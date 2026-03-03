@@ -33,7 +33,7 @@ public class UserV1Controller implements UserV1ApiSpec {
     @Override
     public ApiResponse<UserV1Dto.UserResponse> updateNickname(
         @AuthenticationPrincipal LoginUser loginUser,
-        @RequestBody UserV1Dto.UpdateNicknameRequest request
+        @Valid @RequestBody UserV1Dto.UpdateNicknameRequest request
     ) {
         UserInfo userInfo = userFacade.updateNickname(loginUser.userId(), request.nickname());
         return ApiResponse.success(UserV1Dto.UserResponse.from(userInfo));
