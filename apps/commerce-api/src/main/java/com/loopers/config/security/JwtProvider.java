@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Date;
 
 @Component
@@ -36,24 +37,24 @@ public class JwtProvider {
     }
 
     public String createAccessToken(Long userId) {
-        Date now = new Date();
+        Instant now = Instant.now();
         return Jwts.builder()
             .subject(String.valueOf(userId))
             .claim(CLAIM_TYPE, TYPE_ACCESS)
-            .issuedAt(now)
-            .expiration(new Date(now.getTime() + accessTokenExpiryMs))
+            .issuedAt(Date.from(now))
+            .expiration(Date.from(now.plusMillis(accessTokenExpiryMs)))
             .signWith(secretKey)
             .compact();
     }
 
     public String createRefreshToken(Long userId, String tokenId) {
-        Date now = new Date();
+        Instant now = Instant.now();
         return Jwts.builder()
             .subject(String.valueOf(userId))
             .claim(CLAIM_TYPE, TYPE_REFRESH)
             .claim(CLAIM_TOKEN_ID, tokenId)
-            .issuedAt(now)
-            .expiration(new Date(now.getTime() + refreshTokenExpiryMs))
+            .issuedAt(Date.from(now))
+            .expiration(Date.from(now.plusMillis(refreshTokenExpiryMs)))
             .signWith(secretKey)
             .compact();
     }

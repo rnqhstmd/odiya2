@@ -2,19 +2,20 @@ package com.loopers.domain.user;
 
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
 @Component
 public class UserService {
 
     private final UserRepository userRepository;
+    private final String defaultProfileImageUrl;
 
-    @Value("${service.default-profile-image-url}")
-    private String defaultProfileImageUrl;
+    public UserService(UserRepository userRepository, @Value("${service.default-profile-image-url}") String defaultProfileImageUrl) {
+        this.userRepository = userRepository;
+        this.defaultProfileImageUrl = defaultProfileImageUrl;
+    }
 
     @Transactional
     public User findOrCreateUser(Long kakaoId, String nickname, String profileImageUrl) {

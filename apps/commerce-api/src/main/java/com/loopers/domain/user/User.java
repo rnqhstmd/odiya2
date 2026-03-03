@@ -58,11 +58,8 @@ public class User extends BaseEntity {
     }
 
     private void guardNickname(String nickname) {
-        if (nickname == null || nickname.isEmpty()) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "닉네임은 비어 있을 수 없습니다.");
-        }
-        if (nickname.trim().isEmpty()) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "닉네임은 공백으로만 구성될 수 없습니다.");
+        if (nickname == null || nickname.isBlank()) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "닉네임은 비어 있거나 공백으로만 구성될 수 없습니다.");
         }
         if (nickname.length() > 20) {
             throw new CoreException(ErrorType.BAD_REQUEST, "닉네임은 최대 20자까지 입력할 수 있습니다.");
