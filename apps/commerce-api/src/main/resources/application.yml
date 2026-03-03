@@ -29,11 +29,30 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiry-seconds: 3600
+  refresh-token-expiry-seconds: 2592000
+
+kakao:
+  api-url: https://kapi.kakao.com
+  connect-timeout-seconds: 3
+  read-timeout-seconds: 5
+
+service:
+  default-profile-image-url: ${DEFAULT_PROFILE_IMAGE_URL}
+
 ---
 spring:
   config:
     activate:
       on-profile: local, test
+
+jwt:
+  secret: local-test-secret-key-must-be-at-least-32-chars
+
+service:
+  default-profile-image-url: https://cdn.odiya.com/images/default-profile.png
 
 ---
 spring:
