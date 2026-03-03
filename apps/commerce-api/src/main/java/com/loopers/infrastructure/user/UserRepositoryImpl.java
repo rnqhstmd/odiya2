@@ -1,6 +1,6 @@
 package com.loopers.infrastructure.user;
 
-import com.loopers.domain.user.UserModel;
+import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,17 +14,17 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserJpaRepository userJpaRepository;
 
     @Override
-    public Optional<UserModel> findById(Long id) {
+    public Optional<User> findById(Long id) {
         return userJpaRepository.findById(id);
     }
 
     @Override
-    public Optional<UserModel> findActiveById(Long id) {
+    public Optional<User> findActiveById(Long id) {
         return userJpaRepository.findActiveById(id);
     }
 
     @Override
-    public Optional<UserModel> findActiveByKakaoId(Long kakaoId) {
+    public Optional<User> findActiveByKakaoId(Long kakaoId) {
         return userJpaRepository.findActiveByKakaoId(kakaoId);
     }
 
@@ -39,7 +39,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public UserModel save(UserModel userModel) {
-        return userJpaRepository.save(userModel);
+    public User save(User user) {
+        return userJpaRepository.save(user);
     }
 }

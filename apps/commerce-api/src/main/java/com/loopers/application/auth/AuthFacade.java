@@ -1,7 +1,7 @@
 package com.loopers.application.auth;
 
 import com.loopers.domain.auth.TokenService;
-import com.loopers.domain.user.UserModel;
+import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserService;
 import com.loopers.infrastructure.kakao.KakaoApiClient;
 import com.loopers.infrastructure.kakao.KakaoUserResponse;
@@ -18,7 +18,7 @@ public class AuthFacade {
 
     public AuthInfo kakaoLogin(String kakaoAccessToken) {
         KakaoUserResponse kakaoUser = kakaoApiClient.fetchUser(kakaoAccessToken);
-        UserModel user = userService.findOrCreateUser(kakaoUser.kakaoId(), kakaoUser.nickname(), kakaoUser.profileImageUrl());
+        User user = userService.findOrCreateUser(kakaoUser.kakaoId(), kakaoUser.nickname(), kakaoUser.profileImageUrl());
         TokenService.TokenPair tokenPair = tokenService.issueTokens(user.getId());
         return AuthInfo.from(tokenPair);
     }

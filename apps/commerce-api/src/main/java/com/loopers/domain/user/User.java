@@ -6,13 +6,10 @@ import com.loopers.support.error.ErrorType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {
-    @UniqueConstraint(name = "uq_users_kakao_id", columnNames = "kakao_id")
-})
-public class UserModel extends BaseEntity {
+@Table(name = "users")
+public class User extends BaseEntity {
 
     @Column(name = "kakao_id", nullable = false)
     private Long kakaoId;
@@ -23,17 +20,17 @@ public class UserModel extends BaseEntity {
     @Column(name = "profile_image_url", nullable = false)
     private String profileImageUrl;
 
-    protected UserModel() {}
+    protected User() {}
 
-    private UserModel(Long kakaoId, String nickname, String profileImageUrl) {
+    private User(Long kakaoId, String nickname, String profileImageUrl) {
         guardNickname(nickname);
         this.kakaoId = kakaoId;
         this.nickname = nickname.trim();
         this.profileImageUrl = profileImageUrl;
     }
 
-    public static UserModel create(Long kakaoId, String nickname, String profileImageUrl) {
-        return new UserModel(kakaoId, nickname, profileImageUrl);
+    public static User create(Long kakaoId, String nickname, String profileImageUrl) {
+        return new User(kakaoId, nickname, profileImageUrl);
     }
 
     public Long getKakaoId() {

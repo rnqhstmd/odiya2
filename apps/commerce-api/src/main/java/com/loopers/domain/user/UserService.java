@@ -17,26 +17,26 @@ public class UserService {
     private String defaultProfileImageUrl;
 
     @Transactional
-    public UserModel findOrCreateUser(Long kakaoId, String nickname, String profileImageUrl) {
+    public User findOrCreateUser(Long kakaoId, String nickname, String profileImageUrl) {
         return userRepository.findActiveByKakaoId(kakaoId)
             .orElseGet(() -> {
                 String resolvedProfileImageUrl = profileImageUrl != null
                     ? profileImageUrl
                     : defaultProfileImageUrl;
-                UserModel newUser = UserModel.create(kakaoId, nickname, resolvedProfileImageUrl);
+                User newUser = User.create(kakaoId, nickname, resolvedProfileImageUrl);
                 return userRepository.save(newUser);
             });
     }
 
     @Transactional(readOnly = true)
-    public UserModel getUser(Long userId) {
+    public User getUser(Long userId) {
         return userRepository.findActiveById(userId)
             .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 회원입니다."));
     }
 
     @Transactional
-    public UserModel updateNickname(Long userId, String newNickname) {
-        UserModel user = getUser(userId);
+    public User updateNickname(Long userId, String newNickname) {
+        User user = getUser(userId);
         if (userRepository.existsByNicknameAndDeletedAtIsNullAndIdNot(newNickname, user.getId())) {
             throw new CoreException(ErrorType.CONFLICT, "이미 사용 중인 닉네임입니다.");
         }
@@ -45,15 +45,15 @@ public class UserService {
     }
 
     @Transactional
-    public UserModel updateProfileImage(Long userId, String newUrl) {
-        UserModel user = getUser(userId);
+    public User updateProfileImage(Long userId, String newUrl) {
+        User user = getUser(userId);
         user.changeProfileImageUrl(newUrl);
         return userRepository.save(user);
     }
 
     @Transactional
     public void withdraw(Long userId) {
-        UserModel user = getUser(userId);
+        User user = getUser(userId);
         user.delete();
         userRepository.save(user);
     }
