@@ -9,6 +9,7 @@ import com.loopers.infrastructure.kakao.KakaoApiClient;
 import com.loopers.infrastructure.kakao.KakaoUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
@@ -20,6 +21,7 @@ public class AuthFacade {
     private final TokenService tokenService;
     private final TagService tagService;
 
+    @Transactional
     public AuthInfo kakaoLogin(String kakaoAccessToken) {
         KakaoUserResponse kakaoUser = kakaoApiClient.fetchUser(kakaoAccessToken);
         boolean isNew = !userRepository.findActiveByKakaoId(kakaoUser.kakaoId()).isPresent();

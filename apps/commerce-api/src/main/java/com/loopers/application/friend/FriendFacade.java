@@ -11,6 +11,8 @@ import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -45,6 +47,7 @@ public class FriendFacade {
             .toList();
     }
 
+    @Transactional
     public void acceptRequest(Long requestId, Long userId) {
         friendService.acceptRequest(requestId, userId);
         // 수락 시 양쪽 모두 기본 태그 할당
