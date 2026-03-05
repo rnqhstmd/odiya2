@@ -1,0 +1,27 @@
+/* 공통 */
+"common.loading" = "로딩 중...";
+"common.error" = "오류";
+"common.confirm" = "확인";
+"common.cancel" = "취소";
+"common.save" = "저장";
+"common.delete" = "삭제";
+"common.retry" = "다시 시도";
+
+/* 인증 */
+"auth.login.kakao" = "카카오로 시작하기";
+"auth.login.failed" = "로그인에 실패했습니다.";
+"auth.logout" = "로그아웃";
+"auth.session.expired" = "세션이 만료되었습니다. 다시 로그인해주세요.";
+
+/* 프로필 */
+"profile.title" = "내 프로필";
+"profile.edit.nickname" = "닉네임 변경";
+"profile.edit.nickname.placeholder" = "닉네임을 입력하세요";
+"profile.delete.title" = "회원 탈퇴";
+"profile.delete.message" = "정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.";
+"profile.delete.confirm" = "탈퇴";
+
+/* 에러 */
+"error.network" = "네트워크 연결을 확인해주세요.";
+"error.server" = "일시적인 오류가 발생했습니다.";
+"error.unknown" = "알 수 없는 오류가 발생했습니다.";
