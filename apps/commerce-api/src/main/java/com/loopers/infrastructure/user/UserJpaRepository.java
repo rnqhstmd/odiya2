@@ -21,6 +21,6 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     boolean existsByNicknameAndDeletedAtIsNullAndIdNot(String nickname, Long id);
 
-    @Query("SELECT u FROM User u WHERE u.nickname LIKE CONCAT('%', :keyword, '%') ESCAPE '\\\\' AND u.deletedAt IS NULL AND u.id != :excludeUserId")
+    @Query("SELECT u FROM User u WHERE u.nickname LIKE CONCAT('%', :keyword, '%') ESCAPE '!' AND u.deletedAt IS NULL AND u.id != :excludeUserId")
     List<User> searchByNickname(@Param("keyword") String keyword, @Param("excludeUserId") Long excludeUserId, Pageable pageable);
 }

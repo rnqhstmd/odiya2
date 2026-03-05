@@ -68,7 +68,7 @@ public class UserService {
         if (keyword == null || keyword.length() < 2) {
             throw new CoreException(ErrorType.BAD_REQUEST, "검색어는 2자 이상이어야 합니다.");
         }
-        String sanitized = keyword.replace("%", "\\%").replace("_", "\\_");
+        String sanitized = keyword.replace("!", "!!").replace("%", "!%").replace("_", "!_");
         Pageable pageable = PageRequest.of(0, 20);
         return userRepository.searchByNickname(sanitized, excludeUserId, pageable);
     }
