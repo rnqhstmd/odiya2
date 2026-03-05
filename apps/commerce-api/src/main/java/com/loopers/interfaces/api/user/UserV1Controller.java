@@ -2,6 +2,7 @@ package com.loopers.interfaces.api.user;
 
 import com.loopers.application.user.UserFacade;
 import com.loopers.application.user.UserInfo;
+import com.loopers.application.user.UserSearchInfo;
 import com.loopers.config.security.LoginUser;
 import com.loopers.interfaces.api.ApiResponse;
 import jakarta.validation.Valid;
@@ -12,7 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -57,5 +61,18 @@ public class UserV1Controller implements UserV1ApiSpec {
     ) {
         userFacade.withdraw(loginUser.userId());
         return ApiResponse.<Void>success();
+    }
+
+    @GetMapping("/search")
+    @Override
+    public ApiResponse<List<UserV1Dto.UserSearchResponse>> searchUsers(
+        @AuthenticationPrincipal LoginUser loginUser,
+        @RequestParam String nickname
+    ) {
+        List<UserSearchInfo> results = userFacade.searchByNickname(nickname, loginUser.userId());
+        List<UserV1Dto.UserSearchResponse> response = results.stream()
+            .map(UserV1Dto.UserSearchResponse::from)
+            .toList();
+        return ApiResponse.success(response);
     }
 }
