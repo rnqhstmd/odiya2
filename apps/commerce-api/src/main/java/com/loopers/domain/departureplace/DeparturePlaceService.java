@@ -25,7 +25,8 @@ public class DeparturePlaceService {
     @Transactional
     public DeparturePlace create(User user, String label, String address,
                                  Double latitude, Double longitude) {
-        if (departurePlaceRepository.countActiveByUserId(user.getId()) >= MAX_DEPARTURE_PLACES) {
+        List<DeparturePlace> existing = departurePlaceRepository.findAllActiveByUserIdWithLock(user.getId());
+        if (existing.size() >= MAX_DEPARTURE_PLACES) {
             throw new CoreException(ErrorType.BAD_REQUEST,
                 "출발지는 최대 " + MAX_DEPARTURE_PLACES + "개까지 등록할 수 있습니다.");
         }

@@ -15,7 +15,7 @@ public class UserSettingsService {
 
     @Transactional
     public UserSettings getOrCreateByUserId(Long userId) {
-        return userSettingsRepository.findActiveByUserId(userId)
+        return userSettingsRepository.findActiveByUserIdWithLock(userId)
             .orElseGet(() -> {
                 User user = userService.getUser(userId);
                 UserSettings settings = UserSettings.createDefault(user);

@@ -22,4 +22,9 @@ public class UserSettingsRepositoryImpl implements UserSettingsRepository {
     public Optional<UserSettings> findActiveByUserId(Long userId) {
         return userSettingsJpaRepository.findActiveByUserId(userId);
     }
+
+    @Override
+    public Optional<UserSettings> findActiveByUserIdWithLock(Long userId) {
+        return userSettingsJpaRepository.findActiveByUserIdWithLock(userId);
+    }
 }

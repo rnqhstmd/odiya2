@@ -30,6 +30,11 @@ public class DeparturePlaceRepositoryImpl implements DeparturePlaceRepository {
     }
 
     @Override
+    public List<DeparturePlace> findAllActiveByUserIdWithLock(Long userId) {
+        return departurePlaceJpaRepository.findAllActiveByUserIdWithLock(userId);
+    }
+
+    @Override
     public int countActiveByUserId(Long userId) {
         return departurePlaceJpaRepository.countActiveByUserId(userId);
     }
