@@ -39,9 +39,12 @@ subprojects {
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "jacoco")
 
+    val testcontainersVersion = "1.21.4"
+
     dependencyManagement {
         imports {
             mavenBom("org.springframework.cloud:spring-cloud-dependencies:${project.properties["springCloudDependenciesVersion"]}")
+            mavenBom("org.testcontainers:testcontainers-bom:$testcontainersVersion")
         }
     }
 
@@ -83,6 +86,7 @@ subprojects {
         systemProperty("user.timezone", "Asia/Seoul")
         systemProperty("spring.profiles.active", "test")
         jvmArgs("-Xshare:off")
+        environment("DOCKER_API_VERSION", "1.44")
     }
 
     tasks.withType<JacocoReport> {
