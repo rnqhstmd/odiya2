@@ -25,38 +25,33 @@ final class LoginViewModel: ObservableObject {
                 try await authUseCase.loginWithKakao(accessToken: oauthToken.accessToken)
                 isLoading = false
                 onLoginSuccess?()
-                return
-            } catch let error as APIError {
-                errorMessage = error.userMessage
             } catch {
-                errorMessage = "로그인에 실패했습니다."
+                if let error = error as? APIError {
+                    errorMessage = error.userMessage
+                } else {
+                    errorMessage = "로그인에 실패했습니다."
+                }
+                isLoading = false
             }
-            isLoading = false
         }
     }
 
     private func getKakaoToken() async throws -> OAuthToken {
         return try await withCheckedThrowingContinuation { continuation in
+            let completion: (OAuthToken?, Error?) -> Void = { oauthToken, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else if let oauthToken = oauthToken {
+                    continuation.resume(returning: oauthToken)
+                } else {
+                    continuation.resume(throwing: APIError.unknown("카카오 로그인 응답을 받지 못했습니다."))
+                }
+            }
+
             if UserApi.isKakaoTalkLoginAvailable() {
-                UserApi.shared.loginWithKakaoTalk { oauthToken, error in
-                    if let error = error {
-                        continuation.resume(throwing: error)
-                    } else if let oauthToken = oauthToken {
-                        continuation.resume(returning: oauthToken)
-                    } else {
-                        continuation.resume(throwing: APIError.unknown("카카오 로그인 응답을 받지 못했습니다."))
-                    }
-                }
+                UserApi.shared.loginWithKakaoTalk(completionHandler: completion)
             } else {
-                UserApi.shared.loginWithKakaoAccount { oauthToken, error in
-                    if let error = error {
-                        continuation.resume(throwing: error)
-                    } else if let oauthToken = oauthToken {
-                        continuation.resume(returning: oauthToken)
-                    } else {
-                        continuation.resume(throwing: APIError.unknown("카카오 로그인 응답을 받지 못했습니다."))
-                    }
-                }
+                UserApi.shared.loginWithKakaoAccount(completionHandler: completion)
             }
         }
     }
