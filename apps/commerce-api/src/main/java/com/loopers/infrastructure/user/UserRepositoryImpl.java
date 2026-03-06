@@ -3,8 +3,10 @@ package com.loopers.infrastructure.user;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -41,5 +43,10 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User save(User user) {
         return userJpaRepository.save(user);
+    }
+
+    @Override
+    public List<User> searchByNickname(String keyword, Long excludeUserId, Pageable pageable) {
+        return userJpaRepository.searchByNickname(keyword, excludeUserId, pageable);
     }
 }

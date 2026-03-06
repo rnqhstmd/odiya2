@@ -3,8 +3,12 @@ package com.loopers.domain.user;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Component
 public class UserService {
@@ -57,5 +61,15 @@ public class UserService {
         User user = getUser(userId);
         user.delete();
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> searchByNickname(String keyword, Long excludeUserId) {
+        if (keyword == null || keyword.length() < 2) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "검색어는 2자 이상이어야 합니다.");
+        }
+        String sanitized = keyword.replace("!", "!!").replace("%", "!%").replace("_", "!_");
+        Pageable pageable = PageRequest.of(0, 20);
+        return userRepository.searchByNickname(sanitized, excludeUserId, pageable);
     }
 }
