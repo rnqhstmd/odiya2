@@ -25,5 +25,5 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
     @Override public List<Friendship> findAllByRequesterTagId(Long tagId) { return friendshipJpaRepository.findAllByRequesterTagId(tagId); }
     @Override public List<Friendship> findAllByReceiverTagId(Long tagId) { return friendshipJpaRepository.findAllByReceiverTagId(tagId); }
     @Override public int countAcceptedByUserIdAndTagId(Long userId, Long tagId) { return friendshipJpaRepository.countAcceptedByUserIdAndTagId(userId, tagId); }
-    @Override public String findFriendshipStatus(Long userId1, Long userId2) { return friendshipJpaRepository.findFriendshipStatus(userId1, userId2).orElse(null); }
+    @Override public String findFriendshipStatus(Long userId1, Long userId2) { return friendshipJpaRepository.findFriendshipStatus(userId1, userId2).map(Enum::name).orElse(null); }
 }
