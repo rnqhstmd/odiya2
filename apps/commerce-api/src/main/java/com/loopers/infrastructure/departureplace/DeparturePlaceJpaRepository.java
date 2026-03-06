@@ -1,9 +1,7 @@
 package com.loopers.infrastructure.departureplace;
 
 import com.loopers.domain.departureplace.DeparturePlace;
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -18,10 +16,9 @@ public interface DeparturePlaceJpaRepository extends JpaRepository<DeparturePlac
     @Query("SELECT d FROM DeparturePlace d WHERE d.user.id = :userId AND d.deletedAt IS NULL ORDER BY d.createdAt DESC")
     List<DeparturePlace> findAllActiveByUserId(@Param("userId") Long userId);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT d FROM DeparturePlace d WHERE d.user.id = :userId AND d.deletedAt IS NULL")
-    List<DeparturePlace> findAllActiveByUserIdWithLock(@Param("userId") Long userId);
-
     @Query("SELECT COUNT(d) FROM DeparturePlace d WHERE d.user.id = :userId AND d.deletedAt IS NULL")
     int countActiveByUserId(@Param("userId") Long userId);
+
+    @Query(value = "SELECT COUNT(*) FROM departure_places WHERE user_id = :userId AND deleted_at IS NULL FOR UPDATE", nativeQuery = true)
+    int countActiveByUserIdWithLock(@Param("userId") Long userId);
 }

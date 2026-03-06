@@ -7,6 +7,6 @@ public interface DeparturePlaceRepository {
     DeparturePlace save(DeparturePlace departurePlace);
     Optional<DeparturePlace> findActiveById(Long id);
     List<DeparturePlace> findAllActiveByUserId(Long userId);
-    List<DeparturePlace> findAllActiveByUserIdWithLock(Long userId);
     int countActiveByUserId(Long userId);
+    int countActiveByUserIdWithLock(Long userId);
 }
