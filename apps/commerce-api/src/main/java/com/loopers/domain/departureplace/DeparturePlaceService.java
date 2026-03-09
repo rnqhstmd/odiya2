@@ -38,14 +38,13 @@ public class DeparturePlaceService {
                                  Double latitude, Double longitude) {
         DeparturePlace place = getActiveOwnedPlace(id, userId);
         place.update(label, address, latitude, longitude);
-        return departurePlaceRepository.save(place);
+        return place;
     }
 
     @Transactional
     public void delete(Long id, Long userId) {
         DeparturePlace place = getActiveOwnedPlace(id, userId);
         place.delete();
-        departurePlaceRepository.save(place);
     }
 
     private DeparturePlace getActiveOwnedPlace(Long id, Long userId) {

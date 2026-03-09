@@ -28,6 +28,6 @@ public class UserSettingsService {
                                Integer parkingBufferMinutes, Integer extraMinutes) {
         UserSettings settings = getOrCreateByUserId(userId);
         settings.update(defaultTransportType, parkingBufferMinutes, extraMinutes);
-        return userSettingsRepository.save(settings);
+        return settings;
     }
 }
