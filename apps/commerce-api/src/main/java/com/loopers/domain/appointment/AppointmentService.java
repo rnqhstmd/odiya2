@@ -42,8 +42,9 @@ public class AppointmentService {
                                                  TransportType transportType) {
         AppointmentParticipant participant = AppointmentParticipant.create(
             appointment, user, ParticipantStatus.PENDING, transportType, null);
+        appointmentParticipantRepository.save(participant);
         appointment.addParticipant(participant);
-        return appointmentParticipantRepository.save(participant);
+        return participant;
     }
 
     @Transactional(readOnly = true)

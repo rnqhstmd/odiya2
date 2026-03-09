@@ -27,20 +27,20 @@ public record AppointmentInfo(
     public static AppointmentInfo from(Appointment appointment, Long currentUserId) {
         Long hostId = appointment.getHost().getId();
 
-        AppointmentParticipant currentParticipant = appointment.getParticipants().stream()
-            .filter(p -> p.getUser().getId().equals(currentUserId))
-            .findFirst()
-            .orElse(null);
+        AppointmentParticipant currentParticipant = null;
+        List<ParticipantInfo> participantInfos = new java.util.ArrayList<>();
+        for (AppointmentParticipant p : appointment.getParticipants()) {
+            if (p.getUser().getId().equals(currentUserId)) {
+                currentParticipant = p;
+            }
+            participantInfos.add(ParticipantInfo.from(p, hostId));
+        }
 
         TransportType transportType = currentParticipant != null
             ? currentParticipant.getTransportType() : null;
         String departurePlaceLabel = currentParticipant != null
             && currentParticipant.getDeparturePlace() != null
             ? currentParticipant.getDeparturePlace().getLabel() : null;
-
-        List<ParticipantInfo> participantInfos = appointment.getParticipants().stream()
-            .map(p -> ParticipantInfo.from(p, hostId))
-            .toList();
 
         return new AppointmentInfo(
             appointment.getId(),

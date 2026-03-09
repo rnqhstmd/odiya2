@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
@@ -72,10 +74,8 @@ public class AppointmentFacade {
     @Transactional(readOnly = true)
     public AppointmentDetailInfo getAppointmentDetail(Long appointmentId, Long userId) {
         Appointment appointment = appointmentService.getActiveAppointment(appointmentId);
-        validateParticipant(appointment, userId);
-        AppointmentInfo info = AppointmentInfo.from(appointment, userId);
-
         AppointmentParticipant myParticipant = appointment.findParticipant(userId);
+        AppointmentInfo info = AppointmentInfo.from(appointment, userId);
 
         return new AppointmentDetailInfo(
             info,
@@ -167,15 +167,17 @@ public class AppointmentFacade {
             throw new CoreException(ErrorType.UNAUTHORIZED, "호스트만 추가 초대를 할 수 있습니다.");
         }
 
+        Set<Long> existingParticipantIds = appointment.getParticipants().stream()
+            .map(p -> p.getUser().getId())
+            .collect(Collectors.toSet());
+
         List<Long> uniqueUserIds = userIds.stream().distinct().toList();
         for (Long userId : uniqueUserIds) {
+            if (existingParticipantIds.contains(userId)) {
+                throw new CoreException(ErrorType.CONFLICT, "이미 초대된 참여자입니다.");
+            }
             if (!friendshipRepository.existsAcceptedFriendship(hostUserId, userId)) {
                 throw new CoreException(ErrorType.BAD_REQUEST, "친구 관계인 사용자만 초대할 수 있습니다.");
-            }
-            boolean alreadyParticipant = appointment.getParticipants().stream()
-                .anyMatch(p -> p.getUser().getId().equals(userId));
-            if (alreadyParticipant) {
-                throw new CoreException(ErrorType.CONFLICT, "이미 초대된 참여자입니다.");
             }
             User user = userService.getUser(userId);
             appointmentService.addParticipant(appointment, user, TransportType.TRANSIT);
