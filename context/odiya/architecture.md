@@ -66,10 +66,11 @@ Infrastructure (JPA, Redis, 외부 API)
 |--------|-----------|--------|---------|--------|------|
 | Auth | AuthV1Controller | AuthFacade | TokenService | - | ✅ 완료 |
 | User | UserV1Controller | UserFacade | UserService | User | ✅ 완료 |
-| Friend | - | - | - | - | ⬜ 미구현 |
-| Tag | - | - | - | - | ⬜ 미구현 |
+| Friend | FriendV1Controller | FriendFacade | FriendService | Friendship | ✅ 완료 |
+| Tag | TagV1Controller | FriendFacade | TagService | Tag | ✅ 완료 |
 | Appointment | - | - | - | - | ⬜ 미구현 |
-| DeparturePlace | - | - | - | - | ⬜ 미구현 |
+| DeparturePlace | DeparturePlaceV1Controller | DeparturePlaceFacade | DeparturePlaceService | DeparturePlace | ✅ 완료 |
+| UserSettings | UserSettingsV1Controller | UserSettingsFacade | UserSettingsService | UserSettings | ✅ 완료 |
 | Notification | - | - | - | - | ⬜ 미구현 |
 | Place (검색) | - | - | - | - | ⬜ 미구현 |
 | TravelTime | - | - | - | - | ⬜ 미구현 |
