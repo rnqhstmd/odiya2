@@ -17,4 +17,5 @@ public interface FriendshipRepository {
     List<Friendship> findAllByReceiverTagId(Long tagId);
     int countAcceptedByUserIdAndTagId(Long userId, Long tagId);
     String findFriendshipStatus(Long userId1, Long userId2);
+    boolean existsAcceptedFriendship(Long userId1, Long userId2);
 }
