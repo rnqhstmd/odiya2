@@ -45,4 +45,7 @@ public interface FriendshipJpaRepository extends JpaRepository<Friendship, Long>
 
     @Query("SELECT f.status FROM Friendship f WHERE ((f.requester.id = :userId1 AND f.receiver.id = :userId2) OR (f.requester.id = :userId2 AND f.receiver.id = :userId1)) AND f.deletedAt IS NULL")
     Optional<FriendshipStatus> findFriendshipStatus(@Param("userId1") Long userId1, @Param("userId2") Long userId2);
+
+    @Query("SELECT CASE WHEN COUNT(f) > 0 THEN true ELSE false END FROM Friendship f WHERE ((f.requester.id = :userId1 AND f.receiver.id = :userId2) OR (f.requester.id = :userId2 AND f.receiver.id = :userId1)) AND f.status = 'ACCEPTED' AND f.deletedAt IS NULL")
+    boolean existsAcceptedFriendship(@Param("userId1") Long userId1, @Param("userId2") Long userId2);
 }
