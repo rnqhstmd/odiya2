@@ -38,6 +38,22 @@ kakao:
   api-url: https://kapi.kakao.com
   connect-timeout-seconds: 3
   read-timeout-seconds: 5
+  local:
+    api-url: https://dapi.kakao.com
+    rest-api-key: ${KAKAO_REST_API_KEY}
+    connect-timeout-seconds: 3
+    read-timeout-seconds: 5
+  mobility:
+    api-url: https://apis-navi.kakaomobility.com
+    rest-api-key: ${KAKAO_REST_API_KEY}
+    connect-timeout-seconds: 5
+    read-timeout-seconds: 10
+
+odsay:
+  api-url: https://api.odsay.com
+  api-key: ${ODSAY_API_KEY}
+  connect-timeout-seconds: 3
+  read-timeout-seconds: 10
 
 service:
   default-profile-image-url: ${DEFAULT_PROFILE_IMAGE_URL}
@@ -53,6 +69,15 @@ jwt:
 
 service:
   default-profile-image-url: https://cdn.odiya.com/images/default-profile.png
+
+kakao:
+  local:
+    rest-api-key: test-kakao-rest-api-key
+  mobility:
+    rest-api-key: test-kakao-rest-api-key
+
+odsay:
+  api-key: test-odsay-api-key
 
 ---
 spring:
