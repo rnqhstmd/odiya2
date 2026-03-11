@@ -25,6 +25,11 @@ public record AppointmentInfo(
     List<ParticipantInfo> participants
 ) {
     public static AppointmentInfo from(Appointment appointment, Long currentUserId) {
+        return from(appointment, currentUserId, null, null);
+    }
+
+    public static AppointmentInfo from(Appointment appointment, Long currentUserId,
+                                        Integer durationMinutes, ZonedDateTime departureAlertAt) {
         Long hostId = appointment.getHost().getId();
 
         AppointmentParticipant currentParticipant = null;
@@ -53,8 +58,8 @@ public record AppointmentInfo(
             appointment.getStatus(),
             hostId,
             transportType,
-            null,  // durationMinutes - Phase 4
-            null,  // departureAlertAt - Phase 4
+            durationMinutes,
+            departureAlertAt,
             departurePlaceLabel,
             participantInfos
         );

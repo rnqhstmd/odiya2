@@ -97,7 +97,7 @@ PENDING → CONFIRMED → COMPLETED
 
 > 공통: 모든 응답은 `ApiResponse<T>` 래퍼. 인증: `Bearer {accessToken}` 헤더 (별도 표기 없으면 인증 필요)
 
-### 약속 API — AppointmentV1Controller (⬜ 미구현)
+### 약속 API — AppointmentV1Controller (✅ 구현 완료)
 
 #### 1. 약속 생성
 
