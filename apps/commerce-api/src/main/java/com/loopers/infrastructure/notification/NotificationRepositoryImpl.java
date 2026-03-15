@@ -2,6 +2,8 @@ package com.loopers.infrastructure.notification;
 
 import com.loopers.domain.notification.Notification;
 import com.loopers.domain.notification.NotificationRepository;
+import com.loopers.domain.notification.NotificationStatus;
+import com.loopers.domain.notification.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
@@ -44,4 +46,16 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     public Notification save(Notification notification) {
         return notificationJpaRepository.save(notification);
     }
+
+    @Override
+    public boolean existsByReceiverIdAndTypeAndReferenceIdAndStatus(Long receiverId, NotificationType type, Long referenceId, NotificationStatus status) {
+        return notificationJpaRepository.existsByReceiverIdAndTypeAndReferenceIdAndStatus(receiverId, type, referenceId, status);
+    }
+
+    @Override
+    public int cancelPendingByAppointmentId(Long appointmentId) {
+        return notificationJpaRepository.cancelPendingByAppointmentId(appointmentId);
+    }
+
+
 }
