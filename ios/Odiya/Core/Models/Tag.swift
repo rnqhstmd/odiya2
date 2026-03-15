@@ -10,6 +10,15 @@ struct Tag: Identifiable, Equatable, Hashable {
         Color(hexString: colorHex)
     }
 
+    // MARK: - 기본 이니셜라이저
+
+    init(id: String, name: String, colorHex: String, isDefault: Bool) {
+        self.id = id
+        self.name = name
+        self.colorHex = colorHex
+        self.isDefault = isDefault
+    }
+
     // MARK: - 기본 태그
 
     static let friend = Tag(id: "default-friend", name: "친구", colorHex: "#5AC8FA", isDefault: true)
@@ -17,4 +26,13 @@ struct Tag: Identifiable, Equatable, Hashable {
     static let family = Tag(id: "default-family", name: "가족", colorHex: "#34C759", isDefault: true)
 
     static let defaults: [Tag] = [friend, lover, family]
+
+    // MARK: - DTO 변환
+
+    init(from dto: TagResponseDTO) {
+        self.id = String(dto.id)
+        self.name = dto.name
+        self.colorHex = dto.color
+        self.isDefault = dto.isDefault
+    }
 }

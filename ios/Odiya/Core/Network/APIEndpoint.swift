@@ -18,6 +18,22 @@ enum APIEndpoint {
     case updateNickname
     case updateProfileImage
     case deleteAccount
+    case searchUsers(nickname: String)
+
+    // Friend
+    case getFriends(tagId: Int64?)
+    case sendFriendRequest
+    case getReceivedRequests
+    case acceptFriendRequest(requestId: Int64)
+    case rejectFriendRequest(requestId: Int64)
+    case removeFriend(friendUserId: Int64)
+    case changeFriendTag(friendUserId: Int64)
+
+    // Tag
+    case getTags
+    case createTag
+    case updateTag(tagId: Int64)
+    case deleteTag(tagId: Int64)
 
     // Appointment
     case createAppointment
@@ -44,6 +60,18 @@ enum APIEndpoint {
         case .updateNickname:   return "/api/v1/users/me/nickname"
         case .updateProfileImage: return "/api/v1/users/me/profile-image"
         case .deleteAccount:    return "/api/v1/users/me"
+        case .searchUsers:      return "/api/v1/users/search"
+        case .getFriends:       return "/api/v1/friends"
+        case .sendFriendRequest:            return "/api/v1/friends/request"
+        case .getReceivedRequests:          return "/api/v1/friends/requests/received"
+        case .acceptFriendRequest(let id):  return "/api/v1/friends/request/\(id)/accept"
+        case .rejectFriendRequest(let id):  return "/api/v1/friends/request/\(id)/reject"
+        case .removeFriend(let id):         return "/api/v1/friends/\(id)"
+        case .changeFriendTag(let id):      return "/api/v1/friends/\(id)/tag"
+        case .getTags:                      return "/api/v1/tags"
+        case .createTag:                    return "/api/v1/tags"
+        case .updateTag(let id):            return "/api/v1/tags/\(id)"
+        case .deleteTag(let id):            return "/api/v1/tags/\(id)"
 
         case .createAppointment:        return "/api/v1/appointments"
         case .getAppointment(let id):   return "/api/v1/appointments/\(id)"
@@ -63,6 +91,11 @@ enum APIEndpoint {
 
     var queryItems: [URLQueryItem]? {
         switch self {
+        case .searchUsers(let nickname):
+            return [URLQueryItem(name: "nickname", value: nickname)]
+        case .getFriends(let tagId):
+            if let tagId { return [URLQueryItem(name: "tagId", value: "\(tagId)")] }
+            return nil
         case .getMyAppointments(let status, let cursor, let size):
             var items: [URLQueryItem] = [
                 URLQueryItem(name: "status", value: status),
@@ -89,13 +122,15 @@ enum APIEndpoint {
 
     var method: HTTPMethod {
         switch self {
-        case .kakaoLogin, .refreshToken, .logout:
+        case .kakaoLogin, .refreshToken, .logout,
+             .sendFriendRequest, .acceptFriendRequest, .rejectFriendRequest,
+             .createTag:
             return .post
-        case .getMyProfile:
+        case .getMyProfile, .getFriends, .getReceivedRequests, .getTags, .searchUsers:
             return .get
-        case .updateNickname, .updateProfileImage:
+        case .updateNickname, .updateProfileImage, .changeFriendTag, .updateTag:
             return .patch
-        case .deleteAccount:
+        case .deleteAccount, .removeFriend, .deleteTag:
             return .delete
 
         case .createAppointment:        return .post

@@ -42,3 +42,7 @@ out/
 ### Claude Code / OMC ###
 .omc/
 .dev/
+
+# Swift
+ios/.build/
+ios/Package.resolved
