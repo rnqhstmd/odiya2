@@ -32,14 +32,6 @@ final class CalendarViewModel: ObservableObject {
         return cal
     }()
 
-    private static let isoDateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        f.locale = Locale(identifier: "en_US_POSIX")
-        f.timeZone = TimeZone(identifier: "Asia/Seoul")
-        return f
-    }()
-
     private static let isoDateTimeFormatter: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
         f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -56,7 +48,7 @@ final class CalendarViewModel: ObservableObject {
 
     init(repository: CalendarRepository = CalendarRepositoryImpl()) {
         self.repository = repository
-        let components = Calendar.current.dateComponents([.year, .month], from: Date())
+        let components = koreanCalendar.dateComponents([.year, .month], from: Date())
         if let year = components.year, let month = components.month {
             Task { await loadMonth(year: year, month: month) }
         }
@@ -70,11 +62,7 @@ final class CalendarViewModel: ObservableObject {
         defer { isLoading = false }
         do {
             let days = try await repository.getCalendarData(year: year, month: month)
-            appointments = days.flatMap { day in
-                day.appointments.map { dto in
-                    appointmentFromDTO(dto)
-                }
-            }
+            appointments = days.flatMap { $0.appointments }.map { appointmentFromDTO($0) }
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -97,7 +85,7 @@ final class CalendarViewModel: ObservableObject {
             Tag(id: hex, name: "", colorHex: hex, isDefault: false)
         }
         let participant = Participant(
-            id: dto.id,
+            id: -1,
             nickname: "",
             profileImageUrl: nil,
             status: .accepted,
