@@ -64,8 +64,8 @@ struct AppNotification: Identifiable {
         if let date = formatter.date(from: dto.createdAt) {
             self.createdAt = date
         } else {
-            let fallback = ISO8601DateFormatter()
-            self.createdAt = fallback.date(from: dto.createdAt) ?? Date()
+            formatter.formatOptions = []
+            self.createdAt = formatter.date(from: dto.createdAt) ?? Date.distantPast
         }
     }
 }

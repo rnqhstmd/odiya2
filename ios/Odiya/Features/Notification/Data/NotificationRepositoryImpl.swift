@@ -2,6 +2,8 @@ import Foundation
 
 final class NotificationRepositoryImpl: NotificationRepository {
 
+    private static let iosDeviceType = "IOS"
+
     private let apiClient: APIClient
 
     init(apiClient: APIClient = .shared) {
@@ -34,7 +36,7 @@ final class NotificationRepositoryImpl: NotificationRepository {
     }
 
     func registerDevice(token: String) async throws {
-        let body = RegisterDeviceRequest(token: token, deviceType: "IOS")
+        let body = RegisterDeviceRequest(token: token, deviceType: Self.iosDeviceType)
         try await apiClient.requestVoid(endpoint: .registerDevice, body: body)
     }
 

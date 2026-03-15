@@ -6,6 +6,9 @@ final class NotificationListViewModel: ObservableObject {
     @Published var notifications: [AppNotification] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var unreadCount: Int = 0
+
+    private static let pageSize = 20
 
     private let repository: NotificationRepository
     private var cursor: Int64?
@@ -15,41 +18,31 @@ final class NotificationListViewModel: ObservableObject {
         self.repository = repository
     }
 
-    // MARK: - Computed
-
-    var unreadCount: Int {
-        notifications.filter { !$0.isRead }.count
-    }
-
     // MARK: - Load
 
     func loadNotifications() async {
         guard !isLoading else { return }
-        isLoading = true
-        errorMessage = nil
-        cursor = nil
-
-        do {
-            let response = try await repository.getNotifications(cursor: nil, size: 20)
-            notifications = response.notifications.map { AppNotification(dto: $0) }
-            hasNext = response.hasNext
-            cursor = response.nextCursor
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-
-        isLoading = false
+        await fetchNotifications(cursor: nil, reset: true)
     }
 
     func loadMoreIfNeeded() async {
         guard hasNext, !isLoading else { return }
+        await fetchNotifications(cursor: cursor, reset: false)
+    }
+
+    private func fetchNotifications(cursor: Int64?, reset: Bool) async {
         isLoading = true
+        if reset { errorMessage = nil }
 
         do {
-            let response = try await repository.getNotifications(cursor: cursor, size: 20)
-            notifications += response.notifications.map { AppNotification(dto: $0) }
+            let response = try await repository.getNotifications(cursor: cursor, size: Self.pageSize)
+            if reset {
+                notifications = response.notifications.map { AppNotification(dto: $0) }
+            } else {
+                notifications += response.notifications.map { AppNotification(dto: $0) }
+            }
             hasNext = response.hasNext
-            cursor = response.nextCursor
+            self.cursor = response.nextCursor
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -60,7 +53,7 @@ final class NotificationListViewModel: ObservableObject {
     func loadUnreadCount() async {
         do {
             let response = try await repository.getUnreadCount()
-            _ = response.count
+            unreadCount = response.count
         } catch {
             // unread count failure is non-critical
         }

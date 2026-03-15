@@ -36,8 +36,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     ) {
         let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
         Task {
-            let repository = NotificationRepositoryImpl()
-            try? await repository.registerDevice(token: token)
+            do {
+                let repository = NotificationRepositoryImpl()
+                try await repository.registerDevice(token: token)
+            } catch {
+                print("Failed to register device token: \(error.localizedDescription)")
+            }
         }
     }
 
@@ -53,8 +57,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     /// 로그아웃 시 디바이스 토큰 비활성화
     static func deactivateDeviceToken(_ token: String) {
         Task {
-            let repository = NotificationRepositoryImpl()
-            try? await repository.deactivateDevice(token: token)
+            do {
+                let repository = NotificationRepositoryImpl()
+                try await repository.deactivateDevice(token: token)
+            } catch {
+                print("Failed to deactivate device token: \(error.localizedDescription)")
+            }
         }
     }
 }
