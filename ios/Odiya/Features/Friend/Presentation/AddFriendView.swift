@@ -117,7 +117,7 @@ struct AddFriendView: View {
             .onAppear {
                 Task { await viewModel.loadPendingRequests() }
             }
-            .onChange(of: viewModel.searchText) { _, newValue in
+            .onChange(of: viewModel.searchText) { newValue in
                 Task { await viewModel.searchUsers() }
             }
             .toolbar {

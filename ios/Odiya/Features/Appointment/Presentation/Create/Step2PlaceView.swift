@@ -39,7 +39,7 @@ struct Step2PlaceView: View {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(isSearchFocused ? OdiyaColors.primary : Color.clear, lineWidth: 1.5)
                 )
-                .onChange(of: viewModel.placeSearchText) { _, newValue in
+                .onChange(of: viewModel.placeSearchText) { newValue in
                     if newValue.isEmpty {
                         viewModel.searchedPlaces = []
                     }

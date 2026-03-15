@@ -70,9 +70,9 @@ struct Step3ParticipantsView: View {
                 Image(systemName: "person.2.fill")
                     .foregroundStyle(OdiyaColors.primary)
                 Text("선택: ")
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.secondary)
                 + Text("\(viewModel.selectedFriends.count)명")
-                    .foregroundStyle(OdiyaColors.primary)
+                    .foregroundColor(OdiyaColors.primary)
                     .fontWeight(.semibold)
                 Spacer()
             }

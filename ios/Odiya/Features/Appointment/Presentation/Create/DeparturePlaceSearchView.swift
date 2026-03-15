@@ -131,18 +131,18 @@ struct DeparturePlaceSearchView: View {
 // MARK: - SearchResult
 
 private struct SearchResult: Identifiable {
-    let id: String
+    let id: Int64
     let name: String
     let address: String
     let latitude: Double
     let longitude: Double
 
     static let samples: [SearchResult] = [
-        SearchResult(id: "s1", name: "강남역", address: "서울 강남구 강남대로 396", latitude: 37.4979, longitude: 127.0276),
-        SearchResult(id: "s2", name: "서울역", address: "서울 용산구 한강대로 405", latitude: 37.5547, longitude: 126.9707),
-        SearchResult(id: "s3", name: "잠실역", address: "서울 송파구 올림픽로 지하 265", latitude: 37.5133, longitude: 127.1002),
-        SearchResult(id: "s4", name: "홍대입구역", address: "서울 마포구 양화로 160", latitude: 37.5563, longitude: 126.9236),
-        SearchResult(id: "s5", name: "이태원역", address: "서울 용산구 이태원로 지하 180", latitude: 37.5340, longitude: 126.9948),
+        SearchResult(id: 1, name: "강남역", address: "서울 강남구 강남대로 396", latitude: 37.4979, longitude: 127.0276),
+        SearchResult(id: 2, name: "서울역", address: "서울 용산구 한강대로 405", latitude: 37.5547, longitude: 126.9707),
+        SearchResult(id: 3, name: "잠실역", address: "서울 송파구 올림픽로 지하 265", latitude: 37.5133, longitude: 127.1002),
+        SearchResult(id: 4, name: "홍대입구역", address: "서울 마포구 양화로 160", latitude: 37.5563, longitude: 126.9236),
+        SearchResult(id: 5, name: "이태원역", address: "서울 용산구 이태원로 지하 180", latitude: 37.5340, longitude: 126.9948),
     ]
 }
 
