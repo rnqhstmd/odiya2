@@ -39,7 +39,15 @@ actor APIClient {
         endpoint: APIEndpoint,
         body: (any Encodable)?
     ) throws -> URLRequest {
-        guard let url = URL(string: AppEnvironment.current.baseURL + endpoint.path) else {
+        guard var components = URLComponents(string: AppEnvironment.current.baseURL + endpoint.path) else {
+            throw APIError.unknown("잘못된 URL입니다.")
+        }
+
+        if let queryItems = endpoint.queryItems, !queryItems.isEmpty {
+            components.queryItems = queryItems
+        }
+
+        guard let url = components.url else {
             throw APIError.unknown("잘못된 URL입니다.")
         }
 
