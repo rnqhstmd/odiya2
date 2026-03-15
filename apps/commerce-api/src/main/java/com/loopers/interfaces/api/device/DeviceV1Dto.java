@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 public class DeviceV1Dto {
 
     public record RegisterDeviceRequest(
-        @NotBlank @Size(max = 4096) String token,
+        @NotBlank @Size(max = 512) String token,
         @NotNull DeviceType deviceType
     ) {}
 }
