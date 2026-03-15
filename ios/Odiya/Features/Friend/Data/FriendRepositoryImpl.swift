@@ -67,14 +67,14 @@ final class FriendRepositoryImpl: FriendRepository {
     func updateTag(tagId: Int64, name: String?, colorHex: String?) async throws -> TagResponseDTO {
         let body = UpdateTagBody(name: name, color: colorHex)
         return try await apiClient.request(
-            endpoint: .updateTag(tagId: tagId),
+            endpoint: .updateTag(id: tagId),
             body: body,
             responseType: TagResponseDTO.self
         )
     }
 
     func deleteTag(tagId: Int64) async throws {
-        try await apiClient.requestVoid(endpoint: .deleteTag(tagId: tagId))
+        try await apiClient.requestVoid(endpoint: .deleteTag(id: tagId))
     }
 
     // MARK: - User Search

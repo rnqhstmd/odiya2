@@ -48,7 +48,7 @@ final class FriendListViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            let tagId: Int64? = selectedTag.flatMap { Int64($0.id) }
+            let tagId: Int64? = selectedTag.map { $0.id }
             let dtos = try await repository.getFriends(tagId: tagId)
             friends = dtos.map { Friend(from: $0) }
         } catch {
@@ -78,10 +78,7 @@ final class FriendListViewModel: ObservableObject {
     }
 
     func changeTag(friendId: Int64, tag: Tag) {
-        guard let tagId = Int64(tag.id) else {
-            errorMessage = "유효하지 않은 태그입니다."
-            return
-        }
+        let tagId = tag.id
         Task {
             do {
                 try await repository.changeFriendTag(friendUserId: friendId, tagId: tagId)

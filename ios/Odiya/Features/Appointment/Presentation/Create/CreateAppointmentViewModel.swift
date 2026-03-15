@@ -196,7 +196,7 @@ final class CreateAppointmentViewModel: ObservableObject {
             dateTime: combinedDateTime,
             participantIds: participantIds,
             transportType: transportType.rawValue,
-            departurePlaceId: nil
+            departurePlaceId: departurePlace?.id
         )
 
         do {
