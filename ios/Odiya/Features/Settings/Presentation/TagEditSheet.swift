@@ -5,7 +5,8 @@ struct TagEditSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     let existingTag: Tag?
-    let onSave: (Tag) -> Void
+    /// name, colorHex
+    let onSave: (String, String) -> Void
 
     @State private var name: String
     @State private var selectedColor: Color
@@ -14,7 +15,7 @@ struct TagEditSheet: View {
 
     private let columns = Array(repeating: GridItem(.flexible()), count: 6)
 
-    init(existingTag: Tag?, onSave: @escaping (Tag) -> Void) {
+    init(existingTag: Tag?, onSave: @escaping (String, String) -> Void) {
         self.existingTag = existingTag
         self.onSave = onSave
         _name = State(initialValue: existingTag?.name ?? "")
@@ -129,13 +130,7 @@ struct TagEditSheet: View {
 
     private func saveTag() {
         let colorHex = selectedColor.toHexString()
-        let tag = Tag(
-            id: existingTag?.id ?? UUID().uuidString,
-            name: name.trimmingCharacters(in: .whitespaces),
-            colorHex: colorHex,
-            isDefault: existingTag?.isDefault ?? false
-        )
-        onSave(tag)
+        onSave(name.trimmingCharacters(in: .whitespaces), colorHex)
         dismiss()
     }
 }
@@ -153,5 +148,5 @@ private extension Color {
 }
 
 #Preview {
-    TagEditSheet(existingTag: nil) { _ in }
+    TagEditSheet(existingTag: nil) { _, _ in }
 }

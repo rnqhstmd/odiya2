@@ -12,7 +12,9 @@ struct TagManagementView: View {
         List {
             ForEach(viewModel.tags) { tag in
                 Button {
-                    editingTag = tag
+                    if !tag.isDefault {
+                        editingTag = tag
+                    }
                 } label: {
                     HStack(spacing: 12) {
                         TagDotView(color: tag.color, size: 16)
@@ -55,19 +57,19 @@ struct TagManagementView: View {
             }
         }
         .sheet(isPresented: $showAddSheet) {
-            TagEditSheet(existingTag: nil) { newTag in
-                viewModel.addTag(newTag)
+            TagEditSheet(existingTag: nil) { name, colorHex in
+                Task { await viewModel.addTag(name: name, color: colorHex) }
             }
         }
         .sheet(item: $editingTag) { tag in
-            TagEditSheet(existingTag: tag) { updatedTag in
-                viewModel.updateTag(updatedTag)
+            TagEditSheet(existingTag: tag) { name, colorHex in
+                Task { await viewModel.updateTag(id: tag.id, name: name, color: colorHex) }
             }
         }
         .alert("태그 삭제", isPresented: $showDeleteAlert) {
             Button("삭제", role: .destructive) {
                 if let tag = tagToDelete {
-                    viewModel.deleteTag(tag)
+                    Task { await viewModel.deleteTag(tag) }
                 }
                 tagToDelete = nil
             }

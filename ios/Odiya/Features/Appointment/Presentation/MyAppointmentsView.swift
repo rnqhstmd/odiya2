@@ -43,6 +43,14 @@ struct MyAppointmentsView: View {
             .sheet(isPresented: $showCreateAppointment) {
                 CreateAppointmentView()
             }
+            .onAppear {
+                Task { await viewModel.loadAppointments() }
+            }
+            .overlay {
+                if viewModel.isLoading && viewModel.upcomingAppointments.isEmpty && viewModel.pastAppointments.isEmpty {
+                    ProgressView()
+                }
+            }
         }
     }
 

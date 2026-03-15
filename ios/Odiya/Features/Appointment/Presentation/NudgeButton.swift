@@ -2,6 +2,10 @@ import SwiftUI
 
 struct NudgeButton: View {
 
+    // MARK: - Properties
+
+    var onNudge: (() -> Void)? = nil
+
     // MARK: - State
 
     @State private var isPressed: Bool = false
@@ -100,6 +104,8 @@ struct NudgeButton: View {
     private func triggerNudge() {
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
+
+        onNudge?()
 
         withAnimation {
             showCheckmark = true

@@ -11,17 +11,17 @@ struct AddFriendView: View {
                 // MARK: - 받은 요청
                 if !viewModel.pendingRequests.isEmpty {
                     Section {
-                        ForEach(viewModel.pendingRequests) { friend in
+                        ForEach(viewModel.pendingRequests) { request in
                             HStack(spacing: 12) {
-                                ProfileImageView(imageUrl: friend.profileImageUrl, size: 44)
+                                ProfileImageView(imageUrl: request.profileImageUrl, size: 44)
 
-                                Text(friend.nickname)
+                                Text(request.nickname)
                                     .font(.body)
 
                                 Spacer()
 
                                 Button {
-                                    viewModel.acceptRequest(friend)
+                                    viewModel.acceptRequest(request)
                                 } label: {
                                     Text("수락")
                                         .font(.subheadline)
@@ -35,7 +35,7 @@ struct AddFriendView: View {
                                 .buttonStyle(.plain)
 
                                 Button {
-                                    viewModel.rejectRequest(friend)
+                                    viewModel.rejectRequest(request)
                                 } label: {
                                     Text("거절")
                                         .font(.subheadline)
@@ -57,7 +57,7 @@ struct AddFriendView: View {
 
                 // MARK: - 친구 검색
                 Section {
-                    if viewModel.filteredSearchResults.isEmpty && !viewModel.searchText.isEmpty {
+                    if viewModel.searchResults.isEmpty && !viewModel.searchText.isEmpty {
                         HStack {
                             Spacer()
                             Text("검색 결과가 없어요")
@@ -67,7 +67,7 @@ struct AddFriendView: View {
                         }
                         .padding(.vertical, 20)
                     } else {
-                        ForEach(viewModel.filteredSearchResults) { user in
+                        ForEach(viewModel.searchResults) { user in
                             HStack(spacing: 12) {
                                 ProfileImageView(imageUrl: user.profileImageUrl, size: 44)
 
@@ -114,6 +114,12 @@ struct AddFriendView: View {
                 placement: .navigationBarDrawer(displayMode: .always),
                 prompt: "닉네임으로 검색"
             )
+            .onAppear {
+                Task { await viewModel.loadPendingRequests() }
+            }
+            .onChange(of: viewModel.searchText) { _, newValue in
+                Task { await viewModel.searchUsers() }
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("닫기") { dismiss() }

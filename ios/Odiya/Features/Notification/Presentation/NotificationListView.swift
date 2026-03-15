@@ -8,7 +8,10 @@ struct NotificationListView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if viewModel.notifications.isEmpty {
+                if viewModel.isLoading && viewModel.notifications.isEmpty {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if viewModel.notifications.isEmpty {
                     EmptyStateView(
                         iconName: "bell.slash",
                         title: "알림이 없어요",
@@ -26,7 +29,12 @@ struct NotificationListView: View {
                                         : OdiyaColors.odiya50
                                 )
                                 .onTapGesture {
-                                    viewModel.markAsRead(id: notification.id)
+                                    Task { await viewModel.markAsRead(id: notification.id) }
+                                }
+                                .onAppear {
+                                    if notification.id == viewModel.notifications.last?.id {
+                                        Task { await viewModel.loadMoreIfNeeded() }
+                                    }
                                 }
                         }
                     }
@@ -36,12 +44,23 @@ struct NotificationListView: View {
             .navigationTitle("알림")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    if viewModel.unreadCount > 0 {
+                        Button("전체 읽음") {
+                            Task { await viewModel.markAllAsRead() }
+                        }
+                        .tint(OdiyaColors.primary)
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("닫기") {
                         dismiss()
                     }
                     .tint(OdiyaColors.primary)
                 }
+            }
+            .task {
+                await viewModel.loadNotifications()
             }
         }
     }

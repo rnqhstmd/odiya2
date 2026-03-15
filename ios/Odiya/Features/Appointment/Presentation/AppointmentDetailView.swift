@@ -25,6 +25,24 @@ struct AppointmentDetailView: View {
                 hostToolbar
             }
         }
+        .onAppear {
+            Task { await viewModel.loadDetail() }
+        }
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black.opacity(0.1))
+            }
+        }
+        .alert("약속 취소", isPresented: $viewModel.showCancelConfirm) {
+            Button("취소하기", role: .destructive) {
+                Task { await viewModel.cancelAppointment() }
+            }
+            Button("닫기", role: .cancel) {}
+        } message: {
+            Text("약속을 취소하시겠습니까? 이 작업은 되돌릴 수 없습니다.")
+        }
     }
 
     // MARK: - Map Placeholder
@@ -223,8 +241,10 @@ struct AppointmentDetailView: View {
     private var actionButtons: some View {
         VStack(spacing: 12) {
             if viewModel.appointment.canNudge {
-                NudgeButton()
-                    .frame(maxWidth: .infinity)
+                NudgeButton {
+                    Task { await viewModel.sendNudge() }
+                }
+                .frame(maxWidth: .infinity)
             }
 
             HStack(spacing: 12) {
@@ -269,7 +289,7 @@ struct AppointmentDetailView: View {
                     Label("약속 수정", systemImage: "pencil")
                 }
                 Button(role: .destructive) {
-                    // TODO: 취소 API 연동
+                    viewModel.showCancelConfirm = true
                 } label: {
                     Label("약속 취소", systemImage: "xmark.circle")
                 }

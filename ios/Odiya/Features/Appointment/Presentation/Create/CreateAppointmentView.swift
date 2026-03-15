@@ -132,7 +132,7 @@ struct CreateAppointmentView: View {
                         .disabled(!canProceed)
                     } else {
                         Button {
-                            viewModel.createAppointment()
+                            Task { await viewModel.createAppointment() }
                         } label: {
                             HStack(spacing: 8) {
                                 Image(systemName: "checkmark.circle.fill")
