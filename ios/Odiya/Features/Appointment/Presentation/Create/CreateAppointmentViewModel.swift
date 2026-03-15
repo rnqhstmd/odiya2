@@ -27,6 +27,7 @@ final class CreateAppointmentViewModel: ObservableObject {
     @Published var transportType: TransportType = .transit
     @Published var departurePlace: DeparturePlace? = nil
     @Published var showDeparturePlaceSearch: Bool = false
+    @Published var departurePlaces: [DeparturePlace] = []
 
     // MARK: - Alert
     @Published var showAlert: Bool = false
@@ -38,12 +39,23 @@ final class CreateAppointmentViewModel: ObservableObject {
     // MARK: - Dependencies
 
     private let repository: AppointmentRepository
+    private let friendRepository: FriendRepository
+    private let settingsRepository: SettingsRepository
 
     // MARK: - Init
 
-    init(repository: AppointmentRepository = AppointmentRepositoryImpl()) {
+    init(
+        repository: AppointmentRepository = AppointmentRepositoryImpl(),
+        friendRepository: FriendRepository = FriendRepositoryImpl(),
+        settingsRepository: SettingsRepository = SettingsRepositoryImpl()
+    ) {
         self.repository = repository
-        Task { await loadFriends() }
+        self.friendRepository = friendRepository
+        self.settingsRepository = settingsRepository
+        Task {
+            async let _: () = loadFriends()
+            async let _: () = loadDeparturePlaces()
+        }
     }
 
     // MARK: - Validation
@@ -126,11 +138,27 @@ final class CreateAppointmentViewModel: ObservableObject {
     // MARK: - Friend Loading
 
     func loadFriends() async {
-        // FriendRepository가 Phase 1에서 구현되어 있으면 주입받아 사용.
-        // 현재는 MockData fallback 유지 (FriendRepository 연동 시 교체).
         isLoadingFriends = true
         defer { isLoadingFriends = false }
-        allFriends = MockData.friends
+        do {
+            let dtos = try await friendRepository.getFriends(tagId: nil)
+            allFriends = dtos.map { Friend(from: $0) }
+        } catch {
+            print("Failed to load friends: \(error.localizedDescription)")
+            allFriends = []
+        }
+    }
+
+    // MARK: - Departure Place Loading
+
+    func loadDeparturePlaces() async {
+        do {
+            let dtos = try await settingsRepository.getDeparturePlaces()
+            departurePlaces = dtos.map { DeparturePlace(dto: $0) }
+        } catch {
+            print("Failed to load departure places: \(error.localizedDescription)")
+            departurePlaces = []
+        }
     }
 
     // MARK: - Actions
@@ -170,7 +198,7 @@ final class CreateAppointmentViewModel: ObservableObject {
             dateTime: combinedDateTime,
             participantIds: participantIds,
             transportType: transportType.rawValue,
-            departurePlaceId: nil
+            departurePlaceId: departurePlace?.id
         )
 
         do {

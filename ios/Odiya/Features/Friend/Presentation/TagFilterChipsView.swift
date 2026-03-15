@@ -24,7 +24,7 @@ struct TagFilterChipsView: View {
     }
 
     private var allChip: some View {
-        let allTag = Tag(id: "__all__", name: "전체", colorHex: "#5B3A8C", isDefault: true)
+        let allTag = Tag(id: 0, name: "전체", colorHex: "#5B3A8C", isDefault: true)
         return Button {
             selectedTag = nil
         } label: {

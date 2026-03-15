@@ -82,7 +82,7 @@ final class CalendarViewModel: ObservableObject {
 
         // tagColor가 있으면 임시 Tag를 생성해 participants에 부여 (dot/color 표시용)
         let tag: Tag? = dto.tagColor.map { hex in
-            Tag(id: hex, name: "", colorHex: hex, isDefault: false)
+            Tag(id: Int64(hex.hashValue), name: "", colorHex: hex, isDefault: false)
         }
         let participant = Participant(
             id: -1,
@@ -119,7 +119,7 @@ final class CalendarViewModel: ObservableObject {
 
     func tags(for date: Date) -> [Tag] {
         let dayAppointments = appointments(for: date)
-        var seen = Set<String>()
+        var seen = Set<Int64>()
         var result: [Tag] = []
         for appointment in dayAppointments {
             for participant in appointment.participants {

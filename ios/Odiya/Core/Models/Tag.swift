@@ -24,6 +24,10 @@ struct Tag: Identifiable, Equatable, Hashable {
         self.isDefault = dto.isDefault
     }
 
+    init(from dto: TagResponseDTO) {
+        self.init(dto: dto)
+    }
+
     // MARK: - 기본 태그 (로컬 fallback용)
 
     static let friend = Tag(id: -1, name: "친구", colorHex: "#5AC8FA", isDefault: true)

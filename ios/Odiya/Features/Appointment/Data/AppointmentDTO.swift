@@ -2,6 +2,12 @@ import Foundation
 
 // MARK: - Request DTOs
 
+private let sharedISOEncoder: ISO8601DateFormatter = {
+    let f = ISO8601DateFormatter()
+    f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    return f
+}()
+
 struct CreateAppointmentRequest: Encodable {
     let name: String
     let placeName: String
@@ -13,12 +19,6 @@ struct CreateAppointmentRequest: Encodable {
     let transportType: String
     let departurePlaceId: Int64?
 
-    private static let isoEncoder: ISO8601DateFormatter = {
-        let f = ISO8601DateFormatter()
-        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        return f
-    }()
-
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
@@ -26,7 +26,7 @@ struct CreateAppointmentRequest: Encodable {
         try container.encode(placeAddress, forKey: .placeAddress)
         try container.encode(latitude, forKey: .latitude)
         try container.encode(longitude, forKey: .longitude)
-        try container.encode(Self.isoEncoder.string(from: dateTime), forKey: .dateTime)
+        try container.encode(sharedISOEncoder.string(from: dateTime), forKey: .dateTime)
         try container.encode(participantIds, forKey: .participantIds)
         try container.encode(transportType, forKey: .transportType)
         try container.encodeIfPresent(departurePlaceId, forKey: .departurePlaceId)
@@ -54,7 +54,7 @@ struct UpdateAppointmentRequest: Encodable {
         try container.encodeIfPresent(latitude, forKey: .latitude)
         try container.encodeIfPresent(longitude, forKey: .longitude)
         if let dateTime = dateTime {
-            try container.encode(CreateAppointmentRequest.isoEncoder.string(from: dateTime), forKey: .dateTime)
+            try container.encode(sharedISOEncoder.string(from: dateTime), forKey: .dateTime)
         }
     }
 

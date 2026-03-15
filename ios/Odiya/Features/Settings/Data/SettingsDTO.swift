@@ -45,14 +45,7 @@ struct UpdateUserSettingsRequest: Encodable {
 
 // MARK: - Tag DTOs
 
-/// GET /api/v1/tags 응답 / POST·PATCH 응답
-struct TagResponseDTO: Decodable {
-    let id: Int64
-    let name: String
-    let color: String
-    let isDefault: Bool
-    let friendCount: Int
-}
+// TagResponseDTO는 FriendDTO.swift에 정의되어 있음
 
 /// POST /api/v1/tags
 struct CreateTagRequest: Encodable {

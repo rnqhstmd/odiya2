@@ -72,7 +72,7 @@ struct Step4ConfirmView: View {
 
                     // 등록된 장소 카드
                     VStack(spacing: 0) {
-                        ForEach(MockData.departurePlaces) { place in
+                        ForEach(viewModel.departurePlaces) { place in
                             Button {
                                 viewModel.selectDeparturePlace(place)
                             } label: {
@@ -102,7 +102,7 @@ struct Step4ConfirmView: View {
                             }
                             .buttonStyle(.plain)
 
-                            if place.id != MockData.departurePlaces.last?.id {
+                            if place.id != viewModel.departurePlaces.last?.id {
                                 Divider().padding(.leading, 50)
                             }
                         }

@@ -64,7 +64,7 @@ struct AppNotification: Identifiable {
         if let date = formatter.date(from: dto.createdAt) {
             self.createdAt = date
         } else {
-            formatter.formatOptions = []
+            formatter.formatOptions = [.withInternetDateTime]
             self.createdAt = formatter.date(from: dto.createdAt) ?? Date.distantPast
         }
     }
