@@ -48,6 +48,11 @@ struct TagFilterChipsView: View {
 }
 
 #Preview {
-    @Previewable @State var selectedTag: Tag? = nil
-    TagFilterChipsView(availableTags: MockData.tags, selectedTag: $selectedTag)
+    struct PreviewWrapper: View {
+        @State var selectedTag: Tag? = nil
+        var body: some View {
+            TagFilterChipsView(availableTags: MockData.tags, selectedTag: $selectedTag)
+        }
+    }
+    return PreviewWrapper()
 }
