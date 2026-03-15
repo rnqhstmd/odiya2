@@ -59,10 +59,11 @@ final class MyAppointmentsViewModel: ObservableObject {
             let cursor = reset ? nil : upcomingCursor
             let result = try await repository.getMyAppointments(status: "UPCOMING", cursor: cursor, size: 20)
             if reset {
-                upcomingAppointments = result.appointments.sorted { $0.dateTime < $1.dateTime }
+                upcomingAppointments = result.appointments
             } else {
-                upcomingAppointments += result.appointments.sorted { $0.dateTime < $1.dateTime }
+                upcomingAppointments += result.appointments
             }
+            upcomingAppointments.sort { $0.dateTime < $1.dateTime }
             hasNextUpcoming = result.hasNext
             upcomingCursor = result.appointments.last.map { $0.id }
         } catch {
@@ -75,10 +76,11 @@ final class MyAppointmentsViewModel: ObservableObject {
             let cursor = reset ? nil : pastCursor
             let result = try await repository.getMyAppointments(status: "PAST", cursor: cursor, size: 20)
             if reset {
-                pastAppointments = result.appointments.sorted { $0.dateTime > $1.dateTime }
+                pastAppointments = result.appointments
             } else {
-                pastAppointments += result.appointments.sorted { $0.dateTime > $1.dateTime }
+                pastAppointments += result.appointments
             }
+            pastAppointments.sort { $0.dateTime > $1.dateTime }
             hasNextPast = result.hasNext
             pastCursor = result.appointments.last.map { $0.id }
         } catch {

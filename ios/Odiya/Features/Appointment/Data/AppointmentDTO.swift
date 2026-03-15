@@ -13,6 +13,12 @@ struct CreateAppointmentRequest: Encodable {
     let transportType: String
     let departurePlaceId: Int64?
 
+    private static let isoEncoder: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return f
+    }()
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
@@ -20,9 +26,7 @@ struct CreateAppointmentRequest: Encodable {
         try container.encode(placeAddress, forKey: .placeAddress)
         try container.encode(latitude, forKey: .latitude)
         try container.encode(longitude, forKey: .longitude)
-        let iso = ISO8601DateFormatter()
-        iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        try container.encode(iso.string(from: dateTime), forKey: .dateTime)
+        try container.encode(Self.isoEncoder.string(from: dateTime), forKey: .dateTime)
         try container.encode(participantIds, forKey: .participantIds)
         try container.encode(transportType, forKey: .transportType)
         try container.encodeIfPresent(departurePlaceId, forKey: .departurePlaceId)
@@ -50,9 +54,7 @@ struct UpdateAppointmentRequest: Encodable {
         try container.encodeIfPresent(latitude, forKey: .latitude)
         try container.encodeIfPresent(longitude, forKey: .longitude)
         if let dateTime = dateTime {
-            let iso = ISO8601DateFormatter()
-            iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            try container.encode(iso.string(from: dateTime), forKey: .dateTime)
+            try container.encode(CreateAppointmentRequest.isoEncoder.string(from: dateTime), forKey: .dateTime)
         }
     }
 
@@ -167,27 +169,42 @@ private let isoParserNoFractional: ISO8601DateFormatter = {
     return f
 }()
 
-private func parseDate(_ string: String) -> Date {
+private func parseDate(_ string: String) -> Date? {
     isoParser.date(from: string)
         ?? isoParserNoFractional.date(from: string)
-        ?? Date()
 }
 
-extension AppointmentResponseDTO {
+// MARK: - Shared Conversion Protocol
+
+private protocol AppointmentMappable {
+    var id: Int64 { get }
+    var name: String { get }
+    var placeName: String { get }
+    var placeAddress: String { get }
+    var latitude: Double { get }
+    var longitude: Double { get }
+    var dateTime: String { get }
+    var status: String { get }
+    var hostId: Int64 { get }
+    var transportType: String? { get }
+    var durationMinutes: Int? { get }
+    var departureAlertAt: String? { get }
+    var departurePlaceLabel: String? { get }
+    var participants: [ParticipantResponseDTO] { get }
+}
+
+extension AppointmentMappable {
     func toDomain() -> Appointment {
         let parsedParticipants = participants.map { p -> Participant in
-            let pStatus = ParticipantStatus(rawValue: p.status) ?? .pending
-            return Participant(
+            Participant(
                 id: p.userId,
                 nickname: p.nickname,
                 profileImageUrl: p.profileImageUrl,
-                status: pStatus,
+                status: ParticipantStatus(rawValue: p.status) ?? .pending,
                 isHost: p.isHost,
                 tag: nil
             )
         }
-        let appStatus = AppointmentStatus(rawValue: status) ?? .pending
-        let transport = TransportType(rawValue: transportType ?? "") ?? .transit
         return Appointment(
             id: id,
             name: name,
@@ -195,48 +212,17 @@ extension AppointmentResponseDTO {
             placeAddress: placeAddress,
             latitude: latitude,
             longitude: longitude,
-            dateTime: parseDate(dateTime),
-            status: appStatus,
+            dateTime: parseDate(dateTime) ?? Date(),
+            status: AppointmentStatus(rawValue: status) ?? .pending,
             participants: parsedParticipants,
             hostId: hostId,
-            transportType: transport,
+            transportType: TransportType(rawValue: transportType ?? "") ?? .transit,
             durationMinutes: durationMinutes,
             departurePlaceLabel: departurePlaceLabel,
-            departureAlertAt: departureAlertAt.map { parseDate($0) }
+            departureAlertAt: departureAlertAt.flatMap { parseDate($0) }
         )
     }
 }
 
-extension AppointmentDetailResponseDTO {
-    func toDomain() -> Appointment {
-        let parsedParticipants = participants.map { p -> Participant in
-            let pStatus = ParticipantStatus(rawValue: p.status) ?? .pending
-            return Participant(
-                id: p.userId,
-                nickname: p.nickname,
-                profileImageUrl: p.profileImageUrl,
-                status: pStatus,
-                isHost: p.isHost,
-                tag: nil
-            )
-        }
-        let appStatus = AppointmentStatus(rawValue: status) ?? .pending
-        let transport = TransportType(rawValue: transportType ?? "") ?? .transit
-        return Appointment(
-            id: id,
-            name: name,
-            placeName: placeName,
-            placeAddress: placeAddress,
-            latitude: latitude,
-            longitude: longitude,
-            dateTime: parseDate(dateTime),
-            status: appStatus,
-            participants: parsedParticipants,
-            hostId: hostId,
-            transportType: transport,
-            durationMinutes: durationMinutes,
-            departurePlaceLabel: departurePlaceLabel,
-            departureAlertAt: departureAlertAt.map { parseDate($0) }
-        )
-    }
-}
+extension AppointmentResponseDTO: AppointmentMappable {}
+extension AppointmentDetailResponseDTO: AppointmentMappable {}
