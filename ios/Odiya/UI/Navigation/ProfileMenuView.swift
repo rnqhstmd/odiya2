@@ -4,8 +4,13 @@ struct ProfileMenuView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var showLogoutAlert = false
+    @State private var user: User = User(id: 0, nickname: "", profileImageUrl: nil)
 
-    private let user = MockData.currentUser
+    private let userRepository: UserRepository
+
+    init(userRepository: UserRepository = UserRepositoryImpl()) {
+        self.userRepository = userRepository
+    }
 
     var body: some View {
         NavigationStack {
@@ -24,6 +29,11 @@ struct ProfileMenuView: View {
                 logoutSection
 
                 Spacer()
+            }
+            .task {
+                if let dto = try? await userRepository.getMyProfile() {
+                    user = dto.toDomain()
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
