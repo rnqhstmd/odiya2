@@ -95,16 +95,8 @@ public class AppointmentFacade {
             if (p.getUser().getId().equals(hostUserId)) {
                 continue;
             }
-            try {
-                notificationFacade.sendNotification(
-                    p.getUser(), host, NotificationType.APPOINTMENT_INVITE,
-                    host.getNickname() + "님이 약속에 초대했어요",
-                    appointment.getName(),
-                    appointment.getId(), "APPOINTMENT");
-            } catch (Exception e) {
-                log.warn("약속 초대 알림 발송 실패: appointmentId={}, userId={}, error={}",
-                    appointment.getId(), p.getUser().getId(), e.getMessage(), e);
-            }
+            sendAppointmentNotification(p.getUser(), host, NotificationType.APPOINTMENT_INVITE,
+                    host.getNickname() + "님이 약속에 초대했어요", appointment.getName(), appointment.getId());
         }
 
         return result;
@@ -217,16 +209,10 @@ public class AppointmentFacade {
             User host = userService.getUser(userId);
             for (AppointmentParticipant p : appointment.getParticipants()) {
                 if (!p.getUser().getId().equals(userId)) {
-                    try {
-                        notificationFacade.sendNotification(
-                            p.getUser(), host, NotificationType.APPOINTMENT_UPDATED,
+                    sendAppointmentNotification(p.getUser(), host, NotificationType.APPOINTMENT_UPDATED,
                             appointment.getName() + " 약속이 변경되었어요",
                             coordChanged ? "장소가 변경되었습니다." : "시간이 변경되었습니다.",
-                            appointment.getId(), "APPOINTMENT");
-                    } catch (Exception e) {
-                        log.warn("약속 변경 알림 발송 실패: appointmentId={}, userId={}, error={}",
-                            appointmentId, p.getUser().getId(), e.getMessage(), e);
-                    }
+                            appointment.getId());
                 }
 
                 if (p.getDeparturePlace() != null) {
@@ -241,16 +227,10 @@ public class AppointmentFacade {
                             long diffMinutes = Math.abs(newDuration - oldDuration);
                             boolean appointmentFarEnough = appointment.getDateTime().isAfter(ZonedDateTime.now().plusMinutes(30));
                             if (diffMinutes >= 5 && appointmentFarEnough) {
-                                try {
-                                    notificationFacade.sendNotification(
-                                        p.getUser(), null, NotificationType.TRAVEL_TIME_CHANGED,
+                                sendAppointmentNotification(p.getUser(), null, NotificationType.TRAVEL_TIME_CHANGED,
                                         appointment.getName() + " 이동시간이 변경되었어요",
                                         "이동시간이 " + diffMinutes + "분 변경되었습니다.",
-                                        appointment.getId(), "APPOINTMENT");
-                                } catch (Exception e) {
-                                    log.warn("이동시간 변경 알림 발송 실패: appointmentId={}, userId={}, error={}",
-                                        appointmentId, p.getUser().getId(), e.getMessage(), e);
-                                }
+                                        appointment.getId());
                             }
                         }
                     } catch (Exception e) {
@@ -276,16 +256,9 @@ public class AppointmentFacade {
             if (p.getUser().getId().equals(userId)) {
                 continue;
             }
-            try {
-                notificationFacade.sendNotification(
-                    p.getUser(), host, NotificationType.APPOINTMENT_CANCELLED,
+            sendAppointmentNotification(p.getUser(), host, NotificationType.APPOINTMENT_CANCELLED,
                     appointment.getName() + " 약속이 취소되었어요",
-                    host.getNickname() + "님이 약속을 취소했습니다.",
-                    appointment.getId(), "APPOINTMENT");
-            } catch (Exception e) {
-                log.warn("약속 취소 알림 발송 실패: appointmentId={}, userId={}, error={}",
-                    appointmentId, p.getUser().getId(), e.getMessage(), e);
-            }
+                    host.getNickname() + "님이 약속을 취소했습니다.", appointment.getId());
         }
     }
 
@@ -323,16 +296,8 @@ public class AppointmentFacade {
             User user = userService.getUser(userId);
             appointmentService.addParticipant(appointment, user, TransportType.TRANSIT);
 
-            try {
-                notificationFacade.sendNotification(
-                    user, host, NotificationType.APPOINTMENT_INVITE,
-                    host.getNickname() + "님이 약속에 초대했어요",
-                    appointment.getName(),
-                    appointment.getId(), "APPOINTMENT");
-            } catch (Exception e) {
-                log.warn("약속 초대 알림 발송 실패: appointmentId={}, userId={}, error={}",
-                    appointmentId, userId, e.getMessage(), e);
-            }
+            sendAppointmentNotification(user, host, NotificationType.APPOINTMENT_INVITE,
+                    host.getNickname() + "님이 약속에 초대했어요", appointment.getName(), appointment.getId());
         }
         appointment.revertToPendingIfConfirmed();
     }
@@ -398,6 +363,16 @@ public class AppointmentFacade {
         }
 
         return AppointmentInfo.from(appointment, userId, durationMinutes, departureAlertAt);
+    }
+
+    private void sendAppointmentNotification(User receiver, User sender, NotificationType type,
+                                                String title, String body, Long appointmentId) {
+        try {
+            notificationFacade.sendNotification(receiver, sender, type, title, body, appointmentId, "APPOINTMENT");
+        } catch (Exception e) {
+            log.warn("알림 발송 실패: type={}, appointmentId={}, receiverId={}, error={}",
+                type, appointmentId, receiver.getId(), e.getMessage(), e);
+        }
     }
 
     private void validateParticipant(Appointment appointment, Long userId) {

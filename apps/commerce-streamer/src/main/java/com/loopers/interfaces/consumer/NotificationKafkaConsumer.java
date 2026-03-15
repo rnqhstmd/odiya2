@@ -54,12 +54,11 @@ public class NotificationKafkaConsumer {
             return;
         }
 
-        Map<String, String> data = Map.of(
-            "notificationId", String.valueOf(event.notificationId()),
-            "type", event.type() != null ? event.type() : "",
-            "referenceId", event.referenceId() != null ? String.valueOf(event.referenceId()) : "",
-            "referenceType", event.referenceType() != null ? event.referenceType() : ""
-        );
+        Map<String, String> data = new java.util.HashMap<>();
+        data.put("notificationId", String.valueOf(event.notificationId()));
+        if (event.type() != null) data.put("type", event.type());
+        if (event.referenceId() != null) data.put("referenceId", String.valueOf(event.referenceId()));
+        if (event.referenceType() != null) data.put("referenceType", event.referenceType());
 
         FcmSendResult result = null;
         Exception lastException = null;

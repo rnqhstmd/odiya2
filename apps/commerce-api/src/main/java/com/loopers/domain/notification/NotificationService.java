@@ -5,6 +5,7 @@ import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class NotificationService {
+
+    private static final int MAX_UNREAD_COUNT_DISPLAY = 99;
 
     private final NotificationRepository notificationRepository;
 
@@ -47,9 +50,10 @@ public class NotificationService {
 
     public int countUnread(Long userId) {
         int count = notificationRepository.countUnreadByReceiverId(userId);
-        return Math.min(count, 99);
+        return Math.min(count, MAX_UNREAD_COUNT_DISPLAY);
     }
 
+    @Transactional
     public void updateStatus(Long notificationId, NotificationStatus status) {
         notificationRepository.findById(notificationId).ifPresent(notification -> {
             if (status == NotificationStatus.SENT) {

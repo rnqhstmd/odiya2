@@ -3,6 +3,7 @@ package com.loopers.domain.notification;
 import com.loopers.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,7 @@ public class DeviceTokenService {
 
     private final DeviceTokenRepository deviceTokenRepository;
 
+    @Transactional
     public DeviceToken register(User user, String token, DeviceType deviceType) {
         Optional<DeviceToken> existing = deviceTokenRepository.findByToken(token);
         if (existing.isPresent()) {

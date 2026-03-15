@@ -116,11 +116,13 @@ public class NotificationFacade {
         appointment.findParticipant(senderUserId);
         User sender = userService.getUser(senderUserId);
 
+        List<Long> actualTargetIds = targetUserIds.stream()
+            .filter(id -> !id.equals(senderUserId))
+            .distinct()
+            .toList();
+
         // 1단계: 쿨다운 사전 검증
-        for (Long targetUserId : targetUserIds) {
-            if (targetUserId.equals(senderUserId)) {
-                continue;
-            }
+        for (Long targetUserId : actualTargetIds) {
             appointment.findParticipant(targetUserId);
 
             if (nudgeCooldownRepository.existsCooldown(appointmentId, senderUserId, targetUserId)) {
@@ -129,10 +131,7 @@ public class NotificationFacade {
         }
 
         // 2단계: 쿨다운 설정 + 알림 발송
-        for (Long targetUserId : targetUserIds) {
-            if (targetUserId.equals(senderUserId)) {
-                continue;
-            }
+        for (Long targetUserId : actualTargetIds) {
             nudgeCooldownRepository.setCooldown(appointmentId, senderUserId, targetUserId);
 
             User target = userService.getUser(targetUserId);
