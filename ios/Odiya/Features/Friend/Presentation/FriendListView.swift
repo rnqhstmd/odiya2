@@ -19,7 +19,11 @@ struct FriendListView: View {
 
                 Divider()
 
-                if viewModel.filteredFriends.isEmpty {
+                if viewModel.isLoading {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                } else if viewModel.filteredFriends.isEmpty {
                     Spacer()
                     EmptyStateView(
                         iconName: "person.2.slash",

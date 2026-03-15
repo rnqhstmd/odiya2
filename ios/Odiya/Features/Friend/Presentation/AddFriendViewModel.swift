@@ -23,11 +23,14 @@ final class AddFriendViewModel: ObservableObject {
     // MARK: - Load
 
     func loadPendingRequests() async {
+        isLoading = true
+        defer { isLoading = false }
         do {
             let dtos = try await repository.getReceivedRequests()
             pendingRequests = dtos.map { FriendRequest(from: $0) }
         } catch {
-            errorMessage = error.localizedDescription
+            alertMessage = error.localizedDescription
+            showAlert = true
         }
     }
 
