@@ -51,6 +51,16 @@ enum APIEndpoint {
     // Place
     case searchPlaces(keyword: String, page: Int)
 
+    // Notification
+    case getNotifications(cursor: Int64?, size: Int)
+    case markNotificationAsRead(id: Int64)
+    case markAllNotificationsAsRead
+    case getUnreadCount
+
+    // Device
+    case registerDevice
+    case deactivateDevice(token: String)
+
     var path: String {
         switch self {
         case .kakaoLogin:       return "/api/v1/auth/kakao/login"
@@ -86,6 +96,13 @@ enum APIEndpoint {
         case .nudge(let id):            return "/api/v1/appointments/\(id)/nudge"
 
         case .searchPlaces:             return "/api/v1/places/search"
+
+        case .getNotifications:         return "/api/v1/notifications"
+        case .markNotificationAsRead(let id): return "/api/v1/notifications/\(id)/read"
+        case .markAllNotificationsAsRead: return "/api/v1/notifications/read-all"
+        case .getUnreadCount:           return "/api/v1/notifications/unread-count"
+        case .registerDevice:           return "/api/v1/devices"
+        case .deactivateDevice(let token): return "/api/v1/devices/\(token)"
         }
     }
 
@@ -115,6 +132,12 @@ enum APIEndpoint {
                 URLQueryItem(name: "keyword", value: keyword),
                 URLQueryItem(name: "page", value: "\(page)")
             ]
+        case .getNotifications(let cursor, let size):
+            var items: [URLQueryItem] = [URLQueryItem(name: "size", value: "\(size)")]
+            if let cursor {
+                items.append(URLQueryItem(name: "cursor", value: "\(cursor)"))
+            }
+            return items
         default:
             return nil
         }
@@ -146,6 +169,15 @@ enum APIEndpoint {
         case .nudge:                    return .post
 
         case .searchPlaces:             return .get
+
+        case .getNotifications, .getUnreadCount:
+            return .get
+        case .markNotificationAsRead:
+            return .patch
+        case .markAllNotificationsAsRead, .registerDevice:
+            return .post
+        case .deactivateDevice:
+            return .delete
         }
     }
 

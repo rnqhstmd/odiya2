@@ -3,17 +3,23 @@ import Foundation
 // MARK: - Notification
 
 enum NotificationType: String, CaseIterable {
-    case friendRequest   = "FRIEND_REQUEST"
-    case appointmentInvite = "APPOINTMENT_INVITE"
-    case departureAlert  = "DEPARTURE_ALERT"
-    case nudge           = "NUDGE"
+    case friendRequest      = "FRIEND_REQUEST"
+    case appointmentInvite  = "APPOINTMENT_INVITE"
+    case departureAlert     = "DEPARTURE_ALERT"
+    case nudge              = "NUDGE"
+    case appointmentConfirmed = "APPOINTMENT_CONFIRMED"
+    case appointmentCancelled = "APPOINTMENT_CANCELLED"
+    case unknown            = "UNKNOWN"
 
     var iconName: String {
         switch self {
-        case .friendRequest:     return "person.badge.plus"
-        case .appointmentInvite: return "calendar.badge.plus"
-        case .departureAlert:    return "bell.badge.fill"
-        case .nudge:             return "megaphone.fill"
+        case .friendRequest:        return "person.badge.plus"
+        case .appointmentInvite:    return "calendar.badge.plus"
+        case .departureAlert:       return "bell.badge.fill"
+        case .nudge:                return "megaphone.fill"
+        case .appointmentConfirmed: return "checkmark.circle.fill"
+        case .appointmentCancelled: return "xmark.circle.fill"
+        case .unknown:              return "bell"
         }
     }
 }
@@ -35,6 +41,32 @@ struct AppNotification: Identifiable {
         if hours < 24 { return "\(hours)시간 전" }
         let days = hours / 24
         return "\(days)일 전"
+    }
+
+    init(id: String, type: NotificationType, title: String, body: String, createdAt: Date, isRead: Bool) {
+        self.id = id
+        self.type = type
+        self.title = title
+        self.body = body
+        self.createdAt = createdAt
+        self.isRead = isRead
+    }
+
+    init(dto: NotificationResponseDTO) {
+        self.id = String(dto.id)
+        self.type = NotificationType(rawValue: dto.type) ?? .unknown
+        self.title = dto.title
+        self.body = dto.body
+        self.isRead = dto.isRead
+
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = formatter.date(from: dto.createdAt) {
+            self.createdAt = date
+        } else {
+            formatter.formatOptions = []
+            self.createdAt = formatter.date(from: dto.createdAt) ?? Date.distantPast
+        }
     }
 }
 
