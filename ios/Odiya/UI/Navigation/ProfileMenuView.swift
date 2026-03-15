@@ -32,9 +32,8 @@ struct ProfileMenuView: View {
             }
             .task {
                 do {
-                    if let dto = try await userRepository.getMyProfile() {
-                        user = dto.toDomain()
-                    }
+                    let dto = try await userRepository.getMyProfile()
+                    user = dto.toDomain()
                 } catch {
                     print("Failed to fetch user profile: \(error.localizedDescription)")
                 }
