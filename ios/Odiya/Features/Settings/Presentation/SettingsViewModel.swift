@@ -17,6 +17,17 @@ final class SettingsViewModel: ObservableObject {
         self.repository = repository
     }
 
+    // MARK: - Helpers
+
+    private func fetch<T>(_ apiCall: () async throws -> T) async -> T? {
+        do {
+            return try await apiCall()
+        } catch {
+            errorMessage = error.localizedDescription
+            return nil
+        }
+    }
+
     // MARK: - Load
 
     func loadData() async {
@@ -32,96 +43,84 @@ final class SettingsViewModel: ObservableObject {
     }
 
     private func loadDeparturePlaces() async {
-        do {
-            let dtos = try await repository.getDeparturePlaces()
+        if let dtos = await fetch({ try await repository.getDeparturePlaces() }) {
             departurePlaces = dtos.map { DeparturePlace(dto: $0) }
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
     private func loadTags() async {
-        do {
-            let dtos = try await repository.getTags()
+        if let dtos = await fetch({ try await repository.getTags() }) {
             tags = dtos.map { Tag(dto: $0) }
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
     private func loadUserSettings() async {
-        do {
-            userSettings = try await repository.getUserSettings()
-        } catch {
-            errorMessage = error.localizedDescription
-        }
+        userSettings = await fetch({ try await repository.getUserSettings() })
     }
 
     // MARK: - DeparturePlace CRUD
 
     func addDeparturePlace(label: String, address: String, latitude: Double, longitude: Double) async {
-        do {
-            let dto = try await repository.createDeparturePlace(
+        isLoading = true
+        defer { isLoading = false }
+        if let dto = await fetch({
+            try await repository.createDeparturePlace(
                 label: label, address: address,
                 latitude: latitude, longitude: longitude
             )
+        }) {
             departurePlaces.append(DeparturePlace(dto: dto))
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
     func updateDeparturePlace(id: Int64, label: String, address: String, latitude: Double, longitude: Double) async {
-        do {
-            let dto = try await repository.updateDeparturePlace(
+        isLoading = true
+        defer { isLoading = false }
+        if let dto = await fetch({
+            try await repository.updateDeparturePlace(
                 id: id, label: label, address: address,
                 latitude: latitude, longitude: longitude
             )
+        }) {
             if let index = departurePlaces.firstIndex(where: { $0.id == id }) {
                 departurePlaces[index] = DeparturePlace(dto: dto)
             }
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
     func deleteDeparturePlace(_ place: DeparturePlace) async {
-        do {
-            try await repository.deleteDeparturePlace(id: place.id)
+        isLoading = true
+        defer { isLoading = false }
+        if let _ = await fetch({ try await repository.deleteDeparturePlace(id: place.id) }) {
             departurePlaces.removeAll { $0.id == place.id }
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
     // MARK: - Tag CRUD
 
     func addTag(name: String, color: String) async {
-        do {
-            let dto = try await repository.createTag(name: name, color: color)
+        isLoading = true
+        defer { isLoading = false }
+        if let dto = await fetch({ try await repository.createTag(name: name, color: color) }) {
             tags.append(Tag(dto: dto))
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
     func updateTag(id: Int64, name: String, color: String) async {
-        do {
-            let dto = try await repository.updateTag(id: id, name: name, color: color)
+        isLoading = true
+        defer { isLoading = false }
+        if let dto = await fetch({ try await repository.updateTag(id: id, name: name, color: color) }) {
             if let index = tags.firstIndex(where: { $0.id == id }) {
                 tags[index] = Tag(dto: dto)
             }
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
     func deleteTag(_ tag: Tag) async {
-        do {
-            try await repository.deleteTag(id: tag.id)
+        isLoading = true
+        defer { isLoading = false }
+        if let _ = await fetch({ try await repository.deleteTag(id: tag.id) }) {
             tags.removeAll { $0.id == tag.id }
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
