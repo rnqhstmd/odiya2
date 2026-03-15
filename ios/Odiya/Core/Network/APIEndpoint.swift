@@ -32,8 +32,8 @@ enum APIEndpoint {
     // Tag
     case getTags
     case createTag
-    case updateTag(tagId: Int64)
-    case deleteTag(tagId: Int64)
+    case updateTag(id: Int64)
+    case deleteTag(id: Int64)
 
     // Appointment
     case createAppointment
@@ -60,6 +60,16 @@ enum APIEndpoint {
     // Device
     case registerDevice
     case deactivateDevice(token: String)
+
+    // DeparturePlace
+    case getDeparturePlaces
+    case createDeparturePlace
+    case updateDeparturePlace(id: Int64)
+    case deleteDeparturePlace(id: Int64)
+
+    // UserSettings
+    case getUserSettings
+    case updateUserSettings
 
     var path: String {
         switch self {
@@ -103,6 +113,13 @@ enum APIEndpoint {
         case .getUnreadCount:           return "/api/v1/notifications/unread-count"
         case .registerDevice:           return "/api/v1/devices"
         case .deactivateDevice(let token): return "/api/v1/devices/\(token)"
+
+        case .getDeparturePlaces:       return "/api/v1/departure-places"
+        case .createDeparturePlace:     return "/api/v1/departure-places"
+        case .updateDeparturePlace(let id): return "/api/v1/departure-places/\(id)"
+        case .deleteDeparturePlace(let id): return "/api/v1/departure-places/\(id)"
+        case .getUserSettings:          return "/api/v1/users/me/settings"
+        case .updateUserSettings:       return "/api/v1/users/me/settings"
         }
     }
 
@@ -147,13 +164,15 @@ enum APIEndpoint {
         switch self {
         case .kakaoLogin, .refreshToken, .logout,
              .sendFriendRequest, .acceptFriendRequest, .rejectFriendRequest,
-             .createTag:
+             .createTag, .createDeparturePlace:
             return .post
-        case .getMyProfile, .getFriends, .getReceivedRequests, .getTags, .searchUsers:
+        case .getMyProfile, .getFriends, .getReceivedRequests, .getTags, .searchUsers,
+             .getDeparturePlaces, .getUserSettings:
             return .get
-        case .updateNickname, .updateProfileImage, .changeFriendTag, .updateTag:
+        case .updateNickname, .updateProfileImage, .changeFriendTag, .updateTag,
+             .updateDeparturePlace, .updateUserSettings:
             return .patch
-        case .deleteAccount, .removeFriend, .deleteTag:
+        case .deleteAccount, .removeFriend, .deleteTag, .deleteDeparturePlace:
             return .delete
 
         case .createAppointment:        return .post

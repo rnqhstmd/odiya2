@@ -5,12 +5,13 @@ struct DeparturePlaceEditSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     let existingPlace: DeparturePlace?
-    let onSave: (DeparturePlace) -> Void
+    /// label, address, latitude, longitude
+    let onSave: (String, String, Double, Double) -> Void
 
     @State private var label: String
     @State private var address: String
 
-    init(existingPlace: DeparturePlace?, onSave: @escaping (DeparturePlace) -> Void) {
+    init(existingPlace: DeparturePlace?, onSave: @escaping (String, String, Double, Double) -> Void) {
         self.existingPlace = existingPlace
         self.onSave = onSave
         _label = State(initialValue: existingPlace?.label ?? "")
@@ -92,18 +93,15 @@ struct DeparturePlaceEditSheet: View {
     }
 
     private func savePlace() {
-        let place = DeparturePlace(
-            id: existingPlace?.id ?? UUID().uuidString,
-            label: label.trimmingCharacters(in: .whitespaces),
-            address: address.trimmingCharacters(in: .whitespaces),
-            latitude: existingPlace?.latitude ?? 37.5665,
-            longitude: existingPlace?.longitude ?? 126.9780
-        )
-        onSave(place)
+        let trimmedLabel = label.trimmingCharacters(in: .whitespaces)
+        let trimmedAddress = address.trimmingCharacters(in: .whitespaces)
+        let latitude = existingPlace?.latitude ?? 37.5665
+        let longitude = existingPlace?.longitude ?? 126.9780
+        onSave(trimmedLabel, trimmedAddress, latitude, longitude)
         dismiss()
     }
 }
 
 #Preview {
-    DeparturePlaceEditSheet(existingPlace: nil) { _ in }
+    DeparturePlaceEditSheet(existingPlace: nil) { _, _, _, _ in }
 }
