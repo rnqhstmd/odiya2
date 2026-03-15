@@ -11,7 +11,8 @@ final class CalendarViewModel: ObservableObject {
         didSet {
             let components = koreanCalendar.dateComponents([.year, .month], from: currentMonth)
             if let year = components.year, let month = components.month {
-                Task { await loadMonth(year: year, month: month) }
+                loadTask?.cancel()
+                loadTask = Task { await loadMonth(year: year, month: month) }
             }
         }
     }
@@ -22,6 +23,7 @@ final class CalendarViewModel: ObservableObject {
     // MARK: - Private
 
     private let repository: CalendarRepository
+    private var loadTask: Task<Void, Never>?
 
     private let koreanCalendar: Calendar = {
         var cal = Calendar(identifier: .gregorian)
@@ -81,9 +83,14 @@ final class CalendarViewModel: ObservableObject {
     // MARK: - DTO → Domain Mapping
 
     private func appointmentFromDTO(_ dto: CalendarAppointmentDTO) -> Appointment {
-        let dateTime = Self.isoDateTimeFormatter.date(from: dto.dateTime)
-            ?? Self.isoDateTimeFormatterNoFraction.date(from: dto.dateTime)
-            ?? Date()
+        let dateTime: Date
+        if let parsed = Self.isoDateTimeFormatter.date(from: dto.dateTime)
+            ?? Self.isoDateTimeFormatterNoFraction.date(from: dto.dateTime) {
+            dateTime = parsed
+        } else {
+            print("[CalendarViewModel] 날짜 파싱 실패: \(dto.dateTime), appointmentId: \(dto.id)")
+            dateTime = Date()
+        }
 
         // tagColor가 있으면 임시 Tag를 생성해 participants에 부여 (dot/color 표시용)
         let tag: Tag? = dto.tagColor.map { hex in
