@@ -15,9 +15,16 @@ struct Step2PlaceView: View {
                         .foregroundStyle(OdiyaColors.primary)
                     TextField("장소를 검색하세요", text: $viewModel.placeSearchText)
                         .focused($isSearchFocused)
-                    if !viewModel.placeSearchText.isEmpty {
+                        .onSubmit {
+                            Task { await viewModel.searchPlaces() }
+                        }
+                    if viewModel.isSearchingPlaces {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    } else if !viewModel.placeSearchText.isEmpty {
                         Button {
                             viewModel.placeSearchText = ""
+                            viewModel.searchedPlaces = []
                         } label: {
                             Image(systemName: "xmark.circle.fill")
                                 .foregroundStyle(.secondary)
@@ -32,6 +39,11 @@ struct Step2PlaceView: View {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(isSearchFocused ? OdiyaColors.primary : Color.clear, lineWidth: 1.5)
                 )
+                .onChange(of: viewModel.placeSearchText) { _, newValue in
+                    if newValue.isEmpty {
+                        viewModel.searchedPlaces = []
+                    }
+                }
 
                 // MARK: - 지도 플레이스홀더
                 ZStack {
@@ -54,7 +66,7 @@ struct Step2PlaceView: View {
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
                                 .foregroundStyle(OdiyaColors.primary)
-                            Text(place.address)
+                            Text(place.roadAddress ?? place.address)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         } else {
@@ -88,6 +100,18 @@ struct Step2PlaceView: View {
                                     Divider().padding(.leading, 48)
                                 }
                             }
+
+                            if viewModel.hasNextPlaces {
+                                Button {
+                                    Task { await viewModel.loadMorePlaces() }
+                                } label: {
+                                    Text("더 보기")
+                                        .font(.subheadline)
+                                        .foregroundStyle(OdiyaColors.primary)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 10)
+                                }
+                            }
                         }
                         .background(Color(.systemBackground))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -110,7 +134,7 @@ struct Step2PlaceView: View {
 // MARK: - PlaceRow
 
 private struct PlaceRow: View {
-    let place: MockPlace
+    let place: PlaceResponseDTO
     let isSelected: Bool
     let onTap: () -> Void
 
@@ -127,7 +151,7 @@ private struct PlaceRow: View {
                         .font(.subheadline)
                         .fontWeight(isSelected ? .semibold : .regular)
                         .foregroundStyle(isSelected ? OdiyaColors.primary : .primary)
-                    Text(place.address)
+                    Text(place.roadAddress ?? place.address)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
