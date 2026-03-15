@@ -7,6 +7,7 @@ import com.loopers.domain.appointment.AppointmentService;
 import com.loopers.domain.departureplace.DeparturePlace;
 import com.loopers.domain.departureplace.DeparturePlaceRepository;
 import com.loopers.domain.friend.FriendshipRepository;
+import com.loopers.domain.notification.NotificationRepository;
 import com.loopers.domain.notification.NotificationType;
 import com.loopers.domain.nudge.NudgeCooldownRepository;
 import com.loopers.domain.traveltime.TravelTime;
@@ -40,6 +41,7 @@ public class AppointmentFacade {
     private final TravelTimeService travelTimeService;
     private final TravelTimeRepository travelTimeRepository;
     private final NotificationFacade notificationFacade;
+    private final NotificationRepository notificationRepository;
     private final NudgeCooldownRepository nudgeCooldownRepository;
 
     @Transactional
@@ -251,6 +253,8 @@ public class AppointmentFacade {
         List<AppointmentParticipant> participants = appointment.getParticipants();
 
         appointmentService.cancel(appointmentId, userId);
+
+        notificationRepository.cancelPendingByAppointmentId(appointmentId);
 
         for (AppointmentParticipant p : participants) {
             if (p.getUser().getId().equals(userId)) {

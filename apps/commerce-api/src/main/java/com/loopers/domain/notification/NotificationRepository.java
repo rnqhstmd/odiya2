@@ -10,4 +10,7 @@ public interface NotificationRepository {
     int countUnreadByReceiverId(Long receiverId);
     int markAllAsReadByReceiverId(Long receiverId);
     Notification save(Notification notification);
+
+    boolean existsByReceiverIdAndTypeAndReferenceIdAndStatus(Long receiverId, NotificationType type, Long referenceId, NotificationStatus status);
+    int cancelPendingByAppointmentId(Long appointmentId);
 }
