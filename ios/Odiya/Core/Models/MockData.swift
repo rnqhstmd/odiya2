@@ -8,8 +8,8 @@ enum MockData {
         .lover,
         .friend,
         .family,
-        Tag(id: "custom-1", name: "직장", colorHex: "#007AFF", isDefault: false),
-        Tag(id: "custom-2", name: "동아리", colorHex: "#AF52DE", isDefault: false),
+        Tag(id: 4, name: "직장", colorHex: "#007AFF", isDefault: false),
+        Tag(id: 5, name: "동아리", colorHex: "#AF52DE", isDefault: false),
     ]
 
     // MARK: - Friends
@@ -30,8 +30,8 @@ enum MockData {
     // MARK: - Departure Places
 
     static let departurePlaces: [DeparturePlace] = [
-        DeparturePlace(id: "home", label: "집", address: "서울 강남구 역삼동", latitude: 37.4979, longitude: 127.0276),
-        DeparturePlace(id: "office", label: "회사", address: "서울 종로구 종로1가", latitude: 37.5704, longitude: 126.9831),
+        DeparturePlace(id: 1, label: "집", address: "서울 강남구 역삼동", latitude: 37.4979, longitude: 127.0276),
+        DeparturePlace(id: 2, label: "회사", address: "서울 종로구 종로1가", latitude: 37.5704, longitude: 126.9831),
     ]
 
     // MARK: - Participants

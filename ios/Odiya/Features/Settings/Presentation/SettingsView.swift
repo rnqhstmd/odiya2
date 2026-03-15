@@ -37,6 +37,9 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("설정")
+        .task {
+            await viewModel.loadData()
+        }
         .alert("로그아웃", isPresented: $viewModel.showLogoutAlert) {
             Button("로그아웃", role: .destructive) { viewModel.logout() }
             Button("취소", role: .cancel) {}
