@@ -16,7 +16,10 @@ let package = Package(
             dependencies: [
                 .product(name: "KakaoSDK", package: "kakao-ios-sdk")
             ],
-            path: "Odiya"
+            path: "Odiya",
+            resources: [
+                .process("Resources")
+            ]
         ),
         .testTarget(
             name: "OdiyaTests",
