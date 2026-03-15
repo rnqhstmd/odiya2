@@ -46,4 +46,7 @@ public interface AppointmentV1ApiSpec {
     @Operation(summary = "출발지 설정/변경", description = "약속 출발지와 이동수단을 설정/변경합니다.")
     ApiResponse<AppointmentV1Dto.DepartureUpdateResponse> updateDeparture(
         LoginUser loginUser, Long id, AppointmentV1Dto.UpdateDepartureRequest request);
+
+    @Operation(summary = "콕 찌르기", description = "약속 참여자에게 콕 찌르기 알림을 보냅니다.")
+    ApiResponse<Void> nudge(LoginUser loginUser, Long id, AppointmentV1Dto.NudgeRequest request);
 }

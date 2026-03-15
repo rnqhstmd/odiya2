@@ -25,6 +25,9 @@ spring:
       - logging.yml
       - monitoring.yml
 
+fcm:
+  credentials-path: ${FIREBASE_CREDENTIALS_PATH:}
+
 demo-kafka:
   test:
     topic-name: demo.internal.topic-v1
