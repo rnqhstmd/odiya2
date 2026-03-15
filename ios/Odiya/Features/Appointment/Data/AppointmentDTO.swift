@@ -176,7 +176,7 @@ private func parseDate(_ string: String) -> Date? {
 
 // MARK: - Shared Conversion Protocol
 
-private protocol AppointmentMappable {
+protocol AppointmentMappable {
     var id: Int64 { get }
     var name: String { get }
     var placeName: String { get }
