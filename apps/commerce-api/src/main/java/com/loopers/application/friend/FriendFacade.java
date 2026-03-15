@@ -27,6 +27,7 @@ public class FriendFacade {
     private final TagService tagService;
     private final NotificationFacade notificationFacade;
 
+    @Transactional(readOnly = true)
     public List<FriendInfo> getMyFriends(Long userId, Long tagId) {
         if (tagId != null) {
             Tag tag = tagService.getTag(tagId);
@@ -58,6 +59,7 @@ public class FriendFacade {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<FriendRequestInfo> getReceivedRequests(Long userId) {
         return friendService.getPendingReceivedRequests(userId).stream()
             .map(FriendRequestInfo::from)
@@ -87,14 +89,17 @@ public class FriendFacade {
         }
     }
 
+    @Transactional
     public void rejectRequest(Long requestId, Long userId) {
         friendService.rejectRequest(requestId, userId);
     }
 
+    @Transactional
     public void removeFriend(Long userId, Long friendUserId) {
         friendService.removeFriend(userId, friendUserId);
     }
 
+    @Transactional
     public void changeFriendTag(Long userId, Long friendUserId, Long tagId) {
         Tag tag = tagService.getTag(tagId);
         if (!tag.getOwner().getId().equals(userId)) {

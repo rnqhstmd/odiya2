@@ -27,7 +27,12 @@ public class NotificationService {
         }
         Notification notification = Notification.create(eventId, receiver, sender, type, title, body,
             referenceId, referenceType);
-        return notificationRepository.save(notification);
+        try {
+            return notificationRepository.save(notification);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            return notificationRepository.findByEventId(eventId)
+                .orElseThrow(() -> new RuntimeException("알림 생성 실패", e));
+        }
     }
 
     public List<Notification> getNotifications(Long receiverId, Long cursor, int size) {
@@ -51,6 +56,11 @@ public class NotificationService {
     public int countUnread(Long userId) {
         int count = notificationRepository.countUnreadByReceiverId(userId);
         return Math.min(count, MAX_UNREAD_COUNT_DISPLAY);
+    }
+
+    @Transactional
+    public void cancelPendingByAppointmentId(Long appointmentId) {
+        notificationRepository.cancelPendingByAppointmentId(appointmentId);
     }
 
     @Transactional

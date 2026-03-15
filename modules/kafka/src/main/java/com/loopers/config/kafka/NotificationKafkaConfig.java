@@ -1,4 +1,4 @@
-package com.loopers.confg.kafka;
+package com.loopers.config.kafka;
 
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
