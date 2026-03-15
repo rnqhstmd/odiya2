@@ -5,11 +5,21 @@ final class FriendListViewModel: ObservableObject {
 
     // MARK: - Published
 
-    @Published var friends: [Friend] = MockData.friends
+    @Published var friends: [Friend] = []
     @Published var searchText: String = ""
     @Published var selectedTag: Tag? = nil
     @Published var showEndFriendshipAlert: Bool = false
     @Published var endFriendshipTarget: Friend? = nil
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String? = nil
+
+    // MARK: - Dependencies
+
+    private let repository: FriendRepository
+
+    init(repository: FriendRepository = FriendRepositoryImpl()) {
+        self.repository = repository
+    }
 
     // MARK: - Computed
 
@@ -32,6 +42,20 @@ final class FriendListViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Load
+
+    func loadFriends() async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            let dtos = try await repository.getFriends(tagId: selectedTag.flatMap { Int64($0.id) })
+            friends = dtos.map { Friend(from: $0) }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isLoading = false
+    }
+
     // MARK: - Actions
 
     func confirmEndFriendship(_ friend: Friend) {
@@ -41,13 +65,28 @@ final class FriendListViewModel: ObservableObject {
 
     func endFriendship() {
         guard let target = endFriendshipTarget else { return }
-        friends.removeAll { $0.id == target.id }
-        endFriendshipTarget = nil
+        Task {
+            do {
+                try await repository.removeFriend(friendUserId: target.id)
+                friends.removeAll { $0.id == target.id }
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+            endFriendshipTarget = nil
+        }
     }
 
     func changeTag(friendId: Int64, tag: Tag) {
-        if let index = friends.firstIndex(where: { $0.id == friendId }) {
-            friends[index].tag = tag
+        guard let tagId = Int64(tag.id) else { return }
+        Task {
+            do {
+                try await repository.changeFriendTag(friendUserId: friendId, tagId: tagId)
+                if let index = friends.firstIndex(where: { $0.id == friendId }) {
+                    friends[index].tag = tag
+                }
+            } catch {
+                errorMessage = error.localizedDescription
+            }
         }
     }
 }

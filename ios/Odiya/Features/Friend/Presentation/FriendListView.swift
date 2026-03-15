@@ -72,6 +72,9 @@ struct FriendListView: View {
                 placement: .navigationBarDrawer(displayMode: .always),
                 prompt: "친구 이름 검색"
             )
+            .onAppear {
+                Task { await viewModel.loadFriends() }
+            }
             .sheet(isPresented: $showAddFriend) {
                 AddFriendView()
             }
