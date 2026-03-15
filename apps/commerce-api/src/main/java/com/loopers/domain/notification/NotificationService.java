@@ -32,7 +32,7 @@ public class NotificationService {
             return notificationRepository.save(notification);
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             return notificationRepository.findByEventId(eventId)
-                .orElseThrow(() -> new RuntimeException("알림 생성 실패", e));
+                .orElseThrow(() -> new IllegalStateException("알림 생성 동시성 문제 해결 중 조회 실패: " + eventId, e));
         }
     }
 

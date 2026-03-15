@@ -195,12 +195,12 @@ public class AppointmentFacade {
                                              String placeName, String placeAddress,
                                              Double latitude, Double longitude,
                                              ZonedDateTime dateTime) {
-        if (name == null && placeName == null && placeAddress == null && latitude == null && longitude == null && dateTime == null) {
-            Appointment appointment = appointmentService.getActiveAppointment(appointmentId);
-            validateParticipant(appointment, userId);
-            return buildAppointmentInfoWithTravelTime(appointment, userId);
-        }
         Appointment beforeUpdate = appointmentService.getActiveAppointment(appointmentId);
+        validateParticipant(beforeUpdate, userId);
+
+        if (name == null && placeName == null && placeAddress == null && latitude == null && longitude == null && dateTime == null) {
+            return buildAppointmentInfoWithTravelTime(beforeUpdate, userId);
+        }
         Double oldLat = beforeUpdate.getLatitude();
         Double oldLng = beforeUpdate.getLongitude();
         ZonedDateTime oldDateTime = beforeUpdate.getDateTime();
