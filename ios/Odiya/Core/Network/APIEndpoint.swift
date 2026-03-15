@@ -39,7 +39,6 @@ enum APIEndpoint {
     case createAppointment
     case getAppointment(id: Int64)
     case getMyAppointments(status: String, cursor: Int64?, size: Int)
-    case getCalendarData(year: Int, month: Int)
     case updateAppointment(id: Int64)
     case cancelAppointment(id: Int64)
     case acceptInvitation(id: Int64)
@@ -71,6 +70,9 @@ enum APIEndpoint {
     case getUserSettings
     case updateUserSettings
 
+    // Calendar
+    case getCalendarData(year: Int, month: Int)
+
     var path: String {
         switch self {
         case .kakaoLogin:       return "/api/v1/auth/kakao/login"
@@ -96,7 +98,6 @@ enum APIEndpoint {
         case .createAppointment:        return "/api/v1/appointments"
         case .getAppointment(let id):   return "/api/v1/appointments/\(id)"
         case .getMyAppointments:        return "/api/v1/appointments/me"
-        case .getCalendarData:          return "/api/v1/appointments/calendar"
         case .updateAppointment(let id): return "/api/v1/appointments/\(id)"
         case .cancelAppointment(let id): return "/api/v1/appointments/\(id)"
         case .acceptInvitation(let id): return "/api/v1/appointments/\(id)/accept"
@@ -120,6 +121,8 @@ enum APIEndpoint {
         case .deleteDeparturePlace(let id): return "/api/v1/departure-places/\(id)"
         case .getUserSettings:          return "/api/v1/users/me/settings"
         case .updateUserSettings:       return "/api/v1/users/me/settings"
+
+        case .getCalendarData:          return "/api/v1/appointments/calendar"
         }
     }
 
@@ -167,7 +170,7 @@ enum APIEndpoint {
              .createTag, .createDeparturePlace:
             return .post
         case .getMyProfile, .getFriends, .getReceivedRequests, .getTags, .searchUsers,
-             .getDeparturePlaces, .getUserSettings:
+             .getDeparturePlaces, .getUserSettings, .getCalendarData:
             return .get
         case .updateNickname, .updateProfileImage, .changeFriendTag, .updateTag,
              .updateDeparturePlace, .updateUserSettings:
@@ -178,7 +181,6 @@ enum APIEndpoint {
         case .createAppointment:        return .post
         case .getAppointment:           return .get
         case .getMyAppointments:        return .get
-        case .getCalendarData:          return .get
         case .updateAppointment:        return .patch
         case .cancelAppointment:        return .delete
         case .acceptInvitation:         return .post
