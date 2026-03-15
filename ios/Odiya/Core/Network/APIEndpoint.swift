@@ -19,6 +19,16 @@ enum APIEndpoint {
     case updateProfileImage
     case deleteAccount
 
+    // Notification
+    case getNotifications(cursor: Int64?, size: Int)
+    case markNotificationAsRead(id: Int64)
+    case markAllNotificationsAsRead
+    case getUnreadCount
+
+    // Device
+    case registerDevice
+    case deactivateDevice(token: String)
+
     var path: String {
         switch self {
         case .kakaoLogin:       return "/api/v1/auth/kakao/login"
@@ -28,6 +38,25 @@ enum APIEndpoint {
         case .updateNickname:   return "/api/v1/users/me/nickname"
         case .updateProfileImage: return "/api/v1/users/me/profile-image"
         case .deleteAccount:    return "/api/v1/users/me"
+        case .getNotifications: return "/api/v1/notifications"
+        case .markNotificationAsRead(let id): return "/api/v1/notifications/\(id)/read"
+        case .markAllNotificationsAsRead: return "/api/v1/notifications/read-all"
+        case .getUnreadCount:   return "/api/v1/notifications/unread-count"
+        case .registerDevice:   return "/api/v1/devices"
+        case .deactivateDevice(let token): return "/api/v1/devices/\(token)"
+        }
+    }
+
+    var queryItems: [URLQueryItem]? {
+        switch self {
+        case .getNotifications(let cursor, let size):
+            var items: [URLQueryItem] = [URLQueryItem(name: "size", value: "\(size)")]
+            if let cursor {
+                items.append(URLQueryItem(name: "cursor", value: "\(cursor)"))
+            }
+            return items
+        default:
+            return nil
         }
     }
 
@@ -40,6 +69,14 @@ enum APIEndpoint {
         case .updateNickname, .updateProfileImage:
             return .patch
         case .deleteAccount:
+            return .delete
+        case .getNotifications, .getUnreadCount:
+            return .get
+        case .markNotificationAsRead:
+            return .patch
+        case .markAllNotificationsAsRead, .registerDevice:
+            return .post
+        case .deactivateDevice:
             return .delete
         }
     }
