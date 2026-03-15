@@ -19,7 +19,11 @@ struct FriendListView: View {
 
                 Divider()
 
-                if viewModel.filteredFriends.isEmpty {
+                if viewModel.isLoading {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                } else if viewModel.filteredFriends.isEmpty {
                     Spacer()
                     EmptyStateView(
                         iconName: "person.2.slash",
@@ -72,6 +76,9 @@ struct FriendListView: View {
                 placement: .navigationBarDrawer(displayMode: .always),
                 prompt: "친구 이름 검색"
             )
+            .onAppear {
+                Task { await viewModel.loadFriends() }
+            }
             .sheet(isPresented: $showAddFriend) {
                 AddFriendView()
             }
