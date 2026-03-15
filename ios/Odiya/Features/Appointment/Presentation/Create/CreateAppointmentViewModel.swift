@@ -53,8 +53,8 @@ final class CreateAppointmentViewModel: ObservableObject {
         self.friendRepository = friendRepository
         self.settingsRepository = settingsRepository
         Task {
-            await loadFriends()
-            await loadDeparturePlaces()
+            async let _: () = loadFriends()
+            async let _: () = loadDeparturePlaces()
         }
     }
 
@@ -144,6 +144,7 @@ final class CreateAppointmentViewModel: ObservableObject {
             let dtos = try await friendRepository.getFriends(tagId: nil)
             allFriends = dtos.map { Friend(from: $0) }
         } catch {
+            print("Failed to load friends: \(error.localizedDescription)")
             allFriends = []
         }
     }
@@ -155,6 +156,7 @@ final class CreateAppointmentViewModel: ObservableObject {
             let dtos = try await settingsRepository.getDeparturePlaces()
             departurePlaces = dtos.map { DeparturePlace(dto: $0) }
         } catch {
+            print("Failed to load departure places: \(error.localizedDescription)")
             departurePlaces = []
         }
     }

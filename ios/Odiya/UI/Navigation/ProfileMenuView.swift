@@ -31,8 +31,12 @@ struct ProfileMenuView: View {
                 Spacer()
             }
             .task {
-                if let dto = try? await userRepository.getMyProfile() {
-                    user = dto.toDomain()
+                do {
+                    if let dto = try await userRepository.getMyProfile() {
+                        user = dto.toDomain()
+                    }
+                } catch {
+                    print("Failed to fetch user profile: \(error.localizedDescription)")
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
