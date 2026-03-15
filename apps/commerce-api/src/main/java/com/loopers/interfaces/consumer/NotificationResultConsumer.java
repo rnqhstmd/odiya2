@@ -1,6 +1,8 @@
 package com.loopers.interfaces.consumer;
 
-import com.loopers.confg.kafka.NotificationKafkaConfig;
+import com.loopers.config.kafka.NotificationKafkaConfig;
+import com.loopers.config.kafka.NotificationResultEvent;
+import com.loopers.config.kafka.NotificationTopics;
 import com.loopers.domain.notification.DeviceTokenService;
 import com.loopers.domain.notification.NotificationService;
 import com.loopers.domain.notification.NotificationStatus;
@@ -27,7 +29,7 @@ public class NotificationResultConsumer {
     }
 
     @KafkaListener(
-        topics = "notification.result",
+        topics = NotificationTopics.RESULT,
         containerFactory = NotificationKafkaConfig.NOTIFICATION_LISTENER,
         groupId = "notification-result-consumer"
     )

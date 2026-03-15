@@ -1,6 +1,7 @@
 package com.loopers.batch.scheduler;
 
-import com.loopers.domain.notification.NotificationEvent;
+import com.loopers.config.kafka.NotificationEvent;
+import com.loopers.config.kafka.NotificationEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,7 +21,7 @@ import java.util.UUID;
 public class NotificationProcessor {
 
     private final JdbcTemplate jdbcTemplate;
-    private final SchedulerNotificationPublisher publisher;
+    private final NotificationEventPublisher publisher;
 
     @Transactional
     public void processAppointmentReminder(Map<String, Object> row) {

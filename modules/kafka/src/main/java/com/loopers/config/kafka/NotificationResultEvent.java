@@ -1,4 +1,4 @@
-package com.loopers.infrastructure.fcm;
+package com.loopers.config.kafka;
 
 import java.util.List;
 

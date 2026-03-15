@@ -10,7 +10,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "notifications")
 public class Notification extends BaseEntity {
@@ -87,14 +89,4 @@ public class Notification extends BaseEntity {
         return this.receiver.getId().equals(userId);
     }
 
-    public String getEventId() { return eventId; }
-    public User getReceiver() { return receiver; }
-    public User getSender() { return sender; }
-    public NotificationType getType() { return type; }
-    public String getTitle() { return title; }
-    public String getBody() { return body; }
-    public NotificationStatus getStatus() { return status; }
-    public boolean isRead() { return isRead; }
-    public Long getReferenceId() { return referenceId; }
-    public String getReferenceType() { return referenceType; }
 }

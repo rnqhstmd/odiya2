@@ -7,9 +7,9 @@ public class AuthV1Dto {
 
     public record KakaoLoginRequest(@NotBlank String kakaoAccessToken) {}
 
-    public record RefreshRequest(String refreshToken) {}
+    public record RefreshRequest(@NotBlank String refreshToken) {}
 
-    public record LogoutRequest(String refreshToken) {}
+    public record LogoutRequest(@NotBlank String refreshToken) {}
 
     public record TokenResponse(String accessToken, String refreshToken) {
         public static TokenResponse from(AuthInfo info) {

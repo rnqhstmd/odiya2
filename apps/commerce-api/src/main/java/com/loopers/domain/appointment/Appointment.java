@@ -102,14 +102,12 @@ public class Appointment extends BaseEntity {
             guardPlaceAddress(placeAddress);
             this.placeAddress = placeAddress.trim();
         }
-        if (latitude != null) {
+        if (latitude != null && longitude != null) {
             guardLatitude(latitude);
-            this.latitude = latitude;
-        }
-        if (longitude != null) {
             guardLongitude(longitude);
+            this.latitude = latitude;
             this.longitude = longitude;
-        }
+        } // 하나만 non-null이면 무시 (좌표는 쌍으로만 변경 가능)
         if (dateTime != null) {
             guardDateTime(dateTime);
             this.dateTime = dateTime;

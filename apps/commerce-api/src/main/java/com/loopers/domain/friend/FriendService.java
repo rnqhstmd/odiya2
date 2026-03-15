@@ -100,6 +100,11 @@ public class FriendService {
     }
 
     @Transactional(readOnly = true)
+    public boolean isAcceptedFriend(Long userId1, Long userId2) {
+        return friendshipRepository.existsAcceptedFriendship(userId1, userId2);
+    }
+
+    @Transactional(readOnly = true)
     public int countAcceptedFriendsByTag(Long userId, Long tagId) {
         return friendshipRepository.countAcceptedByUserIdAndTagId(userId, tagId);
     }

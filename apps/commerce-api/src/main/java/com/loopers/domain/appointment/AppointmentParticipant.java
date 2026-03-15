@@ -81,9 +81,7 @@ public class AppointmentParticipant extends BaseEntity {
     }
 
     public void updateDeparture(DeparturePlace departurePlace, TransportType transportType) {
-        if (departurePlace != null) {
-            this.departurePlace = departurePlace;
-        }
+        this.departurePlace = departurePlace; // null 허용
         if (transportType != null) {
             this.transportType = transportType;
         }

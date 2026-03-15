@@ -1,10 +1,11 @@
 package com.loopers.interfaces.consumer;
 
-import com.loopers.confg.kafka.NotificationKafkaConfig;
-import com.loopers.domain.notification.NotificationEvent;
+import com.loopers.config.kafka.NotificationEvent;
+import com.loopers.config.kafka.NotificationKafkaConfig;
+import com.loopers.config.kafka.NotificationResultEvent;
+import com.loopers.config.kafka.NotificationTopics;
 import com.loopers.infrastructure.fcm.FcmClient;
 import com.loopers.infrastructure.fcm.FcmSendResult;
-import com.loopers.infrastructure.fcm.NotificationResultEvent;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +21,8 @@ import java.util.Map;
 public class NotificationKafkaConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationKafkaConsumer.class);
-    private static final String RESULT_TOPIC = "notification.result";
-    private static final String DLQ_TOPIC = "notification.send.dlq";
+    private static final String RESULT_TOPIC = NotificationTopics.RESULT;
+    private static final String DLQ_TOPIC = NotificationTopics.DLQ;
     private static final int MAX_RETRY = 3;
     private static final long[] RETRY_DELAYS_MS = {1000L, 2000L, 4000L};
 
@@ -34,7 +35,7 @@ public class NotificationKafkaConsumer {
     }
 
     @KafkaListener(
-        topics = "notification.send",
+        topics = NotificationTopics.SEND,
         containerFactory = NotificationKafkaConfig.NOTIFICATION_LISTENER,
         groupId = "notification-consumer"
     )
@@ -88,7 +89,7 @@ public class NotificationKafkaConsumer {
             kafkaTemplate.send(RESULT_TOPIC, record.key(),
                 new NotificationResultEvent(event.notificationId(), false, List.of()));
         } else {
-            boolean success = result.failureCount() == 0 || result.successCount() > 0;
+            boolean success = result.successCount() > 0;
             kafkaTemplate.send(RESULT_TOPIC, record.key(),
                 new NotificationResultEvent(event.notificationId(), success, result.invalidTokens()));
         }

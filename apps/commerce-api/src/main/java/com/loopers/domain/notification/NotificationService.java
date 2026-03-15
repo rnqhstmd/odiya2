@@ -18,6 +18,7 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
+    @Transactional
     public Notification createIfAbsent(String eventId, User receiver, User sender,
                                         NotificationType type, String title, String body,
                                         Long referenceId, String referenceType) {
@@ -27,13 +28,20 @@ public class NotificationService {
         }
         Notification notification = Notification.create(eventId, receiver, sender, type, title, body,
             referenceId, referenceType);
-        return notificationRepository.save(notification);
+        try {
+            return notificationRepository.save(notification);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            return notificationRepository.findByEventId(eventId)
+                .orElseThrow(() -> new IllegalStateException("알림 생성 동시성 문제 해결 중 조회 실패: " + eventId, e));
+        }
     }
 
+    @Transactional(readOnly = true)
     public List<Notification> getNotifications(Long receiverId, Long cursor, int size) {
         return notificationRepository.findByReceiverIdWithCursor(receiverId, cursor, size);
     }
 
+    @Transactional
     public void markAsRead(Long notificationId, Long userId) {
         Notification notification = notificationRepository.findById(notificationId)
             .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND));
@@ -44,13 +52,20 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
+    @Transactional
     public int markAllAsRead(Long userId) {
         return notificationRepository.markAllAsReadByReceiverId(userId);
     }
 
+    @Transactional(readOnly = true)
     public int countUnread(Long userId) {
         int count = notificationRepository.countUnreadByReceiverId(userId);
         return Math.min(count, MAX_UNREAD_COUNT_DISPLAY);
+    }
+
+    @Transactional
+    public void cancelPendingByAppointmentId(Long appointmentId) {
+        notificationRepository.cancelPendingByAppointmentId(appointmentId);
     }
 
     @Transactional

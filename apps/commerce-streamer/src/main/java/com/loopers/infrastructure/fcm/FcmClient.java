@@ -23,8 +23,8 @@ public class FcmClient {
 
     public FcmSendResult sendToTokens(List<String> tokens, String title, String body, Map<String, String> data) {
         if (FirebaseApp.getApps().isEmpty()) {
-            log.warn("FirebaseApp not initialized. Skipping FCM send (test environment).");
-            return new FcmSendResult(0, 0, List.of(), List.of());
+            log.warn("FirebaseApp not initialized. Skipping FCM send.");
+            return new FcmSendResult(0, tokens.size(), new ArrayList<>(tokens), List.of());
         }
 
         MulticastMessage message = MulticastMessage.builder()

@@ -6,8 +6,8 @@ import com.loopers.domain.appointment.AppointmentParticipant;
 import com.loopers.domain.appointment.AppointmentService;
 import com.loopers.domain.departureplace.DeparturePlace;
 import com.loopers.domain.departureplace.DeparturePlaceRepository;
-import com.loopers.domain.friend.FriendshipRepository;
-import com.loopers.domain.notification.NotificationRepository;
+import com.loopers.domain.friend.FriendService;
+import com.loopers.domain.notification.NotificationService;
 import com.loopers.domain.notification.NotificationType;
 import com.loopers.domain.nudge.NudgeCooldownRepository;
 import com.loopers.domain.traveltime.TravelTime;
@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,12 +37,12 @@ public class AppointmentFacade {
 
     private final AppointmentService appointmentService;
     private final UserService userService;
-    private final FriendshipRepository friendshipRepository;
+    private final FriendService friendService;
     private final DeparturePlaceRepository departurePlaceRepository;
     private final TravelTimeService travelTimeService;
     private final TravelTimeRepository travelTimeRepository;
     private final NotificationFacade notificationFacade;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
     private final NudgeCooldownRepository nudgeCooldownRepository;
 
     @Transactional
@@ -69,7 +70,7 @@ public class AppointmentFacade {
             if (participantId.equals(hostUserId)) {
                 continue;
             }
-            if (!friendshipRepository.existsAcceptedFriendship(hostUserId, participantId)) {
+            if (!friendService.isAcceptedFriend(hostUserId, participantId)) {
                 throw new CoreException(ErrorType.BAD_REQUEST, "친구 관계인 사용자만 초대할 수 있습니다.");
             }
             User participant = userService.getUser(participantId);
@@ -122,7 +123,6 @@ public class AppointmentFacade {
         boolean inNudgeWindow = !now.isBefore(appointmentTime.minusMinutes(30)) && now.isBefore(appointmentTime);
 
         boolean canNudge = false;
-        Integer nudgeCooldownSeconds = null;
         if (inNudgeWindow) {
             List<AppointmentParticipant> others = appointment.getParticipants().stream()
                 .filter(p -> !p.getUser().getId().equals(userId))
@@ -135,7 +135,7 @@ public class AppointmentFacade {
         return new AppointmentDetailInfo(
             info,
             canNudge,
-            nudgeCooldownSeconds,
+            null,
             appointment.isHostUser(userId),
             myParticipant.getStatus()
         );
@@ -177,10 +177,10 @@ public class AppointmentFacade {
         List<Appointment> appointments = appointmentService.getCalendarAppointments(userId, year, month);
 
         return appointments.stream()
-            .collect(java.util.stream.Collectors.groupingBy(
+            .collect(Collectors.groupingBy(
                 a -> a.getDateTime().toLocalDate()))
             .entrySet().stream()
-            .sorted(java.util.Map.Entry.comparingByKey())
+            .sorted(Map.Entry.comparingByKey())
             .map(entry -> new CalendarDayInfo(
                 entry.getKey(),
                 entry.getValue().stream()
@@ -196,6 +196,11 @@ public class AppointmentFacade {
                                              Double latitude, Double longitude,
                                              ZonedDateTime dateTime) {
         Appointment beforeUpdate = appointmentService.getActiveAppointment(appointmentId);
+        validateParticipant(beforeUpdate, userId);
+
+        if (name == null && placeName == null && placeAddress == null && latitude == null && longitude == null && dateTime == null) {
+            return buildAppointmentInfoWithTravelTime(beforeUpdate, userId);
+        }
         Double oldLat = beforeUpdate.getLatitude();
         Double oldLng = beforeUpdate.getLongitude();
         ZonedDateTime oldDateTime = beforeUpdate.getDateTime();
@@ -254,7 +259,7 @@ public class AppointmentFacade {
 
         appointmentService.cancel(appointmentId, userId);
 
-        notificationRepository.cancelPendingByAppointmentId(appointmentId);
+        notificationService.cancelPendingByAppointmentId(appointmentId);
 
         for (AppointmentParticipant p : participants) {
             if (p.getUser().getId().equals(userId)) {
@@ -294,7 +299,7 @@ public class AppointmentFacade {
             if (existingParticipantIds.contains(userId)) {
                 throw new CoreException(ErrorType.CONFLICT, "이미 초대된 참여자입니다.");
             }
-            if (!friendshipRepository.existsAcceptedFriendship(hostUserId, userId)) {
+            if (!friendService.isAcceptedFriend(hostUserId, userId)) {
                 throw new CoreException(ErrorType.BAD_REQUEST, "친구 관계인 사용자만 초대할 수 있습니다.");
             }
             User user = userService.getUser(userId);

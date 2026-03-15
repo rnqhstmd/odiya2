@@ -1,4 +1,4 @@
-package com.loopers.domain.notification;
+package com.loopers.config.kafka;
 
 import java.util.List;
 

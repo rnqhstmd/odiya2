@@ -4,14 +4,14 @@ import com.loopers.domain.appointment.Appointment;
 import com.loopers.domain.appointment.AppointmentParticipant;
 import com.loopers.domain.appointment.AppointmentService;
 import com.loopers.domain.notification.DeviceTokenService;
-import com.loopers.domain.notification.NotificationEvent;
+import com.loopers.config.kafka.NotificationEvent;
+import com.loopers.config.kafka.NotificationEventPublisher;
 import com.loopers.domain.notification.NotificationService;
 import com.loopers.domain.notification.NotificationType;
 import com.loopers.domain.notification.Notification;
 import com.loopers.domain.nudge.NudgeCooldownRepository;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserService;
-import com.loopers.infrastructure.notification.NotificationEventPublisher;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +63,7 @@ public class NotificationFacade {
         deviceTokenService.register(user, token, deviceType);
     }
 
+    @Transactional
     public void deactivateDevice(String token, Long userId) {
         deviceTokenService.deactivate(token, userId);
     }
@@ -121,18 +122,13 @@ public class NotificationFacade {
             .distinct()
             .toList();
 
-        // 1단계: 쿨다운 사전 검증
+        // 쿨다운 원자적 설정 + 알림 발송
         for (Long targetUserId : actualTargetIds) {
             appointment.findParticipant(targetUserId);
 
-            if (nudgeCooldownRepository.existsCooldown(appointmentId, senderUserId, targetUserId)) {
+            if (!nudgeCooldownRepository.trySetCooldown(appointmentId, senderUserId, targetUserId)) {
                 throw new CoreException(ErrorType.TOO_MANY_REQUESTS, "잠시 후 다시 시도해주세요.");
             }
-        }
-
-        // 2단계: 쿨다운 설정 + 알림 발송
-        for (Long targetUserId : actualTargetIds) {
-            nudgeCooldownRepository.setCooldown(appointmentId, senderUserId, targetUserId);
 
             User target = userService.getUser(targetUserId);
             String title = sender.getNickname() + "님이 콕 찔렀어요!";
