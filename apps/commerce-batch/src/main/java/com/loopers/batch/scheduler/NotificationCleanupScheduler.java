@@ -27,7 +27,7 @@ public class NotificationCleanupScheduler {
             int deleted = jdbcTemplate.update(
                 "DELETE FROM notifications WHERE id IN " +
                 "(SELECT id FROM (SELECT id FROM notifications WHERE created_at < ? " +
-                "AND status IN ('SENT', 'FAILED', 'CANCELLED') LIMIT ?) AS sub)",
+                "AND status IN ('SENT', 'FAILED', 'CANCELLED') ORDER BY id ASC LIMIT ?) AS sub)",
                 cutoff, BATCH_LIMIT);
             log.info("[NotificationCleanupScheduler] 알림 {}건 삭제 완료", deleted);
         } catch (Exception e) {
