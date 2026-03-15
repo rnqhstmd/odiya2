@@ -7,10 +7,21 @@ final class CalendarViewModel: ObservableObject {
     // MARK: - Published State
 
     @Published var selectedDate: Date = Date()
-    @Published var currentMonth: Date = Date()
+    @Published var currentMonth: Date = Date() {
+        didSet {
+            let components = koreanCalendar.dateComponents([.year, .month], from: currentMonth)
+            if let year = components.year, let month = components.month {
+                Task { await loadMonth(year: year, month: month) }
+            }
+        }
+    }
     @Published var appointments: [Appointment] = []
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String? = nil
 
     // MARK: - Private
+
+    private let repository: CalendarRepository
 
     private let koreanCalendar: Calendar = {
         var cal = Calendar(identifier: .gregorian)
@@ -19,10 +30,90 @@ final class CalendarViewModel: ObservableObject {
         return cal
     }()
 
+    private static let isoDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.timeZone = TimeZone(identifier: "Asia/Seoul")
+        return f
+    }()
+
+    private static let isoDateTimeFormatter: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return f
+    }()
+
+    private static let isoDateTimeFormatterNoFraction: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime]
+        return f
+    }()
+
     // MARK: - Init
 
-    init() {
-        self.appointments = MockData.allAppointments
+    init(repository: CalendarRepository = CalendarRepositoryImpl()) {
+        self.repository = repository
+        let components = Calendar.current.dateComponents([.year, .month], from: Date())
+        if let year = components.year, let month = components.month {
+            Task { await loadMonth(year: year, month: month) }
+        }
+    }
+
+    // MARK: - Load
+
+    func loadMonth(year: Int, month: Int) async {
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+        do {
+            let days = try await repository.getCalendarData(year: year, month: month)
+            appointments = days.flatMap { day in
+                day.appointments.map { dto in
+                    appointmentFromDTO(dto)
+                }
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    // MARK: - DTO → Domain Mapping
+
+    private func appointmentFromDTO(_ dto: CalendarAppointmentDTO) -> Appointment {
+        let dateTime = Self.isoDateTimeFormatter.date(from: dto.dateTime)
+            ?? Self.isoDateTimeFormatterNoFraction.date(from: dto.dateTime)
+            ?? Date()
+
+        // tagColor가 있으면 임시 Tag를 생성해 participants에 부여 (dot/color 표시용)
+        let tag: Tag? = dto.tagColor.map { hex in
+            Tag(id: hex, name: "", colorHex: hex, isDefault: false)
+        }
+        let participant = Participant(
+            id: dto.id,
+            nickname: "",
+            profileImageUrl: nil,
+            status: .accepted,
+            isHost: false,
+            tag: tag
+        )
+
+        return Appointment(
+            id: dto.id,
+            name: dto.name,
+            placeName: dto.placeName,
+            placeAddress: "",
+            latitude: 0,
+            longitude: 0,
+            dateTime: dateTime,
+            status: .confirmed,
+            participants: [participant],
+            hostId: 0,
+            transportType: .transit,
+            durationMinutes: nil,
+            departurePlaceLabel: nil,
+            departureAlertAt: nil
+        )
     }
 
     // MARK: - Query

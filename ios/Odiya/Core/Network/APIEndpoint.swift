@@ -19,6 +19,9 @@ enum APIEndpoint {
     case updateProfileImage
     case deleteAccount
 
+    // Calendar
+    case getCalendarData(year: Int, month: Int)
+
     var path: String {
         switch self {
         case .kakaoLogin:       return "/api/v1/auth/kakao/login"
@@ -28,6 +31,8 @@ enum APIEndpoint {
         case .updateNickname:   return "/api/v1/users/me/nickname"
         case .updateProfileImage: return "/api/v1/users/me/profile-image"
         case .deleteAccount:    return "/api/v1/users/me"
+        case .getCalendarData(let year, let month):
+            return "/api/v1/appointments/calendar?year=\(year)&month=\(month)"
         }
     }
 
@@ -35,7 +40,7 @@ enum APIEndpoint {
         switch self {
         case .kakaoLogin, .refreshToken, .logout:
             return .post
-        case .getMyProfile:
+        case .getMyProfile, .getCalendarData:
             return .get
         case .updateNickname, .updateProfileImage:
             return .patch

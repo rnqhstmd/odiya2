@@ -31,6 +31,12 @@ struct CalendarView: View {
             VStack(spacing: 0) {
                 // 상단 헤더
                 header
+                    .onAppear {
+                        let components = Calendar.current.dateComponents([.year, .month], from: viewModel.currentMonth)
+                        if let year = components.year, let month = components.month {
+                            Task { await viewModel.loadMonth(year: year, month: month) }
+                        }
+                    }
 
                 Divider()
 
