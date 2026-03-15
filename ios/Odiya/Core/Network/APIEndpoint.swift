@@ -18,6 +18,38 @@ enum APIEndpoint {
     case updateNickname
     case updateProfileImage
     case deleteAccount
+    case searchUsers(nickname: String)
+
+    // Friend
+    case getFriends(tagId: Int64?)
+    case sendFriendRequest
+    case getReceivedRequests
+    case acceptFriendRequest(requestId: Int64)
+    case rejectFriendRequest(requestId: Int64)
+    case removeFriend(friendUserId: Int64)
+    case changeFriendTag(friendUserId: Int64)
+
+    // Tag
+    case getTags
+    case createTag
+    case updateTag(tagId: Int64)
+    case deleteTag(tagId: Int64)
+
+    // Appointment
+    case createAppointment
+    case getAppointment(id: Int64)
+    case getMyAppointments(status: String, cursor: Int64?, size: Int)
+    case getCalendarData(year: Int, month: Int)
+    case updateAppointment(id: Int64)
+    case cancelAppointment(id: Int64)
+    case acceptInvitation(id: Int64)
+    case rejectInvitation(id: Int64)
+    case inviteParticipants(id: Int64)
+    case updateDeparture(id: Int64)
+    case nudge(id: Int64)
+
+    // Place
+    case searchPlaces(keyword: String, page: Int)
 
     // Notification
     case getNotifications(cursor: Int64?, size: Int)
@@ -38,17 +70,68 @@ enum APIEndpoint {
         case .updateNickname:   return "/api/v1/users/me/nickname"
         case .updateProfileImage: return "/api/v1/users/me/profile-image"
         case .deleteAccount:    return "/api/v1/users/me"
-        case .getNotifications: return "/api/v1/notifications"
+        case .searchUsers:      return "/api/v1/users/search"
+        case .getFriends:       return "/api/v1/friends"
+        case .sendFriendRequest:            return "/api/v1/friends/request"
+        case .getReceivedRequests:          return "/api/v1/friends/requests/received"
+        case .acceptFriendRequest(let id):  return "/api/v1/friends/request/\(id)/accept"
+        case .rejectFriendRequest(let id):  return "/api/v1/friends/request/\(id)/reject"
+        case .removeFriend(let id):         return "/api/v1/friends/\(id)"
+        case .changeFriendTag(let id):      return "/api/v1/friends/\(id)/tag"
+        case .getTags:                      return "/api/v1/tags"
+        case .createTag:                    return "/api/v1/tags"
+        case .updateTag(let id):            return "/api/v1/tags/\(id)"
+        case .deleteTag(let id):            return "/api/v1/tags/\(id)"
+
+        case .createAppointment:        return "/api/v1/appointments"
+        case .getAppointment(let id):   return "/api/v1/appointments/\(id)"
+        case .getMyAppointments:        return "/api/v1/appointments/me"
+        case .getCalendarData:          return "/api/v1/appointments/calendar"
+        case .updateAppointment(let id): return "/api/v1/appointments/\(id)"
+        case .cancelAppointment(let id): return "/api/v1/appointments/\(id)"
+        case .acceptInvitation(let id): return "/api/v1/appointments/\(id)/accept"
+        case .rejectInvitation(let id): return "/api/v1/appointments/\(id)/reject"
+        case .inviteParticipants(let id): return "/api/v1/appointments/\(id)/invite"
+        case .updateDeparture(let id):  return "/api/v1/appointments/\(id)/departure"
+        case .nudge(let id):            return "/api/v1/appointments/\(id)/nudge"
+
+        case .searchPlaces:             return "/api/v1/places/search"
+
+        case .getNotifications:         return "/api/v1/notifications"
         case .markNotificationAsRead(let id): return "/api/v1/notifications/\(id)/read"
         case .markAllNotificationsAsRead: return "/api/v1/notifications/read-all"
-        case .getUnreadCount:   return "/api/v1/notifications/unread-count"
-        case .registerDevice:   return "/api/v1/devices"
+        case .getUnreadCount:           return "/api/v1/notifications/unread-count"
+        case .registerDevice:           return "/api/v1/devices"
         case .deactivateDevice(let token): return "/api/v1/devices/\(token)"
         }
     }
 
     var queryItems: [URLQueryItem]? {
         switch self {
+        case .searchUsers(let nickname):
+            return [URLQueryItem(name: "nickname", value: nickname)]
+        case .getFriends(let tagId):
+            if let tagId { return [URLQueryItem(name: "tagId", value: "\(tagId)")] }
+            return nil
+        case .getMyAppointments(let status, let cursor, let size):
+            var items: [URLQueryItem] = [
+                URLQueryItem(name: "status", value: status),
+                URLQueryItem(name: "size", value: "\(size)")
+            ]
+            if let cursor = cursor {
+                items.append(URLQueryItem(name: "cursor", value: "\(cursor)"))
+            }
+            return items
+        case .getCalendarData(let year, let month):
+            return [
+                URLQueryItem(name: "year", value: "\(year)"),
+                URLQueryItem(name: "month", value: "\(month)")
+            ]
+        case .searchPlaces(let keyword, let page):
+            return [
+                URLQueryItem(name: "keyword", value: keyword),
+                URLQueryItem(name: "page", value: "\(page)")
+            ]
         case .getNotifications(let cursor, let size):
             var items: [URLQueryItem] = [URLQueryItem(name: "size", value: "\(size)")]
             if let cursor {
@@ -62,14 +145,31 @@ enum APIEndpoint {
 
     var method: HTTPMethod {
         switch self {
-        case .kakaoLogin, .refreshToken, .logout:
+        case .kakaoLogin, .refreshToken, .logout,
+             .sendFriendRequest, .acceptFriendRequest, .rejectFriendRequest,
+             .createTag:
             return .post
-        case .getMyProfile:
+        case .getMyProfile, .getFriends, .getReceivedRequests, .getTags, .searchUsers:
             return .get
-        case .updateNickname, .updateProfileImage:
+        case .updateNickname, .updateProfileImage, .changeFriendTag, .updateTag:
             return .patch
-        case .deleteAccount:
+        case .deleteAccount, .removeFriend, .deleteTag:
             return .delete
+
+        case .createAppointment:        return .post
+        case .getAppointment:           return .get
+        case .getMyAppointments:        return .get
+        case .getCalendarData:          return .get
+        case .updateAppointment:        return .patch
+        case .cancelAppointment:        return .delete
+        case .acceptInvitation:         return .post
+        case .rejectInvitation:         return .post
+        case .inviteParticipants:       return .post
+        case .updateDeparture:          return .patch
+        case .nudge:                    return .post
+
+        case .searchPlaces:             return .get
+
         case .getNotifications, .getUnreadCount:
             return .get
         case .markNotificationAsRead:
