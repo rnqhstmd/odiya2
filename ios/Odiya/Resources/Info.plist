@@ -30,5 +30,16 @@
 		<string>kakaolink</string>
 		<string>kakaoplus</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakaoece6b8787b49709a2c667866573791a7</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>kakao-login</string>
+		</dict>
+	</array>
 </dict>
 </plist>
