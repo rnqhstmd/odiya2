@@ -6,6 +6,7 @@ import com.loopers.application.appointment.AppointmentInfo;
 import com.loopers.application.appointment.AppointmentListInfo;
 import com.loopers.application.appointment.CalendarDayInfo;
 import com.loopers.application.appointment.DepartureUpdateInfo;
+import com.loopers.application.notification.NotificationFacade;
 import com.loopers.config.security.LoginUser;
 import com.loopers.interfaces.api.ApiResponse;
 import jakarta.validation.Valid;
@@ -29,6 +30,7 @@ import java.util.List;
 public class AppointmentV1Controller implements AppointmentV1ApiSpec {
 
     private final AppointmentFacade appointmentFacade;
+    private final NotificationFacade notificationFacade;
 
     @PostMapping
     @Override
@@ -151,5 +153,16 @@ public class AppointmentV1Controller implements AppointmentV1ApiSpec {
         DepartureUpdateInfo info = appointmentFacade.updateDeparture(
             id, loginUser.userId(), request.departurePlaceId(), request.transportType());
         return ApiResponse.success(AppointmentV1Dto.DepartureUpdateResponse.from(info));
+    }
+
+    @PostMapping("/{id}/nudge")
+    @Override
+    public ApiResponse<Void> nudge(
+        @AuthenticationPrincipal LoginUser loginUser,
+        @PathVariable Long id,
+        @Valid @RequestBody AppointmentV1Dto.NudgeRequest request
+    ) {
+        notificationFacade.nudge(id, loginUser.userId(), request.targetUserIds());
+        return ApiResponse.success();
     }
 }

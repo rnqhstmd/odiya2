@@ -178,6 +178,10 @@ public class AppointmentV1Dto {
         }
     }
 
+    public record NudgeRequest(
+        @NotNull @Size(max = 30, message = "최대 30명까지 콕 찌르기 가능합니다.") List<Long> targetUserIds
+    ) {}
+
     public record DepartureUpdateResponse(
         Integer durationMinutes,
         ZonedDateTime departureAlertAt,
