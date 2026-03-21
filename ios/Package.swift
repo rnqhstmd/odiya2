@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "Odiya",
     platforms: [
-        .iOS(.v16)
+        .iOS(.v17)
     ],
     dependencies: [
         .package(url: "https://github.com/kakao/kakao-ios-sdk.git", from: "2.22.0")

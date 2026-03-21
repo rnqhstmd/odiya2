@@ -87,7 +87,7 @@ struct ProfileView: View {
                     editingNickname = user.nickname
                 }
             }
-            .onChange(of: viewModel.user) { _, newUser in
+            .onChange(of: viewModel.user) { newUser in
                 if let user = newUser {
                     editingNickname = user.nickname
                 }
