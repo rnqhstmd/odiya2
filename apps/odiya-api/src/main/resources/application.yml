@@ -1,0 +1,103 @@
+server:
+  shutdown: graceful
+  tomcat:
+    threads:
+      max: 200 # 최대 워커 스레드 수 (default : 200)
+      min-spare: 10 # 최소 유지 스레드 수 (default : 10)
+    connection-timeout: 1m # 연결 타임아웃 (ms) (default : 60000ms = 1m)
+    max-connections: 8192 # 최대 동시 연결 수 (default : 8192)
+    accept-count: 100 # 대기 큐 크기 (default : 100)
+    keep-alive-timeout: 60s # 60s
+  max-http-request-header-size: 8KB
+
+spring:
+  main:
+    web-application-type: servlet
+  application:
+    name: odiya-api
+  profiles:
+    active: local
+  config:
+    import:
+      - jpa.yml
+      - redis.yml
+      - kafka.yml
+      - logging.yml
+      - monitoring.yml
+
+springdoc:
+  use-fqn: true
+  swagger-ui:
+    path: /swagger-ui.html
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiry-seconds: 3600
+  refresh-token-expiry-seconds: 2592000
+
+kakao:
+  api-url: https://kapi.kakao.com
+  connect-timeout-seconds: 3
+  read-timeout-seconds: 5
+  local:
+    api-url: https://dapi.kakao.com
+    rest-api-key: ${KAKAO_REST_API_KEY}
+    connect-timeout-seconds: 3
+    read-timeout-seconds: 5
+  mobility:
+    api-url: https://apis-navi.kakaomobility.com
+    rest-api-key: ${KAKAO_REST_API_KEY}
+    connect-timeout-seconds: 5
+    read-timeout-seconds: 10
+
+odsay:
+  api-url: https://api.odsay.com
+  api-key: ${ODSAY_API_KEY}
+  connect-timeout-seconds: 3
+  read-timeout-seconds: 10
+
+service:
+  default-profile-image-url: ${DEFAULT_PROFILE_IMAGE_URL}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local, test
+
+jwt:
+  secret: local-test-secret-key-must-be-at-least-32-chars
+
+service:
+  default-profile-image-url: https://cdn.odiya.com/images/default-profile.png
+
+kakao:
+  local:
+    rest-api-key: test-kakao-rest-api-key
+  mobility:
+    rest-api-key: test-kakao-rest-api-key
+
+odsay:
+  api-key: test-odsay-api-key
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: qa
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prd
+
+springdoc:
+  api-docs:
+    enabled: false

@@ -18,9 +18,9 @@ odiya2/
 │       └── UI/                   ← 공통 UI (Navigation, Components, Theme)
 │
 ├── apps/                         ← Spring Boot 실행 가능 앱 (3개)
-│   ├── commerce-api/             ← REST API 서버 (port 8080)
-│   ├── commerce-batch/           ← Spring Batch (스케줄 작업)
-│   └── commerce-streamer/        ← Kafka 컨슈머
+│   ├── odiya-api/             ← REST API 서버 (port 8080)
+│   ├── odiya-batch/           ← Spring Batch (스케줄 작업)
+│   └── odiya-streamer/        ← Kafka 컨슈머
 │
 ├── modules/                      ← 공유 인프라 모듈
 │   ├── jpa/                      ← MySQL + Hibernate + QueryDSL
