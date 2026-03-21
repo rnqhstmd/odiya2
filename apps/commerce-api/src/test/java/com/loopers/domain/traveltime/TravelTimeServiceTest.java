@@ -10,10 +10,13 @@ import com.loopers.domain.usersettings.UserSettings;
 import com.loopers.domain.usersettings.UserSettingsRepository;
 import com.loopers.infrastructure.kakao.KakaoMobilityApiClient;
 import com.loopers.infrastructure.odsay.OdsayApiClient;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -50,6 +53,12 @@ class TravelTimeServiceTest {
 
     @InjectMocks
     private TravelTimeService travelTimeService;
+
+    @BeforeEach
+    void setUp() {
+        lenient().when(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
+            .thenReturn(Optional.empty());
+    }
 
     private AppointmentParticipant makeParticipant(TransportType transportType,
                                                     double originLat, double originLng,

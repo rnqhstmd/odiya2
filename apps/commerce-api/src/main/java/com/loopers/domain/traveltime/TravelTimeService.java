@@ -151,6 +151,6 @@ public class TravelTimeService {
         };
     }
 
-    public record DurationResult(int durationMinutes, boolean isFallback, boolean fromCache) {
+    private record DurationResult(int durationMinutes, boolean isFallback, boolean fromCache) {
     }
 }

@@ -5,6 +5,7 @@ import com.loopers.infrastructure.kakao.KakaoLocalApiClient;
 import com.loopers.infrastructure.kakao.KakaoLocalResponse;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -36,6 +39,11 @@ class PlaceFacadeTest {
 
     @InjectMocks
     private PlaceFacade placeFacade;
+
+    @BeforeEach
+    void setUp() {
+        lenient().when(placeCacheRepository.find(anyString(), anyInt(), anyInt())).thenReturn(Optional.empty());
+    }
 
     private KakaoLocalResponse.Document makeDocument(String id, String name, String x, String y) {
         return new KakaoLocalResponse.Document(id, name, "주소", "도로명주소", "카테고리", x, y);

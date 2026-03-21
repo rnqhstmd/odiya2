@@ -13,15 +13,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import org.mockito.ArgumentCaptor;
+
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -154,8 +156,10 @@ class PlaceCacheRepositoryImplTest {
             placeCacheRepository.save("강남역", 1, 5, searchResult);
 
             // assert: 동일한 key로 2번 호출됨
-            verify(masterValueOps, org.mockito.Mockito.times(2))
-                .set(anyString(), anyString(), eq(Duration.ofHours(24)));
+            ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
+            verify(masterValueOps, times(2)).set(keyCaptor.capture(), anyString(), eq(Duration.ofHours(24)));
+            List<String> keys = keyCaptor.getAllValues();
+            assertThat(keys.get(0)).isEqualTo(keys.get(1));
         }
 
         @DisplayName("다른검색어는 다른해시를 생성한다.")
@@ -171,8 +175,8 @@ class PlaceCacheRepositoryImplTest {
             placeCacheRepository.find("홍대입구", 1, 5);
 
             // assert: opsForValue().get()이 서로 다른 key로 2번 호출됨
-            org.mockito.ArgumentCaptor<String> keyCaptor = org.mockito.ArgumentCaptor.forClass(String.class);
-            verify(replicaValueOps, org.mockito.Mockito.times(2)).get(keyCaptor.capture());
+            ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
+            verify(replicaValueOps, times(2)).get(keyCaptor.capture());
             List<String> keys = keyCaptor.getAllValues();
             assertThat(keys.get(0)).isNotEqualTo(keys.get(1));
         }

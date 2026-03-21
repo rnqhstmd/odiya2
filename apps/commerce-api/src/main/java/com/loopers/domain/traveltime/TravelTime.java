@@ -37,7 +37,7 @@ public class TravelTime extends BaseEntity {
     @Column(name = "departure_alert_at")
     private ZonedDateTime departureAlertAt;
 
-    @Column(name = "is_fallback", nullable = false)
+    @Column(name = "is_fallback", nullable = false, columnDefinition = "boolean default false")
     private boolean isFallback = false;
 
     protected TravelTime() {}
