@@ -26,7 +26,7 @@
 ## 백엔드 모듈 구조
 
 ```
-odiya2/
+odiya2/backend/
 ├── apps/
 │   ├── odiya-api          ← REST API 서버 (port 8080)
 │   │   └── interfaces/api/   ← Controller, DTO, ApiResponse

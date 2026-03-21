@@ -17,27 +17,23 @@ odiya2/
 │       │       └── Presentation/ ← View, ViewModel
 │       └── UI/                   ← 공통 UI (Navigation, Components, Theme)
 │
-├── apps/                         ← Spring Boot 실행 가능 앱 (3개)
-│   ├── odiya-api/             ← REST API 서버 (port 8080)
-│   ├── odiya-batch/           ← Spring Batch (스케줄 작업)
-│   └── odiya-streamer/        ← Kafka 컨슈머
+├── backend/                      ← Spring Boot 백엔드
+│   ├── apps/                     ← 실행 가능 앱 (3개)
+│   │   ├── odiya-api/            ← REST API 서버 (port 8080)
+│   │   ├── odiya-batch/          ← Spring Batch (스케줄 작업)
+│   │   └── odiya-streamer/       ← Kafka 컨슈머
+│   ├── modules/                  ← 공유 인프라 모듈
+│   │   ├── jpa/, redis/, kafka/
+│   ├── supports/                 ← 유틸리티 모듈
+│   │   ├── jackson/, logging/, monitoring/
+│   └── docker/
+│       ├── infra-compose.yml     ← MySQL, Redis, Kafka, Kafka UI
+│       └── monitoring-compose.yml ← Prometheus, Grafana
 │
-├── modules/                      ← 공유 인프라 모듈
-│   ├── jpa/                      ← MySQL + Hibernate + QueryDSL
-│   ├── redis/                    ← Master/Replica Redis + Lettuce
-│   └── kafka/                    ← Kafka 프로듀서/컨슈머
-│
-├── supports/                     ← 유틸리티 모듈
-│   ├── jackson/                  ← JSON 직렬화
-│   ├── logging/                  ← Logback + Slack 알림
-│   └── monitoring/               ← Prometheus + 분산 추적
-│
-├── docker/
-│   ├── infra-compose.yml         ← MySQL, Redis, Kafka, Kafka UI
-│   └── monitoring-compose.yml    ← Prometheus, Grafana
-│
-└── context/                      ← 프로젝트 문서 (도메인별 context)
-    └── odiya/
+├── context/                      ← 프로젝트 문서 (도메인별 context)
+│   └── odiya/
+├── references/                   ← 외부 API 규격 문서
+└── docs/                         ← 가이드 문서
 ```
 
 ## 기술 스택
@@ -68,7 +64,7 @@ odiya2/
 | 서비스 | 키 종류 | 사용처 | 상태 |
 |--------|---------|--------|------|
 | 카카오 | 네이티브 앱 키 | iOS (로그인, 지도, 공유) | ✅ 발급 완료 |
-| 카카오 | REST API 키 | 백엔드 (로컬 API, 모빌리티) | ⬜ 발급 필요 |
-| ODsay | API Key | 백엔드 (대중교통 이동시간) | ⬜ 발급 필요 |
-| Firebase | 서비스 계정 JSON | 백엔드 (FCM 푸시 전송) | ⬜ 설정 필요 |
-| Firebase | GoogleService-Info.plist | iOS (FCM 수신) | ⬜ 설정 필요 |
+| 카카오 | REST API 키 | 백엔드 (로컬 API, 모빌리티) | ✅ 발급 완료 |
+| ODsay | API Key | 백엔드 (대중교통 이동시간) | ✅ 발급 완료 |
+| Firebase | 서비스 계정 JSON | 백엔드 (FCM 푸시 전송) | ✅ 설정 완료 |
+| Firebase | GoogleService-Info.plist | iOS (FCM 수신) | ✅ 설정 완료 |

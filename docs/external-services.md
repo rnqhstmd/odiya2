@@ -25,7 +25,7 @@
 
 로컬 인프라 실행:
 ```bash
-cd docker && docker compose -f infra-compose.yml up -d
+cd backend/docker && docker compose -f infra-compose.yml up -d
 ```
 
 ---
@@ -49,8 +49,8 @@ cd docker && docker compose -f infra-compose.yml up -d
 
 | 키 | 사용 모듈 | 설정 파일 |
 |----|----------|----------|
-| `KAKAO_REST_API_KEY` | odiya-api | `apps/odiya-api/src/main/resources/application.yml` (line 44) |
-| `KAKAO_REST_API_KEY` | odiya-batch | `apps/odiya-batch/src/main/resources/application.yml` (line 24) |
+| `KAKAO_REST_API_KEY` | odiya-api | `backend/apps/odiya-api/src/main/resources/application.yml` (line 44) |
+| `KAKAO_REST_API_KEY` | odiya-batch | `backend/apps/odiya-batch/src/main/resources/application.yml` (line 24) |
 | `KAKAO_NATIVE_APP_KEY` | iOS | `ios/Odiya/App/Environment.swift` |
 
 ### 3-2. ODsay (대중교통)
@@ -59,7 +59,7 @@ cd docker && docker compose -f infra-compose.yml up -d
 2. **개발자 신청 → API 키 발급**
 3. 무료: 일 1,000건 (6개월 유효)
 
-**사용 위치:** `apps/odiya-api/src/main/resources/application.yml` (line 55)
+**사용 위치:** `backend/apps/odiya-api/src/main/resources/application.yml` (line 55)
 
 ### 3-3. Firebase (FCM 푸시)
 
@@ -69,7 +69,7 @@ cd docker && docker compose -f infra-compose.yml up -d
 3. **iOS 앱 등록** → `GoogleService-Info.plist` 다운로드 → Xcode에 추가
 4. **클라우드 메시징 → APNs 인증 키 업로드** (.p8 파일)
 
-**사용 위치:** `apps/odiya-streamer/src/main/resources/application.yml` (line 29)
+**사용 위치:** `backend/apps/odiya-streamer/src/main/resources/application.yml` (line 29)
 - `FcmConfig.java`에서 `FIREBASE_CREDENTIALS_PATH` 환경변수로 JSON 파일 경로 로드
 
 ### 3-4. Apple APNs (iOS 푸시 수신)
@@ -183,20 +183,21 @@ GoogleService-Info.plist
 
 ```
 odiya2/
-├── apps/
-│   ├── odiya-api/src/main/resources/
-│   │   └── application.yml          ← JWT, 카카오(로그인+로컬+모빌리티), ODsay
-│   ├── odiya-batch/src/main/resources/
-│   │   └── application.yml          ← 카카오모빌리티 (batch 전용)
-│   └── odiya-streamer/src/main/resources/
-│       └── application.yml          ← Firebase 서비스 계정 경로
-├── modules/
-│   ├── jpa/src/main/resources/jpa.yml       ← MySQL
-│   ├── redis/src/main/resources/redis.yml   ← Redis
-│   └── kafka/src/main/resources/kafka.yml   ← Kafka
-├── docker/
-│   ├── infra-compose.yml            ← MySQL, Redis, Kafka
-│   └── monitoring-compose.yml       ← Prometheus, Grafana
+├── backend/
+│   ├── apps/
+│   │   ├── odiya-api/src/main/resources/
+│   │   │   └── application.yml      ← JWT, 카카오(로그인+로컬+모빌리티), ODsay
+│   │   ├── odiya-batch/src/main/resources/
+│   │   │   └── application.yml      ← 카카오모빌리티 (batch 전용)
+│   │   └── odiya-streamer/src/main/resources/
+│   │       └── application.yml      ← Firebase 서비스 계정 경로
+│   ├── modules/
+│   │   ├── jpa/src/main/resources/jpa.yml       ← MySQL
+│   │   ├── redis/src/main/resources/redis.yml   ← Redis
+│   │   └── kafka/src/main/resources/kafka.yml   ← Kafka
+│   └── docker/
+│       ├── infra-compose.yml        ← MySQL, Redis, Kafka
+│       └── monitoring-compose.yml   ← Prometheus, Grafana
 ├── ios/
 │   ├── Package.swift                ← 카카오 SDK 의존성
 │   └── Odiya/App/
