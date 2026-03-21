@@ -47,6 +47,7 @@ struct TagFilterChipsView: View {
     }
 }
 
+@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var selectedTag: Tag? = nil
     TagFilterChipsView(availableTags: MockData.tags, selectedTag: $selectedTag)
