@@ -33,6 +33,33 @@ docker-compose -f ./backend/docker/infra-compose.yml up -d
 ```shell
 cd backend && ./gradlew :apps:odiya-api:bootRun
 ```
+odiya/
+├── ios/                          # iOS 앱 (SwiftUI)
+│   ├── Odiya/
+│   ├── OdiyaTests/
+│   └── Package.swift
+│
+├── apps/                         # Spring Boot 실행 모듈
+│   ├── commerce-api              # REST API 서버
+│   ├── commerce-batch            # 배치 처리
+│   └── commerce-streamer         # 이벤트 스트리밍
+│
+├── modules/                      # 재사용 가능한 인프라 모듈
+│   ├── jpa                       # JPA 설정 + 엔티티
+│   ├── redis                     # Redis 캐싱
+│   └── kafka                     # Kafka 메시징
+│
+├── supports/                     # 부가 기능 모듈
+│   ├── jackson                   # JSON 직렬화
+│   ├── logging                   # 로깅
+│   └── monitoring                # Prometheus + Grafana
+│
+└── docker/                       # 로컬 인프라
+    ├── infra-compose.yml
+    └── monitoring-compose.yml
+```
+
+## 시작하기
 
 ### 모니터링
 ```shell
