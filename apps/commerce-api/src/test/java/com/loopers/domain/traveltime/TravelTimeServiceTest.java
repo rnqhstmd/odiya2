@@ -35,6 +35,9 @@ class TravelTimeServiceTest {
     private TravelTimeRepository travelTimeRepository;
 
     @Mock
+    private TravelTimeCacheRepository travelTimeCacheRepository;
+
+    @Mock
     private UserSettingsRepository userSettingsRepository;
 
     @Mock

@@ -108,21 +108,22 @@ class AppointmentFacadeTravelTimeTest {
             assertThat(result.departureAlertAt()).isNull();
         }
 
-        @DisplayName("이동시간 계산 API 장애 시, 예외 없이 null로 반환된다.")
+        @DisplayName("이동시간 계산 API 장애 시, Haversine fallback으로 이동시간이 계산된다.")
         @Test
-        void returnsNullTravelTime_whenApiThrowsException() {
+        void returnsFallbackTravelTime_whenApiThrowsException() {
             // arrange
             given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willThrow(new RuntimeException("ODsay API 장애"));
 
-            // act & assert - 예외가 전파되지 않아야 함
+            // act & assert - 예외가 전파되지 않고, fallback 값이 반환되어야 함
             AppointmentInfo result = appointmentFacade.create(
                 host.getId(), "모임", "강남역", "서울 강남구 강남대로 396",
                 37.5000, 127.0300, futureDateTime,
                 List.of(), TransportType.TRANSIT, departurePlace.getId());
 
-            assertThat(result.durationMinutes()).isNull();
-            assertThat(result.departureAlertAt()).isNull();
+            assertThat(result.durationMinutes()).isNotNull();
+            assertThat(result.durationMinutes()).isGreaterThanOrEqualTo(0);
+            assertThat(result.departureAlertAt()).isNotNull();
         }
     }
 
@@ -178,9 +179,9 @@ class AppointmentFacadeTravelTimeTest {
                 .calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
         }
 
-        @DisplayName("약속 수정 중 이동시간 계산 API 장애 시, 예외 없이 완료된다.")
+        @DisplayName("약속 수정 중 이동시간 계산 API 장애 시, Haversine fallback으로 완료된다.")
         @Test
-        void completesWithoutException_whenApiThrowsDuringUpdate() {
+        void completesWithFallback_whenApiThrowsDuringUpdate() {
             // arrange
             given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(20);
@@ -194,7 +195,7 @@ class AppointmentFacadeTravelTimeTest {
             given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willThrow(new RuntimeException("API 장애"));
 
-            // act & assert - 예외가 전파되지 않아야 함
+            // act & assert - 예외가 전파되지 않고, fallback으로 이동시간이 계산되어야 함
             AppointmentInfo result = appointmentFacade.updateAppointment(
                 appointmentId, host.getId(), null, null, null,
                 37.5665, 126.9780, null);
@@ -207,9 +208,9 @@ class AppointmentFacadeTravelTimeTest {
     @Nested
     class UpdateDeparture {
 
-        @DisplayName("출발지 수정 시 이동시간 계산 API 장애가 발생해도, 예외 없이 완료된다.")
+        @DisplayName("출발지 수정 시 이동시간 계산 API 장애가 발생해도, Haversine fallback으로 완료된다.")
         @Test
-        void completesWithoutException_whenApiThrowsDuringDepartureUpdate() {
+        void completesWithFallback_whenApiThrowsDuringDepartureUpdate() {
             // arrange
             given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(20);
@@ -223,13 +224,14 @@ class AppointmentFacadeTravelTimeTest {
             given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willThrow(new RuntimeException("API 장애"));
 
-            // act & assert - 예외가 전파되지 않아야 함
+            // act & assert - 예외가 전파되지 않고, fallback 값이 반환되어야 함
             DepartureUpdateInfo result = appointmentFacade.updateDeparture(
                 appointmentId, host.getId(), departurePlace.getId(), TransportType.TRANSIT);
 
             assertThat(result).isNotNull();
-            assertThat(result.durationMinutes()).isNull();
-            assertThat(result.departureAlertAt()).isNull();
+            assertThat(result.durationMinutes()).isNotNull();
+            assertThat(result.durationMinutes()).isGreaterThanOrEqualTo(0);
+            assertThat(result.departureAlertAt()).isNotNull();
         }
     }
 }

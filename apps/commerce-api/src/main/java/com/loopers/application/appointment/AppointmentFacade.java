@@ -11,6 +11,8 @@ import com.loopers.domain.notification.NotificationService;
 import com.loopers.domain.notification.NotificationType;
 import com.loopers.domain.nudge.NudgeCooldownRepository;
 import com.loopers.domain.traveltime.TravelTime;
+import com.loopers.domain.traveltime.TravelTimeCacheRepository;
+import com.loopers.domain.traveltime.TravelTimeCalculateEvent;
 import com.loopers.domain.traveltime.TravelTimeRepository;
 import com.loopers.domain.traveltime.TravelTimeService;
 import com.loopers.domain.user.User;
@@ -20,6 +22,7 @@ import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,9 +44,11 @@ public class AppointmentFacade {
     private final DeparturePlaceRepository departurePlaceRepository;
     private final TravelTimeService travelTimeService;
     private final TravelTimeRepository travelTimeRepository;
+    private final TravelTimeCacheRepository travelTimeCacheRepository;
     private final NotificationFacade notificationFacade;
     private final NotificationService notificationService;
     private final NudgeCooldownRepository nudgeCooldownRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public AppointmentInfo create(Long hostUserId, String name, String placeName, String placeAddress,
@@ -214,6 +219,8 @@ public class AppointmentFacade {
 
         if (coordChanged || timeChanged) {
             User host = userService.getUser(userId);
+            List<Long> asyncParticipantIds = new java.util.ArrayList<>();
+
             for (AppointmentParticipant p : appointment.getParticipants()) {
                 if (!p.getUser().getId().equals(userId)) {
                     sendAppointmentNotification(p.getUser(), host, NotificationType.APPOINTMENT_UPDATED,
@@ -223,28 +230,49 @@ public class AppointmentFacade {
                 }
 
                 if (p.getDeparturePlace() != null) {
-                    Integer oldDuration = travelTimeRepository.findByParticipantId(p.getId())
-                        .map(TravelTime::getDurationMinutes)
-                        .orElse(null);
-
-                    try {
-                        TravelTime newTravelTime = travelTimeService.calculateAndSave(p);
-                        if (newTravelTime != null && oldDuration != null) {
-                            Integer newDuration = newTravelTime.getDurationMinutes();
-                            long diffMinutes = Math.abs(newDuration - oldDuration);
-                            boolean appointmentFarEnough = appointment.getDateTime().isAfter(ZonedDateTime.now().plusMinutes(30));
-                            if (diffMinutes >= 5 && appointmentFarEnough) {
-                                sendAppointmentNotification(p.getUser(), null, NotificationType.TRAVEL_TIME_CHANGED,
-                                        appointment.getName() + " 이동시간이 변경되었어요",
-                                        "이동시간이 " + diffMinutes + "분 변경되었습니다.",
-                                        appointment.getId());
-                            }
+                    // Evict cache on coordinate change
+                    if (coordChanged) {
+                        try {
+                            travelTimeCacheRepository.evict(
+                                p.getDeparturePlace().getLatitude(), p.getDeparturePlace().getLongitude(),
+                                oldLat, oldLng, p.getTransportType());
+                        } catch (Exception e) {
+                            log.warn("이동시간 캐시 삭제 실패: participantId={}, error={}", p.getId(), e.getMessage(), e);
                         }
-                    } catch (Exception e) {
-                        log.warn("이동시간 계산 실패 (약속 수정): appointmentId={}, participantId={}, error={}",
-                            appointmentId, p.getId(), e.getMessage(), e);
+                    }
+
+                    if (p.getUser().getId().equals(userId)) {
+                        // Host: synchronous calculation
+                        Integer oldDuration = travelTimeRepository.findByParticipantId(p.getId())
+                            .map(TravelTime::getDurationMinutes)
+                            .orElse(null);
+
+                        try {
+                            TravelTime newTravelTime = travelTimeService.calculateAndSave(p);
+                            if (newTravelTime != null && oldDuration != null) {
+                                Integer newDuration = newTravelTime.getDurationMinutes();
+                                long diffMinutes = Math.abs(newDuration - oldDuration);
+                                boolean appointmentFarEnough = appointment.getDateTime().isAfter(ZonedDateTime.now().plusMinutes(30));
+                                if (diffMinutes >= 5 && appointmentFarEnough) {
+                                    sendAppointmentNotification(p.getUser(), null, NotificationType.TRAVEL_TIME_CHANGED,
+                                            appointment.getName() + " 이동시간이 변경되었어요",
+                                            "이동시간이 " + diffMinutes + "분 변경되었습니다.",
+                                            appointment.getId());
+                                }
+                            }
+                        } catch (Exception e) {
+                            log.warn("이동시간 계산 실패 (약속 수정): appointmentId={}, participantId={}, error={}",
+                                appointmentId, p.getId(), e.getMessage(), e);
+                        }
+                    } else {
+                        // Others: async calculation via event
+                        asyncParticipantIds.add(p.getId());
                     }
                 }
+            }
+
+            if (!asyncParticipantIds.isEmpty()) {
+                applicationEventPublisher.publishEvent(new TravelTimeCalculateEvent(asyncParticipantIds));
             }
         }
 
@@ -273,7 +301,11 @@ public class AppointmentFacade {
 
     @Transactional
     public void acceptInvitation(Long appointmentId, Long userId) {
-        appointmentService.acceptInvitation(appointmentId, userId);
+        AppointmentParticipant participant = appointmentService.acceptInvitation(appointmentId, userId);
+        if (participant.getDeparturePlace() != null) {
+            applicationEventPublisher.publishEvent(
+                new TravelTimeCalculateEvent(List.of(participant.getId())));
+        }
     }
 
     @Transactional

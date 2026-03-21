@@ -76,12 +76,13 @@ public class AppointmentService {
     }
 
     @Transactional
-    public void acceptInvitation(Long appointmentId, Long userId) {
+    public AppointmentParticipant acceptInvitation(Long appointmentId, Long userId) {
         Appointment appointment = getActiveAppointment(appointmentId);
         validateBeforeAppointmentTime(appointment);
         AppointmentParticipant participant = appointment.findParticipant(userId);
         participant.accept();
         appointment.confirmIfAllAccepted();
+        return participant;
     }
 
     @Transactional

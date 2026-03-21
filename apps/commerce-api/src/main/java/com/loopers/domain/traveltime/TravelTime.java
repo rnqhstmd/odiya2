@@ -37,23 +37,34 @@ public class TravelTime extends BaseEntity {
     @Column(name = "departure_alert_at")
     private ZonedDateTime departureAlertAt;
 
+    @Column(name = "is_fallback", nullable = false)
+    private boolean isFallback = false;
+
     protected TravelTime() {}
 
     private TravelTime(AppointmentParticipant participant, Integer durationMinutes,
                        TransportType transportType, ZonedDateTime calculatedAt,
-                       ZonedDateTime departureAlertAt) {
+                       ZonedDateTime departureAlertAt, boolean isFallback) {
         guardDurationMinutes(durationMinutes);
         this.participant = participant;
         this.durationMinutes = durationMinutes;
         this.transportType = transportType;
         this.calculatedAt = calculatedAt;
         this.departureAlertAt = departureAlertAt;
+        this.isFallback = isFallback;
     }
 
     public static TravelTime create(AppointmentParticipant participant, Integer durationMinutes,
                                      TransportType transportType, ZonedDateTime departureAlertAt) {
         return new TravelTime(participant, durationMinutes, transportType,
-                              ZonedDateTime.now(), departureAlertAt);
+                              ZonedDateTime.now(), departureAlertAt, false);
+    }
+
+    public static TravelTime create(AppointmentParticipant participant, Integer durationMinutes,
+                                     TransportType transportType, ZonedDateTime departureAlertAt,
+                                     boolean isFallback) {
+        return new TravelTime(participant, durationMinutes, transportType,
+                              ZonedDateTime.now(), departureAlertAt, isFallback);
     }
 
     @Override
@@ -63,11 +74,17 @@ public class TravelTime extends BaseEntity {
 
     public void update(Integer durationMinutes, TransportType transportType,
                        ZonedDateTime departureAlertAt) {
+        update(durationMinutes, transportType, departureAlertAt, false);
+    }
+
+    public void update(Integer durationMinutes, TransportType transportType,
+                       ZonedDateTime departureAlertAt, boolean isFallback) {
         guardDurationMinutes(durationMinutes);
         this.durationMinutes = durationMinutes;
         this.transportType = transportType;
         this.calculatedAt = ZonedDateTime.now();
         this.departureAlertAt = departureAlertAt;
+        this.isFallback = isFallback;
     }
 
     public AppointmentParticipant getParticipant() { return participant; }
@@ -75,6 +92,7 @@ public class TravelTime extends BaseEntity {
     public TransportType getTransportType() { return transportType; }
     public ZonedDateTime getCalculatedAt() { return calculatedAt; }
     public ZonedDateTime getDepartureAlertAt() { return departureAlertAt; }
+    public boolean isFallback() { return isFallback; }
 
     private void guardDurationMinutes(Integer durationMinutes) {
         if (durationMinutes == null || durationMinutes < 0) {

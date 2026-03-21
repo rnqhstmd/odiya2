@@ -1,8 +1,9 @@
 package com.loopers.interfaces.api.place;
 
+import com.loopers.application.place.PlaceCacheResult;
 import com.loopers.application.place.PlaceFacade;
-import com.loopers.application.place.PlaceSearchResult;
 import com.loopers.interfaces.api.ApiResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,8 +22,10 @@ public class PlaceV1Controller implements PlaceV1ApiSpec {
     public ApiResponse<PlaceV1Dto.SearchResponse> searchPlaces(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "15") Integer size) {
-        PlaceSearchResult result = placeFacade.searchPlaces(keyword, page, size);
-        return ApiResponse.success(PlaceV1Dto.SearchResponse.from(result));
+            @RequestParam(defaultValue = "15") Integer size,
+            HttpServletResponse httpServletResponse) {
+        PlaceCacheResult cacheResult = placeFacade.searchPlaces(keyword, page, size);
+        httpServletResponse.addHeader("X-Cache", cacheResult.cacheHit() ? "HIT" : "MISS");
+        return ApiResponse.success(PlaceV1Dto.SearchResponse.from(cacheResult.result()));
     }
 }

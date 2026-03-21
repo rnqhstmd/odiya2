@@ -1,5 +1,6 @@
 package com.loopers.application.place;
 
+import com.loopers.domain.place.PlaceCacheRepository;
 import com.loopers.infrastructure.kakao.KakaoLocalApiClient;
 import com.loopers.infrastructure.kakao.KakaoLocalResponse;
 import com.loopers.support.error.CoreException;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -25,6 +27,9 @@ class PlaceFacadeTest {
 
     @Mock
     private KakaoLocalApiClient kakaoLocalApiClient;
+
+    @Mock
+    private PlaceCacheRepository placeCacheRepository;
 
     @InjectMocks
     private PlaceFacade placeFacade;
@@ -88,12 +93,12 @@ class PlaceFacadeTest {
                 .willReturn(response);
 
             // act
-            PlaceSearchResult result = placeFacade.searchPlaces("강남", 100, 5);
+            PlaceCacheResult cacheResult = placeFacade.searchPlaces("강남", 100, 5);
 
             // assert
-            assertThat(result).isNotNull();
+            assertThat(cacheResult).isNotNull();
             // page 100 → 45로 보정되어 API 호출됨 (예외 없이 정상 반환)
-            assertThat(result.places()).hasSize(1);
+            assertThat(cacheResult.result().places()).hasSize(1);
         }
 
         @DisplayName("좌표가 0인 결과는 필터링된다.")
@@ -109,11 +114,11 @@ class PlaceFacadeTest {
                 .willReturn(response);
 
             // act
-            PlaceSearchResult result = placeFacade.searchPlaces("강남", 1, 15);
+            PlaceCacheResult cacheResult = placeFacade.searchPlaces("강남", 1, 15);
 
             // assert
-            assertThat(result.places()).hasSize(1);
-            assertThat(result.places().get(0).name()).isEqualTo("정상 장소");
+            assertThat(cacheResult.result().places()).hasSize(1);
+            assertThat(cacheResult.result().places().get(0).name()).isEqualTo("정상 장소");
         }
 
         @DisplayName("정상적인 검색어와 페이지이면, 결과를 반환한다.")
@@ -128,11 +133,11 @@ class PlaceFacadeTest {
                 .willReturn(response);
 
             // act
-            PlaceSearchResult result = placeFacade.searchPlaces("강남", 1, 5);
+            PlaceCacheResult cacheResult = placeFacade.searchPlaces("강남", 1, 5);
 
             // assert
-            assertThat(result.places()).hasSize(2);
-            assertThat(result.hasNext()).isTrue();
+            assertThat(cacheResult.result().places()).hasSize(2);
+            assertThat(cacheResult.result().hasNext()).isTrue();
         }
 
         @DisplayName("카카오 API가 빈 결과를 반환하면, 빈 리스트와 hasNext=false를 반환한다.")
@@ -144,11 +149,11 @@ class PlaceFacadeTest {
                 .willReturn(response);
 
             // act
-            PlaceSearchResult result = placeFacade.searchPlaces("없는장소12345", 1, 5);
+            PlaceCacheResult cacheResult = placeFacade.searchPlaces("없는장소12345", 1, 5);
 
             // assert
-            assertThat(result.places()).isEmpty();
-            assertThat(result.hasNext()).isFalse();
+            assertThat(cacheResult.result().places()).isEmpty();
+            assertThat(cacheResult.result().hasNext()).isFalse();
         }
     }
 }

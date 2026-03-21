@@ -19,6 +19,11 @@ public class AppointmentParticipantRepositoryImpl implements AppointmentParticip
     }
 
     @Override
+    public Optional<AppointmentParticipant> findById(Long id) {
+        return appointmentParticipantJpaRepository.findById(id);
+    }
+
+    @Override
     public Optional<AppointmentParticipant> findByAppointmentIdAndUserId(Long appointmentId, Long userId) {
         return appointmentParticipantJpaRepository.findByAppointmentIdAndUserId(appointmentId, userId);
     }
