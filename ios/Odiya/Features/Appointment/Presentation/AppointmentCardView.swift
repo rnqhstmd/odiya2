@@ -1,0 +1,263 @@
+import SwiftUI
+
+struct AppointmentCardView: View {
+
+    let appointment: Appointment
+    var isImminent: Bool = false
+
+    // MARK: - Body
+
+    var body: some View {
+        if isImminent {
+            imminentCard
+        } else {
+            regularCard
+        }
+    }
+
+    // MARK: - Imminent Card
+
+    private var imminentCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // 헤더
+            HStack {
+                Label("임박", systemImage: "clock.fill")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(OdiyaColors.primary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(OdiyaColors.odiya300.opacity(0.4))
+                    .clipShape(Capsule())
+                Spacer()
+                CountdownView(targetDate: appointment.dateTime)
+            }
+
+            // 약속명
+            Text(appointment.name)
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundStyle(OdiyaColors.odiya900)
+
+            // 장소
+            HStack(spacing: 4) {
+                Image(systemName: "mappin.circle.fill")
+                    .foregroundStyle(OdiyaColors.primary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(appointment.placeName)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
+                    Text(appointment.placeAddress)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            // 날짜/시간
+            HStack(spacing: 4) {
+                Image(systemName: "calendar")
+                    .foregroundStyle(OdiyaColors.odiya500)
+                Text(appointment.dateTime, style: .date)
+                    .font(.subheadline)
+                Text(appointment.dateTime, style: .time)
+                    .font(.subheadline)
+            }
+            .foregroundStyle(.secondary)
+
+            Divider()
+
+            // 참여자 + 이동수단
+            HStack {
+                ParticipantStackView(participants: appointment.participants)
+                Spacer()
+                transportInfo
+            }
+
+            // 출발까지 카운트다운
+            if let minutes = appointment.minutesUntilDeparture {
+                departureCountdownView(minutes: minutes)
+            }
+
+            // 재촉하기 버튼
+            if appointment.canNudge {
+                NudgeButton()
+            }
+        }
+        .padding(16)
+        .background(OdiyaColors.odiya100)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(OdiyaColors.odiya300, lineWidth: 1.5)
+        )
+    }
+
+    // MARK: - Regular Card
+
+    private var regularCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(appointment.name)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    HStack(spacing: 4) {
+                        Image(systemName: "mappin")
+                            .font(.caption)
+                            .foregroundStyle(OdiyaColors.odiya500)
+                        Text(appointment.placeName)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    HStack(spacing: 4) {
+                        Image(systemName: "calendar")
+                            .font(.caption)
+                            .foregroundStyle(OdiyaColors.odiya500)
+                        Text(appointment.dateTime.koreanFormatted)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Spacer()
+                statusBadge
+            }
+
+            HStack {
+                ParticipantStackView(participants: appointment.participants, imageSize: 24)
+                Spacer()
+                transportInfo
+            }
+        }
+        .padding(16)
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 2)
+    }
+
+    // MARK: - Sub Views
+
+    private var transportInfo: some View {
+        HStack(spacing: 4) {
+            Image(systemName: appointment.transportType.iconName)
+                .font(.caption)
+                .foregroundStyle(OdiyaColors.odiya500)
+            if let duration = appointment.durationMinutes {
+                Text("\(duration)분")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private var statusBadge: some View {
+        Text(appointment.status.displayName)
+            .font(.caption2)
+            .fontWeight(.semibold)
+            .foregroundStyle(.white)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(statusColor)
+            .clipShape(Capsule())
+    }
+
+    private var statusColor: Color {
+        switch appointment.status {
+        case .confirmed: return OdiyaColors.success
+        case .completed: return Color(.systemGray)
+        case .cancelled: return OdiyaColors.danger
+        case .pending:   return OdiyaColors.warning
+        }
+    }
+
+    private func departureCountdownView(minutes: Int) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: "figure.walk")
+                .foregroundStyle(OdiyaColors.nudge)
+            Text("출발까지 \(minutes)분")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundStyle(OdiyaColors.nudge)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(OdiyaColors.nudge.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+}
+
+// MARK: - Countdown View (매초 갱신)
+
+private struct CountdownView: View {
+
+    let targetDate: Date
+    @State private var minutesRemaining: Int = 0
+    @State private var timer: Timer? = nil
+
+    var body: some View {
+        Text(countdownText)
+            .font(.caption)
+            .fontWeight(.semibold)
+            .foregroundStyle(minutesRemaining <= 30 ? OdiyaColors.nudge : OdiyaColors.primary)
+            .monospacedDigit()
+            .onAppear { startTimer() }
+            .onDisappear { timer?.invalidate() }
+    }
+
+    private var countdownText: String {
+        if minutesRemaining <= 0 { return "지금!" }
+        if minutesRemaining < 60 { return "\(minutesRemaining)분 후" }
+        let h = minutesRemaining / 60
+        let m = minutesRemaining % 60
+        return m == 0 ? "\(h)시간 후" : "\(h)시간 \(m)분 후"
+    }
+
+    private func startTimer() {
+        updateRemaining()
+        timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+            updateRemaining()
+        }
+    }
+
+    private func updateRemaining() {
+        let minutes = Calendar.current.dateComponents([.minute], from: Date(), to: targetDate).minute ?? 0
+        minutesRemaining = max(0, minutes)
+    }
+}
+
+// MARK: - Date Extension
+
+private extension Date {
+    var koreanFormatted: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "M월 d일 (E) a h:mm"
+        return formatter.string(from: self)
+    }
+}
+
+#Preview {
+    ScrollView {
+        VStack(spacing: 16) {
+            AppointmentCardView(
+                appointment: MockData.upcomingAppointments[0],
+                isImminent: true
+            )
+            AppointmentCardView(
+                appointment: MockData.upcomingAppointments[1],
+                isImminent: false
+            )
+            AppointmentCardView(
+                appointment: MockData.pastAppointments[0],
+                isImminent: false
+            )
+            AppointmentCardView(
+                appointment: MockData.pastAppointments[1],
+                isImminent: false
+            )
+        }
+        .padding()
+    }
+    .background(Color(.systemGroupedBackground))
+}

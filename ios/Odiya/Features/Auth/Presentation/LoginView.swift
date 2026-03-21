@@ -2,7 +2,6 @@ import SwiftUI
 
 struct LoginView: View {
 
-    @EnvironmentObject var router: RootRouter
     @StateObject private var viewModel = LoginViewModel()
 
     var body: some View {
@@ -52,13 +51,9 @@ struct LoginView: View {
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 48)
-        .onAppear {
-            viewModel.onLoginSuccess = { router.navigateToMain() }
-        }
     }
 }
 
 #Preview {
     LoginView()
-        .environmentObject(RootRouter())
 }

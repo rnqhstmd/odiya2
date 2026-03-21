@@ -1,0 +1,67 @@
+package com.loopers.application.appointment;
+
+import com.loopers.domain.appointment.Appointment;
+import com.loopers.domain.appointment.AppointmentParticipant;
+import com.loopers.domain.appointment.AppointmentStatus;
+import com.loopers.domain.usersettings.TransportType;
+
+import java.time.ZonedDateTime;
+import java.util.List;
+
+public record AppointmentInfo(
+    Long id,
+    String name,
+    String placeName,
+    String placeAddress,
+    Double latitude,
+    Double longitude,
+    ZonedDateTime dateTime,
+    AppointmentStatus status,
+    Long hostId,
+    TransportType transportType,
+    Integer durationMinutes,
+    ZonedDateTime departureAlertAt,
+    String departurePlaceLabel,
+    List<ParticipantInfo> participants
+) {
+    public static AppointmentInfo from(Appointment appointment, Long currentUserId) {
+        return from(appointment, currentUserId, null, null);
+    }
+
+    public static AppointmentInfo from(Appointment appointment, Long currentUserId,
+                                        Integer durationMinutes, ZonedDateTime departureAlertAt) {
+        Long hostId = appointment.getHost().getId();
+
+        AppointmentParticipant currentParticipant = null;
+        List<ParticipantInfo> participantInfos = new java.util.ArrayList<>();
+        for (AppointmentParticipant p : appointment.getParticipants()) {
+            if (p.getUser().getId().equals(currentUserId)) {
+                currentParticipant = p;
+            }
+            participantInfos.add(ParticipantInfo.from(p, hostId));
+        }
+
+        TransportType transportType = currentParticipant != null
+            ? currentParticipant.getTransportType() : null;
+        String departurePlaceLabel = currentParticipant != null
+            && currentParticipant.getDeparturePlace() != null
+            ? currentParticipant.getDeparturePlace().getLabel() : null;
+
+        return new AppointmentInfo(
+            appointment.getId(),
+            appointment.getName(),
+            appointment.getPlaceName(),
+            appointment.getPlaceAddress(),
+            appointment.getLatitude(),
+            appointment.getLongitude(),
+            appointment.getDateTime(),
+            appointment.getStatus(),
+            hostId,
+            transportType,
+            durationMinutes,
+            departureAlertAt,
+            departurePlaceLabel,
+            participantInfos
+        );
+    }
+}

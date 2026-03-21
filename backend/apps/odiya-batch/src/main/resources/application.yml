@@ -1,0 +1,62 @@
+spring:
+  main:
+    web-application-type: none
+  application:
+    name: odiya-batch
+  profiles:
+    active: local
+  config:
+    import:
+      - jpa.yml
+      - redis.yml
+      - kafka.yml
+      - logging.yml
+      - monitoring.yml
+  batch:
+    job:
+      name: ${job.name:NONE}
+    jdbc:
+      initialize-schema: never
+
+kakao:
+  mobility:
+    api-url: https://apis-navi.kakaomobility.com
+    rest-api-key: ${KAKAO_REST_API_KEY}
+    connect-timeout-seconds: 3
+    read-timeout-seconds: 3
+
+management:
+  health:
+    defaults:
+      enabled: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local, test
+  batch:
+    jdbc:
+      initialize-schema: always
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: qa
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prd
+
+springdoc:
+  api-docs:
+    enabled: false
