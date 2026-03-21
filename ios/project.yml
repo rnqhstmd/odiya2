@@ -27,6 +27,7 @@ targets:
         CURRENT_PROJECT_VERSION: "1"
         INFOPLIST_FILE: Odiya/Resources/Info.plist
         GENERATE_INFOPLIST_FILE: false
+        KAKAO_NATIVE_APP_KEY: ece6b8787b49709a2c667866573791a7
     dependencies:
       - package: KakaoSDK
         product: KakaoSDK

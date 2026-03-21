@@ -203,7 +203,7 @@
 		D6871B281DC27FDB727834CE /* Step4ConfirmView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Step4ConfirmView.swift; sourceTree = "<group>"; };
 		DDA4C1B29E3D7304150296FB /* Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
 		E3AE570952773ABAAB8AF624 /* OdiyaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdiyaApp.swift; sourceTree = "<group>"; };
-		EF7F9FE9ACBB7D24FDF360E2 /* Odiya.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Odiya.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF7F9FE9ACBB7D24FDF360E2 /* Odiya.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Odiya.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3416FCACA66C9F1067CB34F /* DayAppointmentListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayAppointmentListView.swift; sourceTree = "<group>"; };
 		F62672CFEE63A83BA95DA8DE /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		F6764AB71E5765A64125B52B /* DeparturePlaceManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeparturePlaceManagementView.swift; sourceTree = "<group>"; };
@@ -748,6 +748,8 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = E549C57AF5CE23792CE8EF78 /* Build configuration list for PBXProject "Odiya" */;
 			developmentRegion = en;
@@ -906,9 +908,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HRZXYW37RD;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Odiya/Resources/Info.plist;
+				KAKAO_NATIVE_APP_KEY = ece6b8787b49709a2c667866573791a7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1077,9 +1079,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HRZXYW37RD;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Odiya/Resources/Info.plist;
+				KAKAO_NATIVE_APP_KEY = ece6b8787b49709a2c667866573791a7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -92,7 +92,7 @@ struct DeparturePlaceSearchView: View {
                         Button {
                             guard let result = selectedResult else { return }
                             let place = DeparturePlace(
-                                id: 0,
+                                id: nil,
                                 label: result.name,
                                 address: result.address,
                                 latitude: result.latitude,

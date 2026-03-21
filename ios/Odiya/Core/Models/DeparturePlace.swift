@@ -1,7 +1,7 @@
 import Foundation
 
 struct DeparturePlace: Identifiable, Equatable, Hashable {
-    let id: Int64
+    let id: Int64?
     var label: String
     var address: String
     var latitude: Double
@@ -15,7 +15,7 @@ struct DeparturePlace: Identifiable, Equatable, Hashable {
         }
     }
 
-    init(id: Int64, label: String, address: String, latitude: Double, longitude: Double) {
+    init(id: Int64? = nil, label: String, address: String, latitude: Double, longitude: Double) {
         self.id = id
         self.label = label
         self.address = address
