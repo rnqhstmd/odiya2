@@ -25,7 +25,7 @@
 
 로컬 인프라 실행:
 ```bash
-cd docker && docker compose -f infra-compose.yml up -d
+cd backend/docker && docker compose -f infra-compose.yml up -d
 ```
 
 ---
