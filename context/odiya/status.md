@@ -48,7 +48,7 @@
 | 사용자 설정 (기본 이동수단, 주차버퍼, 여유시간) | ✅ | ✅ | 완료 — PR #14 iOS 연동 |
 | 약속 생성 시 소요시간 사전 계산 & 저장 | - | ✅ | 백엔드 완료 — `AppointmentFacade.create()` → `travelTimeService.calculateAndSave()` |
 | 역산 공식 (약속시간 - API소요시간 - 주차버퍼 - 여유시간) | - | ✅ | 백엔드 완료 — `TravelTimeService`, `TravelTime.departureAlertAt` |
-| 당일 자동차 재계산 (1시간 전 30분 간격 → 30분 전 10분 간격) | - | ⬜ | ⬜ 스케줄러 미구현 |
+| 당일 자동차 재계산 (1시간 전 30분 간격 → 30분 전 10분 간격) | - | ✅ | 백엔드 완료 — `TravelTimeRecalcScheduler` (odiya-batch) |
 | 5분+ 변동 시 참여자 알림 | - | ✅ | 백엔드 완료 — `TRAVEL_TIME_CHANGED` 알림 (5분 기준) |
 
 ---
@@ -228,17 +228,17 @@
 | Kafka 이벤트 (발행/소비/DLQ/재시도) | - (odiya-streamer) |
 | **소계** | **7** (+내부 서비스) |
 
-### Phase 6: 스케줄링 + 재계산 — `odiya-batch` 🔶 부분 완료
+### Phase 6: 스케줄링 + 재계산 — `odiya-batch` ✅ 완료
 
 **의존성:** 전체 (Phase 1~5 완료 후)
 
 | 작업 | 상태 |
 |------|------|
 | 출발 알림 스케줄러 (약속시간 - 이동시간 - 버퍼) | ✅ `DepartureReminderScheduler` |
-| 당일 자동차 이동시간 재계산 (30분/10분 간격) | ⬜ 미구현 |
+| 당일 자동차 이동시간 재계산 (30분/10분 간격) | ✅ `TravelTimeRecalcScheduler` |
 | 리마인더 알림 (약속 1시간 전) | ✅ `AppointmentReminderScheduler` |
 | 출발지 미등록 알림 (약속 2시간 전) | ✅ `DepartureLocationMissingScheduler` |
-| 약속 완료 상태 전이 (약속시간 경과 → COMPLETED) | ⬜ 미구현 |
+| 약속 완료 상태 전이 (약속시간 경과 → COMPLETED) | ✅ `AppointmentCompletionScheduler` |
 | 알림 정리 (오래된 알림 삭제) | ✅ `NotificationCleanupScheduler` |
 
 ---
@@ -247,8 +247,6 @@
 
 | 영역 | 항목 | 비고 |
 |------|------|------|
-| 백엔드 | 당일 자동차 이동시간 재계산 스케줄러 | Phase 6 — odiya-batch |
-| 백엔드 | 약속 완료 상태 전이 스케줄러 | Phase 6 — odiya-batch |
 | iOS | 카카오맵 SDK 지도 렌더링 | 지도 도메인 |
 | iOS | 외부 앱 연결 (카카오맵 > 네이버맵 > 애플맵) | 지도 도메인 |
 | iOS | 미수락 약속 카카오톡 공유 | 약속 관리, ShareApi |

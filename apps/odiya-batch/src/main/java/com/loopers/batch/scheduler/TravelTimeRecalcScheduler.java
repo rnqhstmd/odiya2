@@ -99,7 +99,7 @@ public class TravelTimeRecalcScheduler {
         int newDuration;
         try {
             newDuration = batchKakaoMobilityClient.calculateDuration(originLng, originLat, destLng, destLat);
-        } catch (Exception e) {
+        } catch (com.loopers.batch.client.KakaoMobilityApiException e) {
             log.warn("[TravelTimeRecalcScheduler] API 호출 실패, skip: ttId={}, error={}", ttId, e.getMessage());
             return;
         }
