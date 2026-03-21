@@ -1,40 +1,44 @@
-# Loopers Template (Spring + Java)
-Loopers 에서 제공하는 스프링 자바 템플릿 프로젝트입니다.
+# odiya (어디야)
+
+약속 시간 역산 출발 알림 + 재촉하기(Nudge)가 핵심인 커플/친구 약속 관리 앱.
+
+## 프로젝트 구조
+
+```
+odiya2/
+├── backend/          ← Spring Boot 백엔드 (멀티모듈 Gradle)
+│   ├── apps/         ← 실행 가능한 Spring Boot 애플리케이션
+│   │   ├── 📦 odiya-api       (REST API 서버)
+│   │   ├── 📦 odiya-batch     (스케줄러)
+│   │   └── 📦 odiya-streamer  (Kafka 컨슈머 + FCM)
+│   ├── modules/      ← 공유 인프라 모듈
+│   │   ├── 📦 jpa, 📦 redis, 📦 kafka
+│   ├── supports/     ← 유틸리티 모듈
+│   │   ├── 📦 jackson, 📦 monitoring, 📦 logging
+│   └── docker/       ← Docker Compose (MySQL, Redis, Kafka)
+├── ios/              ← SwiftUI iOS 앱
+├── context/          ← 도메인 컨텍스트 (용어, 아키텍처, 상태 추적)
+├── references/       ← 외부 API 규격 문서
+└── docs/             ← 가이드 문서
+```
 
 ## Getting Started
-현재 프로젝트 안정성 및 유지보수성 등을 위해 아래와 같은 장치를 운용하고 있습니다. 이에 아래 명령어를 통해 프로젝트의 기반을 설치해주세요.
-### Environment
-`local` 프로필로 동작할 수 있도록, 필요 인프라를 `docker-compose` 로 제공합니다.
+
+### 인프라 실행
 ```shell
-docker-compose -f ./docker/infra-compose.yml up
+docker-compose -f ./backend/docker/infra-compose.yml up -d
 ```
-### Monitoring
-`local` 환경에서 모니터링을 할 수 있도록, `docker-compose` 를 통해 `prometheus` 와 `grafana` 를 제공합니다.
 
-애플리케이션 실행 이후, **http://localhost:3000** 로 접속해, admin/admin 계정으로 로그인하여 확인하실 수 있습니다.
+### 백엔드 실행
 ```shell
-docker-compose -f ./docker/monitoring-compose.yml up
+cd backend && ./gradlew :apps:odiya-api:bootRun
 ```
 
-## About Multi-Module Project
-본 프로젝트는 멀티 모듈 프로젝트로 구성되어 있습니다. 각 모듈의 위계 및 역할을 분명히 하고, 아래와 같은 규칙을 적용합니다.
-
-- apps : 각 모듈은 실행가능한 **SpringBootApplication** 을 의미합니다.
-- modules : 특정 구현이나 도메인에 의존적이지 않고, reusable 한 configuration 을 원칙으로 합니다.
-- supports : logging, monitoring 과 같이 부가적인 기능을 지원하는 add-on 모듈입니다.
-
+### 모니터링
+```shell
+docker-compose -f ./backend/docker/monitoring-compose.yml up -d
 ```
-Root
-├── apps ( spring-applications )
-│   ├── 📦 odiya-api
-│   ├── 📦 odiya-batch
-│   └── 📦 odiya-streamer
-├── modules ( reusable-configurations )
-│   ├── 📦 jpa
-│   ├── 📦 redis
-│   └── 📦 kafka
-└── supports ( add-ons )
-    ├── 📦 jackson
-    ├── 📦 monitoring
-    └── 📦 logging
-```
+http://localhost:3000 로 접속 (admin/admin)
+
+### iOS
+Xcode에서 `ios/Odiya.xcodeproj` 열기 → iPhone 시뮬레이터 선택 → Cmd+R
