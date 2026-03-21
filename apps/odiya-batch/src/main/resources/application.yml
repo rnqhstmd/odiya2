@@ -18,6 +18,13 @@ spring:
     jdbc:
       initialize-schema: never
 
+kakao:
+  mobility:
+    api-url: https://apis-navi.kakaomobility.com
+    rest-api-key: ${KAKAO_MOBILITY_REST_API_KEY:}
+    connect-timeout-seconds: 3
+    read-timeout-seconds: 3
+
 management:
   health:
     defaults:
