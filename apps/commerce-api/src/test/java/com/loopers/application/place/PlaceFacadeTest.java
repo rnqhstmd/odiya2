@@ -18,9 +18,12 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class PlaceFacadeTest {
@@ -154,6 +157,64 @@ class PlaceFacadeTest {
             // assert
             assertThat(cacheResult.result().places()).isEmpty();
             assertThat(cacheResult.result().hasNext()).isFalse();
+        }
+
+        @DisplayName("캐시히트시 API를 호출하지않는다.")
+        @Test
+        void doesNotCallApi_whenCacheHit() {
+            // arrange
+            PlaceSearchResult cached = new PlaceSearchResult(
+                List.of(new PlaceInfo("1", "강남역", "주소", "도로명주소", "카테고리", 37.4979, 127.0276)),
+                false);
+            given(placeCacheRepository.find(anyString(), anyInt(), anyInt()))
+                .willReturn(Optional.of(cached));
+
+            // act
+            PlaceCacheResult cacheResult = placeFacade.searchPlaces("강남", 1, 5);
+
+            // assert
+            assertThat(cacheResult.result().places()).hasSize(1);
+            assertThat(cacheResult.cacheHit()).isTrue();
+            verify(kakaoLocalApiClient, never()).searchByKeyword(anyString(), anyInt(), anyInt());
+        }
+
+        @DisplayName("캐시미스시 API호출후 캐시에 저장한다.")
+        @Test
+        void callsApiAndSavesToCache_whenCacheMiss() {
+            // arrange
+            given(placeCacheRepository.find(anyString(), anyInt(), anyInt()))
+                .willReturn(Optional.empty());
+            KakaoLocalResponse response = makeResponse(List.of(
+                makeDocument("1", "강남역", "127.0276", "37.4979")
+            ), true);
+            given(kakaoLocalApiClient.searchByKeyword(anyString(), anyInt(), anyInt()))
+                .willReturn(response);
+
+            // act
+            PlaceCacheResult cacheResult = placeFacade.searchPlaces("강남", 1, 5);
+
+            // assert
+            assertThat(cacheResult.result().places()).hasSize(1);
+            assertThat(cacheResult.cacheHit()).isFalse();
+            verify(kakaoLocalApiClient).searchByKeyword(anyString(), anyInt(), anyInt());
+            verify(placeCacheRepository).save(anyString(), anyInt(), anyInt(), any());
+        }
+
+        @DisplayName("캐시히트시 cacheHit이 true이다.")
+        @Test
+        void cacheHitIsTrue_whenCacheHit() {
+            // arrange
+            PlaceSearchResult cached = new PlaceSearchResult(
+                List.of(new PlaceInfo("1", "강남역", "주소", "도로명주소", "카테고리", 37.4979, 127.0276)),
+                true);
+            given(placeCacheRepository.find(anyString(), anyInt(), anyInt()))
+                .willReturn(Optional.of(cached));
+
+            // act
+            PlaceCacheResult cacheResult = placeFacade.searchPlaces("강남", 1, 5);
+
+            // assert
+            assertThat(cacheResult.cacheHit()).isTrue();
         }
     }
 }

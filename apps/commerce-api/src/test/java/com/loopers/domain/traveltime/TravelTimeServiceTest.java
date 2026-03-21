@@ -25,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -292,6 +294,161 @@ class TravelTimeServiceTest {
             assertThat(result.getDurationMinutes()).isEqualTo(30);
             ZonedDateTime expected = participant.getAppointment().getDateTime().minusMinutes(35);
             assertThat(result.getDepartureAlertAt()).isEqualToIgnoringNanos(expected);
+        }
+
+        @DisplayName("캐시히트시 외부API를 호출하지않는다.")
+        @Test
+        void doesNotCallExternalApi_whenCacheHit() {
+            // arrange
+            AppointmentParticipant participant = makeParticipant(
+                TransportType.TRANSIT, 37.4979, 127.0276, 37.5665, 126.9780);
+
+            given(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
+                .willReturn(Optional.of(25));
+            given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
+            given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
+            given(travelTimeRepository.save(any())).willAnswer(inv -> inv.getArgument(0));
+
+            // act
+            TravelTime result = travelTimeService.calculateAndSave(participant);
+
+            // assert
+            assertThat(result).isNotNull();
+            assertThat(result.getDurationMinutes()).isEqualTo(25);
+            verify(kakaoMobilityApiClient, never()).calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+            verify(odsayApiClient, never()).calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+        }
+
+        @DisplayName("캐시미스시 외부API를 호출하고 캐시에 저장한다.")
+        @Test
+        void callsExternalApiAndSavesToCache_whenCacheMiss() {
+            // arrange
+            AppointmentParticipant participant = makeParticipant(
+                TransportType.TRANSIT, 37.4979, 127.0276, 37.5665, 126.9780);
+
+            given(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
+                .willReturn(Optional.empty());
+            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+                .willReturn(40);
+            given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
+            given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
+            given(travelTimeRepository.save(any())).willAnswer(inv -> inv.getArgument(0));
+
+            // act
+            TravelTime result = travelTimeService.calculateAndSave(participant);
+
+            // assert
+            assertThat(result).isNotNull();
+            assertThat(result.getDurationMinutes()).isEqualTo(40);
+            verify(odsayApiClient).calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+            verify(travelTimeCacheRepository).save(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any(), eq(40));
+        }
+
+        @DisplayName("외부API실패시 Haversine fallback을 사용한다.")
+        @Test
+        void usesHaversineFallback_whenExternalApiFails() {
+            // arrange
+            AppointmentParticipant participant = makeParticipant(
+                TransportType.TRANSIT, 37.4979, 127.0276, 37.5665, 126.9780);
+
+            given(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
+                .willReturn(Optional.empty());
+            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+                .willThrow(new RuntimeException("API 장애"));
+            given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
+            given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
+            given(travelTimeRepository.save(any())).willAnswer(inv -> inv.getArgument(0));
+
+            // act
+            TravelTime result = travelTimeService.calculateAndSave(participant);
+
+            // assert
+            assertThat(result).isNotNull();
+            assertThat(result.getDurationMinutes()).isGreaterThan(0);
+            assertThat(result.isFallback()).isTrue();
+        }
+
+        @DisplayName("fallback결과는 캐시하지않는다.")
+        @Test
+        void doesNotCacheFallbackResult() {
+            // arrange
+            AppointmentParticipant participant = makeParticipant(
+                TransportType.TRANSIT, 37.4979, 127.0276, 37.5665, 126.9780);
+
+            given(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
+                .willReturn(Optional.empty());
+            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+                .willThrow(new RuntimeException("API 장애"));
+            given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
+            given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
+            given(travelTimeRepository.save(any())).willAnswer(inv -> inv.getArgument(0));
+
+            // act
+            travelTimeService.calculateAndSave(participant);
+
+            // assert: fallback 결과는 캐시에 저장하지 않음
+            verify(travelTimeCacheRepository, never()).save(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any(), anyInt());
+        }
+
+        @DisplayName("fallback시 isFallback이 true이다.")
+        @Test
+        void isFallbackIsTrue_whenFallback() {
+            // arrange
+            AppointmentParticipant participant = makeParticipant(
+                TransportType.CAR_PARKING, 37.4979, 127.0276, 37.5665, 126.9780);
+
+            given(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
+                .willReturn(Optional.empty());
+            given(kakaoMobilityApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+                .willThrow(new RuntimeException("API 장애"));
+            given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
+            given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
+            given(travelTimeRepository.save(any())).willAnswer(inv -> inv.getArgument(0));
+
+            // act
+            TravelTime result = travelTimeService.calculateAndSave(participant);
+
+            // assert
+            assertThat(result.isFallback()).isTrue();
+        }
+
+        @DisplayName("출발지가 null이면 null을 반환한다.")
+        @Test
+        void returnsNull_whenDeparturePlaceIsNull_cache() {
+            // arrange
+            User user = User.create(1L, "유저", "https://example.com/img.jpg");
+            Appointment appointment = Appointment.create(
+                user, "약속", "강남역", "서울 강남구", 37.4979, 127.0276,
+                ZonedDateTime.now().plusDays(1));
+            AppointmentParticipant participant = AppointmentParticipant.create(
+                appointment, user, ParticipantStatus.ACCEPTED, TransportType.TRANSIT, null);
+
+            // act
+            TravelTime result = travelTimeService.calculateAndSave(participant);
+
+            // assert
+            assertThat(result).isNull();
+            verify(travelTimeCacheRepository, never()).find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any());
+        }
+
+        @DisplayName("50m이내면 0분을 저장한다.")
+        @Test
+        void savesZeroMinutes_whenWithin50Meters() {
+            // arrange: 동일 좌표 → 거리 0m
+            AppointmentParticipant participant = makeParticipant(
+                TransportType.TRANSIT, 37.4979, 127.0276, 37.4979, 127.0276);
+
+            given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
+            given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
+            given(travelTimeRepository.save(any())).willAnswer(inv -> inv.getArgument(0));
+
+            // act
+            TravelTime result = travelTimeService.calculateAndSave(participant);
+
+            // assert
+            assertThat(result).isNotNull();
+            assertThat(result.getDurationMinutes()).isEqualTo(0);
+            verify(travelTimeCacheRepository, never()).find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any());
         }
     }
 }
