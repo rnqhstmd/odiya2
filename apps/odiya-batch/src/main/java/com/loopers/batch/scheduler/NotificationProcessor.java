@@ -47,6 +47,14 @@ public class NotificationProcessor {
         publishNotification(receiverId, appointmentId, "DEPARTURE_LOCATION_MISSING", appointmentName, "출발지를 등록해주세요! 약속 2시간 전입니다.");
     }
 
+    @Transactional
+    public void processTravelTimeChanged(Long receiverId, Long appointmentId,
+                                          String appointmentName, int diffMinutes) {
+        publishNotification(receiverId, appointmentId, "TRAVEL_TIME_CHANGED",
+            appointmentName + " 이동시간이 변경되었어요",
+            "이동시간이 " + diffMinutes + "분 변경되었습니다.");
+    }
+
     private void publishNotification(Long receiverId, Long appointmentId, String type, String title, String body) {
         Integer count = jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM notifications WHERE receiver_id = ? AND type = ? AND reference_id = ? AND status IN ('SENT', 'PENDING')",

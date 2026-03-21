@@ -9,6 +9,9 @@ dependencies {
 
     // batch
     implementation("org.springframework.boot:spring-boot-starter-batch")
+
+    // web (RestClient for Kakao Mobility API)
+    implementation("org.springframework:spring-web")
     testImplementation("org.springframework.batch:spring-batch-test")
 
     // querydsl
