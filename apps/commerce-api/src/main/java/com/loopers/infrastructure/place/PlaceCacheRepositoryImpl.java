@@ -73,7 +73,7 @@ public class PlaceCacheRepositoryImpl implements PlaceCacheRepository {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(keyword.getBytes(StandardCharsets.UTF_8));
             StringBuilder hex = new StringBuilder();
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 8; i++) {
                 hex.append(String.format("%02x", hash[i]));
             }
             return hex.toString();

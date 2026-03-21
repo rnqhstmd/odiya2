@@ -230,14 +230,22 @@ public class AppointmentFacade {
                 }
 
                 if (p.getDeparturePlace() != null) {
-                    // Evict cache on coordinate change
+                    // Evict cache on coordinate or time change
                     if (coordChanged) {
                         try {
                             travelTimeCacheRepository.evict(
                                 p.getDeparturePlace().getLatitude(), p.getDeparturePlace().getLongitude(),
                                 oldLat, oldLng, p.getTransportType());
                         } catch (Exception e) {
-                            log.warn("이동시간 캐시 삭제 실패: participantId={}, error={}", p.getId(), e.getMessage(), e);
+                            log.warn("이동시간 캐시 삭제 실패 (좌표 변경): participantId={}, error={}", p.getId(), e.getMessage(), e);
+                        }
+                    } else if (timeChanged) {
+                        try {
+                            travelTimeCacheRepository.evict(
+                                p.getDeparturePlace().getLatitude(), p.getDeparturePlace().getLongitude(),
+                                appointment.getLatitude(), appointment.getLongitude(), p.getTransportType());
+                        } catch (Exception e) {
+                            log.warn("이동시간 캐시 삭제 실패 (시간 변경): participantId={}, error={}", p.getId(), e.getMessage(), e);
                         }
                     }
 
