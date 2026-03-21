@@ -28,14 +28,14 @@
 ```
 odiya2/
 ├── apps/
-│   ├── commerce-api          ← REST API 서버 (port 8080)
+│   ├── odiya-api          ← REST API 서버 (port 8080)
 │   │   └── interfaces/api/   ← Controller, DTO, ApiResponse
 │   │   └── application/      ← Facade (오케스트레이션)
 │   │   └── domain/           ← Service, Entity, Repository 인터페이스
 │   │   └── infrastructure/   ← Repository 구현체, 외부 API 클라이언트
 │   │   └── config/           ← Security, Swagger
-│   ├── commerce-batch        ← Spring Batch (스케줄 작업)
-│   └── commerce-streamer     ← Kafka 컨슈머
+│   ├── odiya-batch        ← Spring Batch (스케줄 작업)
+│   └── odiya-streamer     ← Kafka 컨슈머
 ├── modules/
 │   ├── jpa                   ← MySQL + Hibernate + QueryDSL + BaseEntity
 │   ├── redis                 ← Master/Replica Redis + Lettuce
@@ -46,7 +46,7 @@ odiya2/
     └── monitoring            ← Prometheus + 분산 추적
 ```
 
-### 레이어 구조 (commerce-api)
+### 레이어 구조 (odiya-api)
 
 ```
 Controller (@RestController)

@@ -14,7 +14,7 @@ spring:
   main:
     web-application-type: servlet
   application:
-    name: commerce-streamer
+    name: odiya-streamer
   profiles:
     active: local
   config:

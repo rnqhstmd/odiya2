@@ -26,9 +26,9 @@ docker-compose -f ./docker/monitoring-compose.yml up
 ```
 Root
 ├── apps ( spring-applications )
-│   ├── 📦 commerce-api
-│   ├── 📦 commerce-batch
-│   └── 📦 commerce-streamer
+│   ├── 📦 odiya-api
+│   ├── 📦 odiya-batch
+│   └── 📦 odiya-streamer
 ├── modules ( reusable-configurations )
 │   ├── 📦 jpa
 │   ├── 📦 redis

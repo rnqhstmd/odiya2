@@ -1,9 +1,9 @@
 rootProject.name = "odiya"
 
 include(
-    ":apps:commerce-api",
-    ":apps:commerce-streamer",
-    ":apps:commerce-batch",
+    ":apps:odiya-api",
+    ":apps:odiya-streamer",
+    ":apps:odiya-batch",
     ":modules:jpa",
     ":modules:redis",
     ":modules:kafka",

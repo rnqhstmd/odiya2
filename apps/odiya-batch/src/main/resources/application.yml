@@ -2,7 +2,7 @@ spring:
   main:
     web-application-type: none
   application:
-    name: commerce-batch
+    name: odiya-batch
   profiles:
     active: local
   config:
