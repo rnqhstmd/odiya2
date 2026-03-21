@@ -24,10 +24,10 @@ struct AppointmentCardView: View {
                 Label("임박", systemImage: "clock.fill")
                     .font(.caption)
                     .fontWeight(.semibold)
-                    .foregroundStyle(OdiyaColors.primary)
+                    .foregroundStyle(.white)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
-                    .background(OdiyaColors.odiya300.opacity(0.4))
+                    .background(OdiyaColors.primaryGradient)
                     .clipShape(Capsule())
                 Spacer()
                 CountdownView(targetDate: appointment.dateTime)
@@ -91,6 +91,7 @@ struct AppointmentCardView: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(OdiyaColors.odiya300, lineWidth: 1.5)
         )
+        .shadow(color: OdiyaColors.odiya500.opacity(0.15), radius: 12, x: 0, y: 4)
     }
 
     // MARK: - Regular Card

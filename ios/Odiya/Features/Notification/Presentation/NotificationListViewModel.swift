@@ -90,6 +90,38 @@ final class NotificationListViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Grouped Notifications
+
+    var groupedNotifications: [(key: String, notifications: [AppNotification])] {
+        let calendar = Calendar.current
+
+        let grouped = Dictionary(grouping: notifications) { notification -> String in
+            if calendar.isDateInToday(notification.createdAt) {
+                return "오늘"
+            } else if calendar.isDateInYesterday(notification.createdAt) {
+                return "어제"
+            } else {
+                let month = calendar.component(.month, from: notification.createdAt)
+                let day = calendar.component(.day, from: notification.createdAt)
+                return "\(month)월 \(day)일"
+            }
+        }
+
+        // Sort groups: 오늘 first, 어제 second, then by date descending
+        let order: [String: Int] = ["오늘": 0, "어제": 1]
+        return grouped
+            .map { (key: $0.key, notifications: $0.value) }
+            .sorted { lhs, rhs in
+                let lOrder = order[lhs.key] ?? 2
+                let rOrder = order[rhs.key] ?? 2
+                if lOrder != rOrder { return lOrder < rOrder }
+                // Both are date strings — compare by first notification's createdAt descending
+                guard let lDate = lhs.notifications.first?.createdAt,
+                      let rDate = rhs.notifications.first?.createdAt else { return false }
+                return lDate > rDate
+            }
+    }
+
     func acceptFriendRequest(id: String) {
         Task { await markAsRead(id: id) }
         // TODO: 친구 요청 수락 API 연동

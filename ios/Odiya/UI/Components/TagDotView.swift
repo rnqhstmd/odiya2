@@ -16,6 +16,7 @@ struct TagChipView: View {
 
     let tag: Tag
     let isSelected: Bool
+    var count: Int? = nil
     var action: (() -> Void)?
 
     var body: some View {
@@ -25,6 +26,11 @@ struct TagChipView: View {
                 Text(tag.name)
                     .font(.caption)
                     .fontWeight(isSelected ? .semibold : .regular)
+                if let count, count > 0 {
+                    Text("(\(count))")
+                        .font(.caption)
+                        .fontWeight(isSelected ? .semibold : .regular)
+                }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)

@@ -40,6 +40,19 @@ enum OdiyaColors {
     static let tagFriend = Color(hex: 0x5AC8FA)   // 친구 - 하늘
     static let tagLover  = Color(hex: 0xFF2D55)    // 연인 - 핑크
     static let tagFamily = Color(hex: 0x34C759)    // 가족 - 초록
+
+    // MARK: - 그라데이션
+    static let primaryGradient = LinearGradient(
+        colors: [odiya700, odiya500],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+
+    static let nudgeGradient = LinearGradient(
+        colors: [nudge, Color(hex: 0xE87BAD)],
+        startPoint: .leading,
+        endPoint: .trailing
+    )
 }
 
 // MARK: - Color Extension

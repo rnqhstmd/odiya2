@@ -9,14 +9,24 @@ struct SettingsView: View {
             // MARK: - 출발지 관리
             Section("출발지") {
                 NavigationLink(destination: DeparturePlaceManagementView(viewModel: viewModel)) {
-                    Label("출발지 관리", systemImage: "mappin.and.ellipse")
+                    VStack(alignment: .leading, spacing: 4) {
+                        Label("출발지 관리", systemImage: "mappin.and.ellipse")
+                        Text("자주 가는 출발지를 관리하세요")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
 
             // MARK: - 태그 관리
             Section("태그") {
                 NavigationLink(destination: TagManagementView(viewModel: viewModel)) {
-                    Label("태그 관리", systemImage: "tag.fill")
+                    VStack(alignment: .leading, spacing: 4) {
+                        Label("태그 관리", systemImage: "tag.fill")
+                        Text("모임을 구분할 태그를 관리하세요")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
 
@@ -34,6 +44,18 @@ struct SettingsView: View {
                 } label: {
                     Text("회원 탈퇴")
                 }
+            }
+
+            // MARK: - 앱 버전
+            Section {
+                HStack {
+                    Spacer()
+                    Text("오디야 v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                    Spacer()
+                }
+                .listRowBackground(Color.clear)
             }
         }
         .navigationTitle("설정")

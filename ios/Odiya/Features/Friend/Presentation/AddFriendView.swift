@@ -13,7 +13,7 @@ struct AddFriendView: View {
                     Section {
                         ForEach(viewModel.pendingRequests) { request in
                             HStack(spacing: 12) {
-                                ProfileImageView(imageUrl: request.profileImageUrl, size: 44)
+                                ProfileImageView(imageUrl: request.profileImageUrl, size: 44, nickname: request.nickname)
 
                                 Text(request.nickname)
                                     .font(.body)
@@ -69,7 +69,7 @@ struct AddFriendView: View {
                     } else {
                         ForEach(viewModel.searchResults) { user in
                             HStack(spacing: 12) {
-                                ProfileImageView(imageUrl: user.profileImageUrl, size: 44)
+                                ProfileImageView(imageUrl: user.profileImageUrl, size: 44, nickname: user.nickname)
 
                                 Text(user.nickname)
                                     .font(.body)
@@ -105,6 +105,75 @@ struct AddFriendView: View {
                     }
                 } header: {
                     Label("친구 검색", systemImage: "magnifyingglass")
+                }
+
+                // MARK: - QR 코드로 친구 추가
+                Section {
+                    VStack(spacing: 0) {
+                        // "또는" 구분선
+                        HStack(spacing: 12) {
+                            Rectangle()
+                                .fill(Color(.separator))
+                                .frame(height: 1)
+                            Text("또는")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Rectangle()
+                                .fill(Color(.separator))
+                                .frame(height: 1)
+                        }
+                        .padding(.vertical, 16)
+
+                        // QR 아이콘 + 텍스트
+                        VStack(spacing: 8) {
+                            Image(systemName: "qrcode")
+                                .font(.system(size: 48))
+                                .foregroundStyle(OdiyaColors.primary)
+
+                            Text("QR 코드로 친구 추가")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+
+                            Text("친구의 QR 코드를 스캔하거나 내 QR 코드를 보여주세요")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding(.vertical, 8)
+
+                        // 버튼 2개
+                        HStack(spacing: 12) {
+                            Button {
+                                // TODO: QR 스캔 화면 이동
+                            } label: {
+                                Text("스캔하기")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 12)
+                                    .background(OdiyaColors.primary)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                            }
+                            .buttonStyle(.plain)
+
+                            Button {
+                                // TODO: 내 QR 코드 표시 화면 이동
+                            } label: {
+                                Text("내 QR")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(OdiyaColors.primary)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 12)
+                                    .background(OdiyaColors.odiya100)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding(.top, 12)
+                        .padding(.bottom, 4)
+                    }
                 }
             }
             .navigationTitle("친구 추가")
