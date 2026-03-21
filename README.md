@@ -1,40 +1,130 @@
-# Loopers Template (Spring + Java)
-Loopers 에서 제공하는 스프링 자바 템플릿 프로젝트입니다.
+<p align="center">
+  <img src="https://img.shields.io/badge/iOS-16+-000000?style=for-the-badge&logo=apple&logoColor=white" />
+  <img src="https://img.shields.io/badge/Spring_Boot-3.4-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" />
+  <img src="https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" />
+  <img src="https://img.shields.io/badge/Swift-5.9-F05138?style=for-the-badge&logo=swift&logoColor=white" />
+</p>
 
-## Getting Started
-현재 프로젝트 안정성 및 유지보수성 등을 위해 아래와 같은 장치를 운용하고 있습니다. 이에 아래 명령어를 통해 프로젝트의 기반을 설치해주세요.
-### Environment
-`local` 프로필로 동작할 수 있도록, 필요 인프라를 `docker-compose` 로 제공합니다.
-```shell
-docker-compose -f ./docker/infra-compose.yml up
+# 어디야 (Odiya)
+
+> **"출발했어?" 카톡은 이제 그만.**
+>
+> 약속 시간을 역산해 출발 알림을 보내고, 친구에게 재촉(Nudge)까지 — 지각 없는 약속의 시작.
+
+---
+
+## 핵심 기능
+
+| 기능 | 설명 |
+|------|------|
+| **출발 알림** | 실시간 교통 정보 기반으로 이동시간을 계산하고, 출발해야 할 시점에 푸시 알림 |
+| **재촉하기 (Nudge)** | "지금 어디야?" 카톡 대신 앱 내에서 한 번의 탭으로 친구를 재촉 |
+| **약속 관리** | 약속 생성 · 참여 · 장소 지정을 간편하게 |
+| **친구 관리** | 카카오 로그인 기반 친구 추가 및 그룹 관리 |
+| **캘린더** | 내 약속 일정을 한눈에 확인 |
+
+## 아키텍처
+
 ```
-### Monitoring
-`local` 환경에서 모니터링을 할 수 있도록, `docker-compose` 를 통해 `prometheus` 와 `grafana` 를 제공합니다.
-
-애플리케이션 실행 이후, **http://localhost:3000** 로 접속해, admin/admin 계정으로 로그인하여 확인하실 수 있습니다.
-```shell
-docker-compose -f ./docker/monitoring-compose.yml up
+┌─────────────────────────────────────────────────────────┐
+│                      iOS Client                         │
+│               Swift 5.9 · SwiftUI · iOS 16+             │
+│                    Kakao SDK 연동                        │
+└────────────────────────┬────────────────────────────────┘
+                         │ REST API
+┌────────────────────────▼────────────────────────────────┐
+│                   Spring Boot Backend                    │
+│                                                         │
+│  ┌─────────────┐  ┌──────────────┐  ┌────────────────┐ │
+│  │ commerce-api │  │ commerce-batch│  │commerce-stream.│ │
+│  │  (REST API)  │  │  (스케줄링)   │  │  (이벤트 처리) │ │
+│  └──────┬───────┘  └──────┬───────┘  └───────┬────────┘ │
+│         │                 │                  │          │
+│  ┌──────▼─────────────────▼──────────────────▼────────┐ │
+│  │           Modules (JPA · Redis · Kafka)             │ │
+│  └────────────────────────────────────────────────────┘ │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │        Supports (Jackson · Logging · Monitoring)    │ │
+│  └────────────────────────────────────────────────────┘ │
+└─────────────────────────┬───────────────────────────────┘
+                          │
+          ┌───────────────┼───────────────┐
+          ▼               ▼               ▼
+       MySQL           Redis        Kakao / ODsay API
+                     (캐시/세션)     (지도 · 이동시간)
 ```
 
-## About Multi-Module Project
-본 프로젝트는 멀티 모듈 프로젝트로 구성되어 있습니다. 각 모듈의 위계 및 역할을 분명히 하고, 아래와 같은 규칙을 적용합니다.
-
-- apps : 각 모듈은 실행가능한 **SpringBootApplication** 을 의미합니다.
-- modules : 특정 구현이나 도메인에 의존적이지 않고, reusable 한 configuration 을 원칙으로 합니다.
-- supports : logging, monitoring 과 같이 부가적인 기능을 지원하는 add-on 모듈입니다.
+## 프로젝트 구조
 
 ```
-Root
-├── apps ( spring-applications )
-│   ├── 📦 commerce-api
-│   ├── 📦 commerce-batch
-│   └── 📦 commerce-streamer
-├── modules ( reusable-configurations )
-│   ├── 📦 jpa
-│   ├── 📦 redis
-│   └── 📦 kafka
-└── supports ( add-ons )
-    ├── 📦 jackson
-    ├── 📦 monitoring
-    └── 📦 logging
+odiya/
+├── ios/                          # iOS 앱 (SwiftUI)
+│   ├── Odiya/
+│   ├── OdiyaTests/
+│   └── Package.swift
+│
+├── apps/                         # Spring Boot 실행 모듈
+│   ├── commerce-api              # REST API 서버
+│   ├── commerce-batch            # 배치 처리
+│   └── commerce-streamer         # 이벤트 스트리밍
+│
+├── modules/                      # 재사용 가능한 인프라 모듈
+│   ├── jpa                       # JPA 설정 + 엔티티
+│   ├── redis                     # Redis 캐싱
+│   └── kafka                     # Kafka 메시징
+│
+├── supports/                     # 부가 기능 모듈
+│   ├── jackson                   # JSON 직렬화
+│   ├── logging                   # 로깅
+│   └── monitoring                # Prometheus + Grafana
+│
+└── docker/                       # 로컬 인프라
+    ├── infra-compose.yml
+    └── monitoring-compose.yml
 ```
+
+## 시작하기
+
+### 사전 요구사항
+
+- Java 21+
+- Docker & Docker Compose
+- Xcode 15+ (iOS 개발 시)
+
+### Backend
+
+```bash
+# 1. 인프라 실행 (MySQL, Redis, Kafka)
+docker-compose -f ./docker/infra-compose.yml up -d
+
+# 2. API 서버 실행
+./gradlew :apps:commerce-api:bootRun --args='--spring.profiles.active=local'
+```
+
+### iOS
+
+Xcode에서 `ios/Odiya.xcodeproj`를 열고 빌드합니다.
+
+### 모니터링
+
+```bash
+docker-compose -f ./docker/monitoring-compose.yml up -d
+```
+
+Grafana: [http://localhost:3000](http://localhost:3000) (admin / admin)
+
+## 기술 스택
+
+| Layer | Stack |
+|-------|-------|
+| **iOS** | Swift 5.9 · SwiftUI · Kakao SDK |
+| **Backend** | Spring Boot 3.4 · Java 21 · Spring Cloud |
+| **Database** | MySQL · Redis |
+| **Messaging** | Kafka |
+| **Infra** | Docker Compose · Prometheus · Grafana |
+| **Testing** | JUnit 5 · Testcontainers · Mockito |
+| **External API** | Kakao Map · ODsay (대중교통 이동시간) |
+
+## 라이선스
+
+이 프로젝트에 포함된 라이선스 정보는 [LICENSE](LICENSE) 파일을 참조하세요.
