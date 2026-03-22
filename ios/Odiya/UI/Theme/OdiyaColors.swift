@@ -53,6 +53,18 @@ enum OdiyaColors {
         startPoint: .leading,
         endPoint: .trailing
     )
+
+    static let loginBackgroundGradient = LinearGradient(
+        colors: [Color(hex: 0xF8F3FC), Color(hex: 0xE8D5F5), Color(hex: 0xF0E6F7)],
+        startPoint: .top,
+        endPoint: .bottom
+    )
+
+    static let initialAvatarGradient = LinearGradient(
+        colors: [odiya500, odiya300],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
 }
 
 // MARK: - Color Extension

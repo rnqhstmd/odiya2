@@ -95,29 +95,31 @@ final class NotificationListViewModel: ObservableObject {
     var groupedNotifications: [(key: String, notifications: [AppNotification])] {
         let calendar = Calendar.current
 
-        let grouped = Dictionary(grouping: notifications) { notification -> String in
-            if calendar.isDateInToday(notification.createdAt) {
-                return "오늘"
-            } else if calendar.isDateInYesterday(notification.createdAt) {
-                return "어제"
-            } else {
-                let month = calendar.component(.month, from: notification.createdAt)
-                let day = calendar.component(.day, from: notification.createdAt)
-                return "\(month)월 \(day)일"
-            }
+        // 날짜의 시작(startOfDay)을 그룹 키로 사용하여 연도 간 충돌 방지
+        let grouped = Dictionary(grouping: notifications) { notification -> Date in
+            calendar.startOfDay(for: notification.createdAt)
         }
 
-        // Sort groups: 오늘 first, 어제 second, then by date descending
-        let order: [String: Int] = ["오늘": 0, "어제": 1]
         return grouped
-            .map { (key: $0.key, notifications: $0.value) }
+            .map { date, items -> (key: String, notifications: [AppNotification]) in
+                let sortedItems = items.sorted { $0.createdAt > $1.createdAt }
+                let label: String
+                if calendar.isDateInToday(date) {
+                    label = "오늘"
+                } else if calendar.isDateInYesterday(date) {
+                    label = "어제"
+                } else {
+                    let year = calendar.component(.year, from: date)
+                    let month = calendar.component(.month, from: date)
+                    let day = calendar.component(.day, from: date)
+                    let currentYear = calendar.component(.year, from: Date())
+                    label = year == currentYear ? "\(month)월 \(day)일" : "\(year)년 \(month)월 \(day)일"
+                }
+                return (key: label, notifications: sortedItems)
+            }
             .sorted { lhs, rhs in
-                let lOrder = order[lhs.key] ?? 2
-                let rOrder = order[rhs.key] ?? 2
-                if lOrder != rOrder { return lOrder < rOrder }
-                // Both are date strings — compare by first notification's createdAt descending
-                guard let lDate = lhs.notifications.first?.createdAt,
-                      let rDate = rhs.notifications.first?.createdAt else { return false }
+                let lDate = lhs.notifications.first?.createdAt ?? .distantPast
+                let rDate = rhs.notifications.first?.createdAt ?? .distantPast
                 return lDate > rDate
             }
     }

@@ -356,15 +356,19 @@ private struct DepartureCountdownBannerText: View {
 
     let targetDate: Date
     @State private var minutesRemaining: Int = 0
-    @State private var timer: Timer? = nil
+    private let timer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     var body: some View {
         Text(countdownLabel)
             .font(.caption)
             .foregroundStyle(.white.opacity(0.85))
             .monospacedDigit()
-            .onAppear { startTimer() }
-            .onDisappear { timer?.invalidate() }
+            .onReceive(timer) { _ in
+                updateRemaining()
+            }
+            .onAppear {
+                updateRemaining()
+            }
     }
 
     private var countdownLabel: String {
@@ -376,13 +380,6 @@ private struct DepartureCountdownBannerText: View {
             let hours = minutesRemaining / 60
             let mins = minutesRemaining % 60
             return "\(hours)시간 \(mins)분 남음"
-        }
-    }
-
-    private func startTimer() {
-        updateRemaining()
-        timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
-            updateRemaining()
         }
     }
 

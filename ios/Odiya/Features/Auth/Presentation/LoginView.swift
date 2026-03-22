@@ -7,15 +7,7 @@ struct LoginView: View {
     var body: some View {
         ZStack {
             // 배경 그라데이션
-            LinearGradient(
-                colors: [
-                    Color(hex: 0xF8F3FC),
-                    Color(hex: 0xE8D5F5),
-                    Color(hex: 0xF0E6F7)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
+            OdiyaColors.loginBackgroundGradient
             .ignoresSafeArea()
 
             VStack(spacing: 32) {

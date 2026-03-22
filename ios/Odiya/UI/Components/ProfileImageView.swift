@@ -27,11 +27,7 @@ struct ProfileImageView: View {
     private var placeholderView: some View {
         if let nickname, let initial = nickname.first {
             ZStack {
-                LinearGradient(
-                    colors: [OdiyaColors.odiya500, OdiyaColors.odiya300],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+                OdiyaColors.initialAvatarGradient
                 Text(String(initial))
                     .font(.system(size: size * 0.4, weight: .bold))
                     .foregroundStyle(.white)
