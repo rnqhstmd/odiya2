@@ -18,19 +18,22 @@ struct Friend: Identifiable, Equatable, Hashable {
     var profileImageUrl: String?
     var tag: Tag
     var status: FriendshipStatus
+    var commonAppointmentCount: Int?
 
     init(
         id: Int64,
         nickname: String,
         profileImageUrl: String? = nil,
         tag: Tag = .friend,
-        status: FriendshipStatus = .accepted
+        status: FriendshipStatus = .accepted,
+        commonAppointmentCount: Int? = nil
     ) {
         self.id = id
         self.nickname = nickname
         self.profileImageUrl = profileImageUrl
         self.tag = tag
         self.status = status
+        self.commonAppointmentCount = commonAppointmentCount
     }
 
     // MARK: - DTO 변환
@@ -41,6 +44,7 @@ struct Friend: Identifiable, Equatable, Hashable {
         self.profileImageUrl = dto.profileImageUrl
         self.tag = dto.tag.map { Tag(from: $0) } ?? .friend
         self.status = FriendshipStatus(rawValue: dto.status) ?? .accepted
+        self.commonAppointmentCount = nil
     }
 }
 

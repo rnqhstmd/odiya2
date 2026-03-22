@@ -19,23 +19,33 @@ struct NotificationListView: View {
                     )
                 } else {
                     List {
-                        ForEach(viewModel.notifications) { notification in
-                            notificationRow(notification)
-                                .listRowInsets(EdgeInsets())
-                                .listRowSeparator(.hidden)
-                                .listRowBackground(
-                                    notification.isRead
-                                        ? Color(.systemBackground)
-                                        : OdiyaColors.odiya50
-                                )
-                                .onTapGesture {
-                                    Task { await viewModel.markAsRead(id: notification.id) }
+                        ForEach(viewModel.groupedNotifications, id: \.key) { group in
+                            Section {
+                                ForEach(group.notifications) { notification in
+                                    notificationRow(notification)
+                                        .listRowInsets(EdgeInsets())
+                                        .listRowSeparator(.hidden)
+                                        .listRowBackground(
+                                            notification.isRead
+                                                ? Color(.systemBackground)
+                                                : OdiyaColors.odiya50
+                                        )
+                                        .onTapGesture {
+                                            Task { await viewModel.markAsRead(id: notification.id) }
+                                        }
+                                        .onAppear {
+                                            if notification.id == viewModel.notifications.last?.id {
+                                                Task { await viewModel.loadMoreIfNeeded() }
+                                            }
+                                        }
                                 }
-                                .onAppear {
-                                    if notification.id == viewModel.notifications.last?.id {
-                                        Task { await viewModel.loadMoreIfNeeded() }
-                                    }
-                                }
+                            } header: {
+                                Text(group.key)
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(OdiyaColors.odiya500)
+                                    .textCase(nil)
+                            }
                         }
                     }
                     .listStyle(.plain)
@@ -73,9 +83,9 @@ struct NotificationListView: View {
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: notification.type.iconName)
                     .font(.system(size: 20))
-                    .foregroundColor(OdiyaColors.primary)
+                    .foregroundColor(.white)
                     .frame(width: 36, height: 36)
-                    .background(OdiyaColors.odiya100)
+                    .background(notificationIconGradient(for: notification.type))
                     .clipShape(Circle())
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -113,6 +123,21 @@ struct NotificationListView: View {
 
             Divider()
                 .padding(.leading, 64)
+        }
+    }
+
+    // MARK: - Icon Gradient
+
+    private func notificationIconGradient(for type: NotificationType) -> LinearGradient {
+        switch type {
+        case .nudge:
+            return OdiyaColors.nudgeGradient
+        case .appointmentCancelled:
+            return LinearGradient(colors: [OdiyaColors.danger, OdiyaColors.danger.opacity(0.7)], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case .friendRequest, .friendAccepted:
+            return LinearGradient(colors: [Color(hex: 0x5AC8FA), Color(hex: 0x007AFF)], startPoint: .topLeading, endPoint: .bottomTrailing)
+        default:
+            return OdiyaColors.primaryGradient
         }
     }
 

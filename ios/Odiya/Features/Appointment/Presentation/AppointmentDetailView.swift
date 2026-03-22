@@ -71,6 +71,9 @@ struct AppointmentDetailView: View {
 
     private var contentSection: some View {
         VStack(alignment: .leading, spacing: 24) {
+            if viewModel.appointment.isImminent {
+                countdownBanner
+            }
             basicInfoSection
             Divider()
             transportSection
@@ -80,6 +83,30 @@ struct AppointmentDetailView: View {
             actionButtons
         }
         .padding(20)
+    }
+
+    // MARK: - Countdown Banner
+
+    private var countdownBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "clock.fill")
+                .font(.title2)
+                .foregroundStyle(.white)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("약속 시간이 다가오고 있어요!")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+
+                DepartureCountdownBannerText(targetDate: viewModel.appointment.dateTime)
+            }
+
+            Spacer()
+        }
+        .padding(16)
+        .background(OdiyaColors.nudgeGradient)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 
     // MARK: - Basic Info
@@ -183,7 +210,7 @@ struct AppointmentDetailView: View {
 
     private func participantRow(_ participant: Participant) -> some View {
         HStack(spacing: 12) {
-            ProfileImageView(imageUrl: participant.profileImageUrl, size: 40)
+            ProfileImageView(imageUrl: participant.profileImageUrl, nickname: participant.nickname, size: 40)
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
@@ -320,6 +347,45 @@ struct AppointmentDetailView: View {
                     .foregroundStyle(.secondary)
             }
         }
+    }
+}
+
+// MARK: - Departure Countdown Banner Text
+
+private struct DepartureCountdownBannerText: View {
+
+    let targetDate: Date
+    @State private var minutesRemaining: Int = 0
+    private let timer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        Text(countdownLabel)
+            .font(.caption)
+            .foregroundStyle(.white.opacity(0.85))
+            .monospacedDigit()
+            .onReceive(timer) { _ in
+                updateRemaining()
+            }
+            .onAppear {
+                updateRemaining()
+            }
+    }
+
+    private var countdownLabel: String {
+        if minutesRemaining <= 0 {
+            return "지금 출발하세요!"
+        } else if minutesRemaining < 60 {
+            return "\(minutesRemaining)분 남음"
+        } else {
+            let hours = minutesRemaining / 60
+            let mins = minutesRemaining % 60
+            return "\(hours)시간 \(mins)분 남음"
+        }
+    }
+
+    private func updateRemaining() {
+        let minutes = Calendar.current.dateComponents([.minute], from: Date(), to: targetDate).minute ?? 0
+        minutesRemaining = max(0, minutes)
     }
 }
 

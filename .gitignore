@@ -55,3 +55,5 @@ ios/.build/
 ios/Package.resolved
 ios/.swiftpm/xcode/xcuserdata/**
 ios/Odiya.xcodeproj/xcuserdata/**
+.DS_Store
+.claude/

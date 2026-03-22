@@ -15,10 +15,10 @@ enum MockData {
     // MARK: - Friends
 
     static let friends: [Friend] = [
-        Friend(id: 1, nickname: "김민지", profileImageUrl: nil, tag: .lover, status: .accepted),
-        Friend(id: 2, nickname: "박서준", profileImageUrl: nil, tag: .friend, status: .accepted),
+        Friend(id: 1, nickname: "김민지", profileImageUrl: nil, tag: .lover, status: .accepted, commonAppointmentCount: 5),
+        Friend(id: 2, nickname: "박서준", profileImageUrl: nil, tag: .friend, status: .accepted, commonAppointmentCount: 3),
         Friend(id: 3, nickname: "이하늘", profileImageUrl: nil, tag: .friend, status: .accepted),
-        Friend(id: 4, nickname: "정우진", profileImageUrl: nil, tag: .family, status: .accepted),
+        Friend(id: 4, nickname: "정우진", profileImageUrl: nil, tag: .family, status: .accepted, commonAppointmentCount: 1),
         Friend(id: 5, nickname: "최지우", profileImageUrl: nil, tag: tags[3], status: .accepted),
     ]
 

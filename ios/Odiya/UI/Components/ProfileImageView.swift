@@ -4,6 +4,7 @@ struct ProfileImageView: View {
 
     let imageUrl: String?
     var size: CGFloat = 40
+    var nickname: String? = nil
 
     var body: some View {
         if let url = imageUrl, let imageURL = URL(string: url) {
@@ -22,11 +23,23 @@ struct ProfileImageView: View {
         }
     }
 
+    @ViewBuilder
     private var placeholderView: some View {
-        Image(systemName: "person.circle.fill")
-            .resizable()
-            .foregroundStyle(OdiyaColors.odiya300)
+        if let nickname, let initial = nickname.first {
+            ZStack {
+                OdiyaColors.initialAvatarGradient
+                Text(String(initial))
+                    .font(.system(size: size * 0.4, weight: .bold))
+                    .foregroundStyle(.white)
+            }
             .frame(width: size, height: size)
+            .clipShape(Circle())
+        } else {
+            Image(systemName: "person.circle.fill")
+                .resizable()
+                .foregroundStyle(OdiyaColors.odiya300)
+                .frame(width: size, height: size)
+        }
     }
 }
 
@@ -40,7 +53,7 @@ struct ParticipantStackView: View {
     var body: some View {
         HStack(spacing: -8) {
             ForEach(Array(participants.prefix(maxDisplay).enumerated()), id: \.element.id) { index, participant in
-                ProfileImageView(imageUrl: participant.profileImageUrl, size: imageSize)
+                ProfileImageView(imageUrl: participant.profileImageUrl, size: imageSize, nickname: participant.nickname)
                     .overlay(
                         Circle().stroke(Color(.systemBackground), lineWidth: 2)
                     )

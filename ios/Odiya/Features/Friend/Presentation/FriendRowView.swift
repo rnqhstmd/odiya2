@@ -10,11 +10,19 @@ struct FriendRowView: View {
         HStack(spacing: 12) {
             TagDotView(color: friend.tag.color, size: 10)
 
-            ProfileImageView(imageUrl: friend.profileImageUrl, size: 40)
+            ProfileImageView(imageUrl: friend.profileImageUrl, size: 40, nickname: friend.nickname)
 
-            Text(friend.nickname)
-                .font(.body)
-                .foregroundStyle(.primary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(friend.nickname)
+                    .font(.body)
+                    .foregroundStyle(.primary)
+
+                if let count = friend.commonAppointmentCount, count > 0 {
+                    Text("공통 약속 \(count)개")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
 
             Spacer()
 

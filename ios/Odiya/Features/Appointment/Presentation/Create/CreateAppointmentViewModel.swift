@@ -28,6 +28,7 @@ final class CreateAppointmentViewModel: ObservableObject {
     @Published var departurePlace: DeparturePlace? = nil
     @Published var showDeparturePlaceSearch: Bool = false
     @Published var departurePlaces: [DeparturePlace] = []
+    @Published var estimatedDuration: Int? = nil
 
     // MARK: - Alert
     @Published var showAlert: Bool = false

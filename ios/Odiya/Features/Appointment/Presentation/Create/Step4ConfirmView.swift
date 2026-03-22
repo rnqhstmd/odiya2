@@ -61,6 +61,20 @@ struct Step4ConfirmView: View {
                             }
                         }
                     }
+
+                    if let duration = viewModel.estimatedDuration {
+                        HStack(spacing: 6) {
+                            Image(systemName: viewModel.transportType.iconName)
+                                .font(.subheadline)
+                            Text("\(duration)분 소요 예상")
+                                .font(.subheadline)
+                        }
+                        .foregroundStyle(.secondary)
+                        .padding(12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(OdiyaColors.odiya50)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
                 }
 
                 // MARK: - 출발지
