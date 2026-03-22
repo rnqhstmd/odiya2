@@ -79,7 +79,7 @@ struct KakaoMapView: UIViewControllerRepresentable {
         let oldLat = vc.latitude ?? KakaoMapViewController.defaultLatitude
         let oldLon = vc.longitude ?? KakaoMapViewController.defaultLongitude
 
-        if abs(newLat - oldLat) > 0.00001 || abs(newLon - oldLon) > 0.00001 {
+        if abs(newLat - oldLat) > 0.00001 || abs(newLon - oldLon) > 0.00001 || vc.markerTitle != markerTitle {
             vc.updatePosition(latitude: newLat, longitude: newLon, title: markerTitle)
         }
     }
@@ -220,10 +220,12 @@ class KakaoMapViewController: UIViewController, MapControllerDelegate {
             symbol: UIImage(systemName: "mappin.circle.fill")?
                 .withTintColor(.systemPurple, renderingMode: .alwaysOriginal)
         )
-        let poiStyle = PoiStyle(styleID: "defaultMarker", styles: [
-            PerLevelPoiStyle(iconStyle: iconStyle, level: 0)
-        ])
-        manager.addPoiStyle(poiStyle)
+        if manager.getPoiStyle(styleID: "defaultMarker") == nil {
+            let poiStyle = PoiStyle(styleID: "defaultMarker", styles: [
+                PerLevelPoiStyle(iconStyle: iconStyle, level: 0)
+            ])
+            manager.addPoiStyle(poiStyle)
+        }
 
         let options = PoiOptions(styleID: "defaultMarker")
         let point = MapPoint(longitude: lon, latitude: lat)
