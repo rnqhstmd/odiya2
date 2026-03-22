@@ -79,7 +79,20 @@ struct DeparturePlaceSearchView: View {
                     .listStyle(.plain)
                 }
 
-                // 저장 옵션 + 완료 버튼
+                // 미니 지도 + 저장 옵션 + 완료 버튼
+                if let result = selectedResult {
+                    KakaoMapContainerView(
+                        latitude: result.latitude,
+                        longitude: result.longitude,
+                        height: 120,
+                        markerTitle: result.name,
+                        isScrollEnabled: false
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
+                }
+
                 if selectedResult != nil {
                     Divider()
                     VStack(spacing: 12) {
