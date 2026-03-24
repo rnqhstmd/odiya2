@@ -1,5 +1,8 @@
 import Foundation
+import UIKit
 import Combine
+import KakaoSDKShare
+import KakaoSDKTemplate
 
 @MainActor
 final class AppointmentDetailViewModel: ObservableObject {
@@ -85,17 +88,73 @@ final class AppointmentDetailViewModel: ObservableObject {
         }
     }
 
+    // MARK: - 외부 앱 길안내
+
     func openNavigation() {
         let lat = appointment.latitude
         let lng = appointment.longitude
-        let name = appointment.placeName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let urlString = "maps://?ll=\(lat),\(lng)&q=\(name)"
-        guard let url = URL(string: urlString) else { return }
-        print("[Navigation] 길찾기 열기: \(url)")
+        let name = appointment.placeName
+            .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+
+        // 우선순위: 카카오맵 > 네이버맵 > 애플맵
+        let candidates: [(scheme: String, urlString: String)] = [
+            ("kakaomap://", "kakaomap://route?sp=&ep=\(lat),\(lng)&by=CAR"),
+            ("nmap://", "nmap://route/car?dlat=\(lat)&dlng=\(lng)&dname=\(name)&appname=com.odiya"),
+            ("maps://", "maps://?daddr=\(lat),\(lng)&dirflg=d")
+        ]
+
+        for candidate in candidates {
+            guard let schemeURL = URL(string: candidate.scheme),
+                  let targetURL = URL(string: candidate.urlString) else { continue }
+
+            // 애플맵은 항상 열 수 있으므로 canOpenURL 체크 생략
+            if candidate.scheme == "maps://" || UIApplication.shared.canOpenURL(schemeURL) {
+                UIApplication.shared.open(targetURL)
+                return
+            }
+        }
     }
 
+    // MARK: - 카카오톡 공유
+
     func shareToKakao() {
-        // TODO: 카카오 SDK 연동
-        print("[KakaoShare] '\(appointment.name)' 약속 카톡 공유")
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "ko_KR")
+        dateFormatter.dateFormat = "M월 d일 (E) a h:mm"
+        let dateString = dateFormatter.string(from: appointment.dateTime)
+
+        let template = FeedTemplate(
+            content: Content(
+                title: appointment.name,
+                description: "\(dateString)\n\(appointment.placeName)",
+                imageUrl: URL(string: "https://odiya.app/og-image.png")!,
+                link: Link(
+                    iosExecutionParams: ["appointmentId": "\(appointment.id)"]
+                )
+            ),
+            buttons: [
+                Button(
+                    title: "약속 확인하기",
+                    link: Link(
+                        iosExecutionParams: ["appointmentId": "\(appointment.id)"]
+                    )
+                )
+            ]
+        )
+
+        guard ShareApi.isKakaoTalkSharingAvailable() else {
+            errorMessage = "카카오톡이 설치되어 있지 않습니다."
+            return
+        }
+
+        ShareApi.shared.shareDefault(templatable: template) { [weak self] sharingResult, error in
+            if let error {
+                self?.errorMessage = "공유에 실패했습니다: \(error.localizedDescription)"
+                return
+            }
+            if let url = sharingResult?.url {
+                UIApplication.shared.open(url)
+            }
+        }
     }
 }
