@@ -98,7 +98,7 @@ final class AppointmentDetailViewModel: ObservableObject {
 
         // 우선순위: 카카오맵 > 네이버맵 > 애플맵
         let candidates: [(scheme: String, urlString: String)] = [
-            ("kakaomap://", "kakaomap://route?sp=&ep=\(lat),\(lng)&by=CAR"),
+            ("kakaomap://", "kakaomap://route?ep=\(lat),\(lng)&by=CAR"),
             ("nmap://", "nmap://route/car?dlat=\(lat)&dlng=\(lng)&dname=\(name)&appname=com.odiya"),
             ("maps://", "maps://?daddr=\(lat),\(lng)&dirflg=d")
         ]
@@ -127,7 +127,7 @@ final class AppointmentDetailViewModel: ObservableObject {
             content: Content(
                 title: appointment.name,
                 description: "\(dateString)\n\(appointment.placeName)",
-                imageUrl: URL(string: "https://odiya.app/og-image.png")!,
+                imageUrl: URL(string: "https://odiya.app/og-image.png") ?? URL(string: "https://via.placeholder.com/300")!,
                 link: Link(
                     iosExecutionParams: ["appointmentId": "\(appointment.id)"]
                 )
@@ -148,12 +148,14 @@ final class AppointmentDetailViewModel: ObservableObject {
         }
 
         ShareApi.shared.shareDefault(templatable: template) { [weak self] sharingResult, error in
-            if let error {
-                self?.errorMessage = "공유에 실패했습니다: \(error.localizedDescription)"
-                return
-            }
-            if let url = sharingResult?.url {
-                UIApplication.shared.open(url)
+            DispatchQueue.main.async {
+                if let error {
+                    self?.errorMessage = "공유에 실패했습니다: \(error.localizedDescription)"
+                    return
+                }
+                if let url = sharingResult?.url {
+                    UIApplication.shared.open(url)
+                }
             }
         }
     }
