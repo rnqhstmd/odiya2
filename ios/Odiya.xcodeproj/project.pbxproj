@@ -748,8 +748,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = E549C57AF5CE23792CE8EF78 /* Build configuration list for PBXProject "Odiya" */;
 			developmentRegion = en;
@@ -762,6 +760,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				71294B4B7557F360F04CF9F4 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+				E6F020702F6FA3B6008B71A3 /* XCRemoteSwiftPackageReference "KakaoMapsSDK-SPM" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 75BE77E42548A853AA9BC31E /* Products */;
@@ -1132,6 +1131,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.22.0;
+			};
+		};
+		E6F020702F6FA3B6008B71A3 /* XCRemoteSwiftPackageReference "KakaoMapsSDK-SPM" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kakao-mapsSDK/KakaoMapsSDK-SPM.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.12.10;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

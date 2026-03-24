@@ -45,37 +45,19 @@ struct Step2PlaceView: View {
                     }
                 }
 
-                // MARK: - 지도 플레이스홀더
-                ZStack {
-                    Rectangle()
-                        .fill(OdiyaColors.odiya100)
-                        .frame(height: 160)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 14)
-                                .stroke(OdiyaColors.odiya300, lineWidth: 1)
-                        )
-
-                    VStack(spacing: 8) {
-                        Image(systemName: "mappin.circle.fill")
-                            .font(.system(size: 36))
-                            .foregroundStyle(OdiyaColors.primary)
-
-                        if let place = viewModel.selectedPlace {
-                            Text(place.name)
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(OdiyaColors.primary)
-                            Text(place.roadAddress ?? place.address)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        } else {
-                            Text("장소를 선택하면 여기에 표시됩니다")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
+                // MARK: - 지도
+                KakaoMapContainerView(
+                    latitude: viewModel.selectedPlace?.latitude,
+                    longitude: viewModel.selectedPlace?.longitude,
+                    height: 160,
+                    markerTitle: viewModel.selectedPlace?.name,
+                    isScrollEnabled: false
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(OdiyaColors.odiya300, lineWidth: 1)
+                )
 
                 // MARK: - 검색 결과
                 if !viewModel.filteredPlaces.isEmpty {

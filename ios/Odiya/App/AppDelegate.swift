@@ -1,5 +1,6 @@
 import UIKit
 import KakaoSDKCommon
+import KakaoMapsSDK
 import UserNotifications
 
 class AppDelegate: NSObject, UIApplicationDelegate {
@@ -9,6 +10,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         KakaoSDK.initSDK(appKey: AppEnvironment.current.kakaoAppKey)
+        SDKInitializer.InitSDK(appKey: AppEnvironment.current.kakaoAppKey)
         requestNotificationPermission(application)
         return true
     }

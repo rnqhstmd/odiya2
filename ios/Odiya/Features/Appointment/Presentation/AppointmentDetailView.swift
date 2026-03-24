@@ -48,23 +48,13 @@ struct AppointmentDetailView: View {
     // MARK: - Map Placeholder
 
     private var mapPlaceholder: some View {
-        ZStack {
-            Rectangle()
-                .fill(OdiyaColors.odiya100)
-                .frame(height: 220)
-            VStack(spacing: 8) {
-                Image(systemName: "mappin.circle.fill")
-                    .font(.system(size: 40))
-                    .foregroundStyle(OdiyaColors.primary)
-                Text(viewModel.appointment.placeName)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(OdiyaColors.odiya700)
-                Text("지도는 카카오맵 연동 후 표시됩니다")
-                    .font(.caption)
-                    .foregroundStyle(OdiyaColors.odiya500)
-            }
-        }
+        KakaoMapContainerView(
+            latitude: viewModel.appointment.latitude,
+            longitude: viewModel.appointment.longitude,
+            height: 220,
+            markerTitle: viewModel.appointment.placeName,
+            isScrollEnabled: false
+        )
     }
 
     // MARK: - Content Section
