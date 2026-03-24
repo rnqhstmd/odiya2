@@ -117,27 +117,34 @@ final class AppointmentDetailViewModel: ObservableObject {
 
     // MARK: - 카카오톡 공유
 
+    private static let shareDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "M월 d일 (E) a h:mm"
+        return formatter
+    }()
+
     func shareToKakao() {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "ko_KR")
-        dateFormatter.dateFormat = "M월 d일 (E) a h:mm"
-        let dateString = dateFormatter.string(from: appointment.dateTime)
+        let dateString = Self.shareDateFormatter.string(from: appointment.dateTime)
+
+        guard let imageUrl = URL(string: "https://odiya.app/og-image.png") else {
+            errorMessage = "카카오톡 공유 이미지 URL 생성에 실패했습니다."
+            return
+        }
+
+        let appointmentLink = Link(iosExecutionParams: ["appointmentId": "\(appointment.id)"])
 
         let template = FeedTemplate(
             content: Content(
                 title: appointment.name,
                 description: "\(dateString)\n\(appointment.placeName)",
-                imageUrl: URL(string: "https://odiya.app/og-image.png") ?? URL(string: "https://via.placeholder.com/300")!,
-                link: Link(
-                    iosExecutionParams: ["appointmentId": "\(appointment.id)"]
-                )
+                imageUrl: imageUrl,
+                link: appointmentLink
             ),
             buttons: [
                 Button(
                     title: "약속 확인하기",
-                    link: Link(
-                        iosExecutionParams: ["appointmentId": "\(appointment.id)"]
-                    )
+                    link: appointmentLink
                 )
             ]
         )
