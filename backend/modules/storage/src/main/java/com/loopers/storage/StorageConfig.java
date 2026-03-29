@@ -1,8 +1,6 @@
 package com.loopers.storage;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -10,25 +8,17 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
-@Getter
-@Setter
 @Configuration
-@ConfigurationProperties(prefix = "cloud.aws.s3")
+@EnableConfigurationProperties(StorageProperties.class)
 public class StorageConfig {
 
-    private String bucket;
-    private String region;
-    private String accessKey;
-    private String secretKey;
-    private int presignedUrlExpiration = 600;
-
     @Bean
-    public S3Presigner s3Presigner() {
+    public S3Presigner s3Presigner(StorageProperties props) {
         return S3Presigner.builder()
-            .region(Region.of(region))
+            .region(Region.of(props.region()))
             .credentialsProvider(
                 StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create(accessKey, secretKey)
+                    AwsBasicCredentials.create(props.accessKey(), props.secretKey())
                 )
             )
             .build();

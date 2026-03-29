@@ -24,7 +24,7 @@ public class StorageV1Controller implements StorageV1ApiSpec {
         @AuthenticationPrincipal LoginUser loginUser,
         @Valid @RequestBody StorageV1Dto.PresignedUrlRequest request
     ) {
-        var result = storageService.generatePresignedUrl(request.fileName(), request.contentType());
+        var result = storageService.generatePresignedUrl(loginUser.userId(), request.fileName(), request.contentType());
         return ApiResponse.success(new StorageV1Dto.PresignedUrlResponse(result.presignedUrl(), result.imageUrl()));
     }
 }

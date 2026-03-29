@@ -15,31 +15,31 @@ import java.util.UUID;
 public class StorageService {
 
     private final S3Presigner s3Presigner;
-    private final StorageConfig config;
+    private final StorageProperties properties;
 
-    public PresignedUrlResult generatePresignedUrl(String fileName, String contentType) {
-        // Path Traversal 방지: basename만 추출하고 위험 문자 제거
-        String sanitized = fileName.replaceAll("[/\\\\]", "").replaceAll("\\.\\.", "");
+    public PresignedUrlResult generatePresignedUrl(Long userId, String fileName, String contentType) {
+        // Path Traversal 방지: basename만 추출
+        String sanitized = java.nio.file.Paths.get(fileName).getFileName().toString();
         if (sanitized.isBlank()) {
             sanitized = "profile.jpg";
         }
-        String objectKey = "profile-images/" + UUID.randomUUID() + "/" + sanitized;
+        String objectKey = "profile-images/" + userId + "/" + UUID.randomUUID() + "/" + sanitized;
 
         PutObjectRequest putRequest = PutObjectRequest.builder()
-            .bucket(config.getBucket())
+            .bucket(properties.bucket())
             .key(objectKey)
             .contentType(contentType)
             .build();
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-            .signatureDuration(Duration.ofSeconds(config.getPresignedUrlExpiration()))
+            .signatureDuration(Duration.ofSeconds(properties.presignedUrlExpiration()))
             .putObjectRequest(putRequest)
             .build();
 
         PresignedPutObjectRequest presigned = s3Presigner.presignPutObject(presignRequest);
 
         String publicUrl = String.format("https://%s.s3.%s.amazonaws.com/%s",
-            config.getBucket(), config.getRegion(), objectKey);
+            properties.bucket(), properties.region(), objectKey);
 
         return new PresignedUrlResult(presigned.url().toString(), publicUrl);
     }

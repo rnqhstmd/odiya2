@@ -56,31 +56,33 @@ final class QRScannerViewModel: NSObject, ObservableObject {
     // MARK: - Private
 
     private func setupCaptureSession() {
-        guard let device = AVCaptureDevice.default(for: .video),
-              let input = try? AVCaptureDeviceInput(device: device) else {
-            alertMessage = "카메라를 사용할 수 없습니다."
-            showAlert = true
-            return
-        }
-
-        let metadataOutput = AVCaptureMetadataOutput()
-
-        captureSession.beginConfiguration()
-
-        if captureSession.canAddInput(input) {
-            captureSession.addInput(input)
-        }
-
-        if captureSession.canAddOutput(metadataOutput) {
-            captureSession.addOutput(metadataOutput)
-            metadataOutput.setMetadataObjectsDelegate(self, queue: .main)
-            metadataOutput.metadataObjectTypes = [.qr]
-        }
-
-        captureSession.commitConfiguration()
-
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            self?.captureSession.startRunning()
+            guard let self,
+                  let device = AVCaptureDevice.default(for: .video),
+                  let input = try? AVCaptureDeviceInput(device: device) else {
+                Task { @MainActor [weak self] in
+                    self?.alertMessage = "카메라를 사용할 수 없습니다."
+                    self?.showAlert = true
+                }
+                return
+            }
+
+            let metadataOutput = AVCaptureMetadataOutput()
+
+            self.captureSession.beginConfiguration()
+
+            if self.captureSession.canAddInput(input) {
+                self.captureSession.addInput(input)
+            }
+
+            if self.captureSession.canAddOutput(metadataOutput) {
+                self.captureSession.addOutput(metadataOutput)
+                metadataOutput.setMetadataObjectsDelegate(self, queue: .main)
+                metadataOutput.metadataObjectTypes = [.qr]
+            }
+
+            self.captureSession.commitConfiguration()
+            self.captureSession.startRunning()
         }
     }
 
