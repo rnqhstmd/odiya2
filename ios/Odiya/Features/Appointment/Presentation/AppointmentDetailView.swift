@@ -415,27 +415,17 @@ private struct DepartureCountdownBannerText: View {
     }
 
     private func startTimer() {
-        updateRemaining()
-        let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
-        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
-            updateRemaining()
-        }
+        updateAndReschedule()
     }
 
-    private func updateRemaining() {
+    private func updateAndReschedule() {
+        timer?.invalidate()
         let seconds = Int(targetDate.timeIntervalSince(Date()))
         secondsRemaining = max(0, seconds)
-        if secondsRemaining <= 0 {
-            timer?.invalidate()
-            return
-        }
-        if secondsRemaining <= 1800, let t = timer, t.timeInterval > 1 {
-            t.invalidate()
-            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-                let s = Int(targetDate.timeIntervalSince(Date()))
-                secondsRemaining = max(0, s)
-                if s <= 0 { timer?.invalidate() }
-            }
+        guard secondsRemaining > 0 else { return }
+        let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
+            updateAndReschedule()
         }
     }
 }
@@ -474,54 +464,18 @@ private struct DepartureCountdownDetailView: View {
     }
 
     private func startTimer() {
-        updateRemaining()
-        let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
-        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
-            updateRemaining()
-        }
+        updateAndReschedule()
     }
 
-    private func updateRemaining() {
+    private func updateAndReschedule() {
+        timer?.invalidate()
         let seconds = Int(alertAt.timeIntervalSince(Date()))
         secondsRemaining = max(0, seconds)
-        if secondsRemaining <= 0 {
-            timer?.invalidate()
-            return
+        guard secondsRemaining > 0 else { return }
+        let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
+            updateAndReschedule()
         }
-        if secondsRemaining <= 1800, let t = timer, t.timeInterval > 1 {
-            t.invalidate()
-            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-                let s = Int(alertAt.timeIntervalSince(Date()))
-                secondsRemaining = max(0, s)
-                if s <= 0 { timer?.invalidate() }
-            }
-        }
-    }
-}
-
-// MARK: - Date Extension
-
-private extension Date {
-    private static let koreanDateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy년 M월 d일 (E)"
-        return formatter
-    }()
-
-    private static let koreanTimeFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "a h:mm"
-        return formatter
-    }()
-
-    var koreanDateFormatted: String {
-        Self.koreanDateFormatter.string(from: self)
-    }
-
-    var koreanTimeFormatted: String {
-        Self.koreanTimeFormatter.string(from: self)
     }
 }
 

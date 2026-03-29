@@ -220,43 +220,18 @@ private struct CountdownView: View {
     }
 
     private func startTimer() {
-        updateRemaining()
-        let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
-        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
-            updateRemaining()
-        }
+        updateAndReschedule()
     }
 
-    private func updateRemaining() {
+    private func updateAndReschedule() {
+        timer?.invalidate()
         let seconds = Int(targetDate.timeIntervalSince(Date()))
         secondsRemaining = max(0, seconds)
-        if secondsRemaining <= 0 {
-            timer?.invalidate()
-            return
+        guard secondsRemaining > 0 else { return }
+        let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
+            updateAndReschedule()
         }
-        if secondsRemaining <= 1800, let t = timer, t.timeInterval > 1 {
-            t.invalidate()
-            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-                let s = Int(targetDate.timeIntervalSince(Date()))
-                secondsRemaining = max(0, s)
-                if s <= 0 { timer?.invalidate() }
-            }
-        }
-    }
-}
-
-// MARK: - Date Extension
-
-private extension Date {
-    private static let koreanFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "M월 d일 (E) a h:mm"
-        return formatter
-    }()
-
-    var koreanFormatted: String {
-        Self.koreanFormatter.string(from: self)
     }
 }
 
