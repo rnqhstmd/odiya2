@@ -93,6 +93,7 @@ struct AppointmentDetailView: View {
                     .foregroundStyle(.white)
 
                 DepartureCountdownBannerText(targetDate: viewModel.appointment.dateTime)
+                    .id(viewModel.appointment.dateTime)
             }
 
             Spacer()
@@ -165,6 +166,7 @@ struct AppointmentDetailView: View {
                 // 출발 카운트다운
                 if let alertAt = viewModel.appointment.departureAlertAt {
                     DepartureCountdownDetailView(alertAt: alertAt)
+                        .id(alertAt)
                     Divider().frame(height: 44)
                 }
 

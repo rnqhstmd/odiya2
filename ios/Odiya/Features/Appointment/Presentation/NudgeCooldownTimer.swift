@@ -46,6 +46,7 @@ final class NudgeCooldownTimer: ObservableObject {
     }
 
     deinit {
-        timer?.invalidate()
+        let t = timer
+        DispatchQueue.main.async { t?.invalidate() }
     }
 }

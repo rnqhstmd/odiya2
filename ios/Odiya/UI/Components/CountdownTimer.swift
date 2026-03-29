@@ -27,7 +27,10 @@ final class CountdownTimer: ObservableObject {
         timer?.invalidate()
         let seconds = Int(targetDate.timeIntervalSince(Date()))
         secondsRemaining = max(0, seconds)
-        guard secondsRemaining > 0 else { return }
+        guard secondsRemaining > 0 else {
+            timer = nil
+            return
+        }
         let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
         // RunLoop.main(.common) — 스크롤 중에도 갱신, 메인 스레드 보장
         let newTimer = Timer(timeInterval: interval, repeats: false) { [weak self] _ in
@@ -40,6 +43,8 @@ final class CountdownTimer: ObservableObject {
     }
 
     deinit {
-        timer?.invalidate()
+        // deinit은 nonisolated — Timer는 메인 스레드에서 invalidate 필요
+        let t = timer
+        DispatchQueue.main.async { t?.invalidate() }
     }
 }

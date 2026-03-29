@@ -138,7 +138,12 @@ final class SettingsViewModel: ObservableObject {
     func logout() {
         showLogoutAlert = false
         Task {
-            try? await authUseCase.logout()
+            do {
+                try await authUseCase.logout()
+            } catch {
+                // 서버 로그아웃 실패해도 로컬 토큰은 이미 삭제됨 — 로그인 화면으로 전환
+                print("[Settings] logout error: \(error.localizedDescription)")
+            }
             onLogout?()
         }
     }

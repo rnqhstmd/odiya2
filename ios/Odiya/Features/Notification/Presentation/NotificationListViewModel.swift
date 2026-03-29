@@ -130,7 +130,10 @@ final class NotificationListViewModel: ObservableObject {
     }
 
     func acceptFriendRequest(notification: AppNotification) {
-        guard let requestId = notification.referenceId else { return }
+        guard let requestId = notification.referenceId else {
+            errorMessage = "요청 정보를 찾을 수 없습니다."
+            return
+        }
         Task {
             do {
                 try await friendRepository.acceptFriendRequest(requestId: requestId)
@@ -142,7 +145,10 @@ final class NotificationListViewModel: ObservableObject {
     }
 
     func declineFriendRequest(notification: AppNotification) {
-        guard let requestId = notification.referenceId else { return }
+        guard let requestId = notification.referenceId else {
+            errorMessage = "요청 정보를 찾을 수 없습니다."
+            return
+        }
         Task {
             do {
                 try await friendRepository.rejectFriendRequest(requestId: requestId)

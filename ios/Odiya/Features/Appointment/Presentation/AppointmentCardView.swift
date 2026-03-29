@@ -31,6 +31,7 @@ struct AppointmentCardView: View {
                     .clipShape(Capsule())
                 Spacer()
                 CountdownView(targetDate: appointment.dateTime)
+                    .id(appointment.dateTime)
             }
 
             // 약속명

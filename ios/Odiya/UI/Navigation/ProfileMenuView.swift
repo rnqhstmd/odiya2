@@ -3,19 +3,21 @@ import SwiftUI
 struct ProfileMenuView: View {
 
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var router: RootRouter
     @State private var showLogoutAlert = false
     @State private var user: User = User(id: 0, nickname: "", profileImageUrl: nil)
 
     private let userRepository: UserRepository
     private let authUseCase: AuthUseCaseProtocol
+    var onLogout: (() -> Void)?
 
     init(
         userRepository: UserRepository = UserRepositoryImpl(),
-        authUseCase: AuthUseCaseProtocol = AuthUseCase()
+        authUseCase: AuthUseCaseProtocol = AuthUseCase(),
+        onLogout: (() -> Void)? = nil
     ) {
         self.userRepository = userRepository
         self.authUseCase = authUseCase
+        self.onLogout = onLogout
     }
 
     var body: some View {
@@ -57,11 +59,13 @@ struct ProfileMenuView: View {
                 Button("취소", role: .cancel) {}
                 Button("로그아웃", role: .destructive) {
                     Task {
-                        try? await authUseCase.logout()
-                        dismiss()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            router.navigateToLogin()
+                        do {
+                            try await authUseCase.logout()
+                        } catch {
+                            print("[ProfileMenu] logout error: \(error.localizedDescription)")
                         }
+                        onLogout?()
+                        dismiss()
                     }
                 }
             } message: {
