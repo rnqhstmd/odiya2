@@ -424,9 +424,11 @@ private struct DepartureCountdownBannerText: View {
         secondsRemaining = max(0, seconds)
         guard secondsRemaining > 0 else { return }
         let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
-        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
+        let newTimer = Timer(timeInterval: interval, repeats: false) { _ in
             updateAndReschedule()
         }
+        timer = newTimer
+        RunLoop.main.add(newTimer, forMode: .common)
     }
 }
 
@@ -473,9 +475,11 @@ private struct DepartureCountdownDetailView: View {
         secondsRemaining = max(0, seconds)
         guard secondsRemaining > 0 else { return }
         let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
-        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
+        let newTimer = Timer(timeInterval: interval, repeats: false) { _ in
             updateAndReschedule()
         }
+        timer = newTimer
+        RunLoop.main.add(newTimer, forMode: .common)
     }
 }
 

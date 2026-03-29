@@ -19,20 +19,24 @@ struct FriendListView: View {
 
                 Divider()
 
-                if viewModel.isLoading {
+                if viewModel.isLoading && viewModel.friends.isEmpty {
                     Spacer()
                     ProgressView()
                     Spacer()
                 } else if viewModel.filteredFriends.isEmpty {
-                    Spacer()
-                    EmptyStateView(
-                        iconName: "person.2.slash",
-                        title: "친구가 없어요",
-                        description: "오디야에 친구를 초대해보세요",
-                        actionTitle: "친구 추가",
-                        action: { showAddFriend = true }
-                    )
-                    Spacer()
+                    ScrollView {
+                        EmptyStateView(
+                            iconName: "person.2.slash",
+                            title: "친구가 없어요",
+                            description: "오디야에 친구를 초대해보세요",
+                            actionTitle: "친구 추가",
+                            action: { showAddFriend = true }
+                        )
+                        .frame(maxWidth: .infinity, minHeight: 300)
+                    }
+                    .refreshable {
+                        await viewModel.loadFriends()
+                    }
                 } else {
                     List {
                         ForEach(viewModel.filteredFriends) { friend in
