@@ -341,6 +341,14 @@ struct AppointmentDetailView: View {
             }
             .navigationTitle("약속 수정")
             .navigationBarTitleDisplayMode(.inline)
+            .alert("오류", isPresented: Binding(
+                get: { viewModel.errorMessage != nil && viewModel.showEditSheet },
+                set: { if !$0 { viewModel.errorMessage = nil } }
+            )) {
+                Button("확인", role: .cancel) { viewModel.errorMessage = nil }
+            } message: {
+                Text(viewModel.errorMessage ?? "")
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("취소") {
@@ -424,6 +432,7 @@ private struct DepartureCountdownBannerText: View {
         secondsRemaining = max(0, seconds)
         guard secondsRemaining > 0 else { return }
         let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
+        // RunLoop.main(.common) — 스크롤 중에도 갱신, 메인 스레드 보장
         let newTimer = Timer(timeInterval: interval, repeats: false) { _ in
             updateAndReschedule()
         }
@@ -475,6 +484,7 @@ private struct DepartureCountdownDetailView: View {
         secondsRemaining = max(0, seconds)
         guard secondsRemaining > 0 else { return }
         let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
+        // RunLoop.main(.common) — 스크롤 중에도 갱신, 메인 스레드 보장
         let newTimer = Timer(timeInterval: interval, repeats: false) { _ in
             updateAndReschedule()
         }

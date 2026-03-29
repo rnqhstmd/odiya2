@@ -229,6 +229,7 @@ private struct CountdownView: View {
         secondsRemaining = max(0, seconds)
         guard secondsRemaining > 0 else { return }
         let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
+        // RunLoop.main(.common) — 스크롤 중에도 갱신, 메인 스레드 보장
         let newTimer = Timer(timeInterval: interval, repeats: false) { _ in
             updateAndReschedule()
         }
