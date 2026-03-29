@@ -98,7 +98,8 @@ final class AppointmentDetailViewModel: ObservableObject {
     }
 
     func updateAppointment() async {
-        guard editName != appointment.name || editDateTime != appointment.dateTime else {
+        let trimmedName = editName.trimmingCharacters(in: .whitespaces)
+        guard trimmedName != appointment.name || editDateTime != appointment.dateTime else {
             showEditSheet = false
             return
         }
@@ -107,7 +108,7 @@ final class AppointmentDetailViewModel: ObservableObject {
         defer { isLoading = false }
         do {
             let request = UpdateAppointmentRequest(
-                name: editName != appointment.name ? editName : nil,
+                name: trimmedName != appointment.name ? trimmedName : nil,
                 placeName: nil,
                 placeAddress: nil,
                 latitude: nil,

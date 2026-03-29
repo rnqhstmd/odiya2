@@ -52,6 +52,7 @@ struct CalendarView: View {
                 .refreshable {
                     await viewModel.reloadCurrentMonth()
                 }
+            }
         }
     }
 
