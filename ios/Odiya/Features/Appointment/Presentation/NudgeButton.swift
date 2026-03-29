@@ -8,23 +8,19 @@ struct NudgeButton: View {
 
     // MARK: - State
 
+    @StateObject private var cooldown = NudgeCooldownTimer()
     @State private var isPressed: Bool = false
     @State private var showCheckmark: Bool = false
-    @State private var isCooldown: Bool = false
-    @State private var cooldownRemaining: Double = 0
-    @State private var cooldownTimer: Timer? = nil
-
-    private let cooldownDuration: Double = 300 // 5분
 
     // MARK: - Body
 
     var body: some View {
         Button {
-            guard !isCooldown else { return }
+            guard !cooldown.isCooldown else { return }
             triggerNudge()
         } label: {
             ZStack {
-                if isCooldown {
+                if cooldown.isCooldown {
                     cooldownLabel
                 } else if showCheckmark {
                     checkmarkLabel
@@ -38,10 +34,10 @@ struct NudgeButton: View {
             .clipShape(Capsule())
         }
         .buttonStyle(.plain)
-        .disabled(isCooldown)
+        .disabled(cooldown.isCooldown)
         .scaleEffect(isPressed ? 0.85 : 1.0)
         .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isPressed)
-        .onDisappear { cooldownTimer?.invalidate(); cooldownTimer = nil }
+        .onDisappear { cooldown.stop() }
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in isPressed = true }
@@ -80,13 +76,13 @@ struct NudgeButton: View {
                     .stroke(Color.white.opacity(0.3), lineWidth: 2)
                     .frame(width: 18, height: 18)
                 Circle()
-                    .trim(from: 0, to: CGFloat(cooldownRemaining / cooldownDuration))
+                    .trim(from: 0, to: CGFloat(cooldown.cooldownRemaining / cooldown.cooldownDuration))
                     .stroke(Color.white, lineWidth: 2)
                     .frame(width: 18, height: 18)
                     .rotationEffect(.degrees(-90))
-                    .animation(.linear(duration: 1), value: cooldownRemaining)
+                    .animation(.linear(duration: 1), value: cooldown.cooldownRemaining)
             }
-            Text("\(Int(cooldownRemaining / 60))분 \(Int(cooldownRemaining) % 60)초")
+            Text("\(Int(cooldown.cooldownRemaining / 60))분 \(Int(cooldown.cooldownRemaining) % 60)초")
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundStyle(.white.opacity(0.8))
@@ -95,7 +91,7 @@ struct NudgeButton: View {
     }
 
     private var buttonBackground: Color {
-        isCooldown
+        cooldown.isCooldown
             ? OdiyaColors.nudge.opacity(0.5)
             : (showCheckmark ? OdiyaColors.success : OdiyaColors.nudge)
     }
@@ -116,32 +112,8 @@ struct NudgeButton: View {
             withAnimation {
                 showCheckmark = false
             }
-            startCooldown()
+            cooldown.startCooldown()
         }
-    }
-
-    private func startCooldown() {
-        isCooldown = true
-        cooldownRemaining = cooldownDuration
-        scheduleCooldownTick()
-    }
-
-    private func scheduleCooldownTick() {
-        cooldownTimer?.invalidate()
-        guard cooldownRemaining > 0 else {
-            cooldownTimer = nil
-            isCooldown = false
-            return
-        }
-        // RunLoop.main(.common) — 스크롤 중에도 갱신, 메인 스레드 보장
-        let newTimer = Timer(timeInterval: 1, repeats: false) { _ in
-            Task { @MainActor in
-                cooldownRemaining -= 1
-                scheduleCooldownTick()
-            }
-        }
-        cooldownTimer = newTimer
-        RunLoop.main.add(newTimer, forMode: .common)
     }
 }
 

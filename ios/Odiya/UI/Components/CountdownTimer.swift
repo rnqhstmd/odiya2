@@ -31,7 +31,7 @@ final class CountdownTimer: ObservableObject {
         let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
         // RunLoop.main(.common) — 스크롤 중에도 갱신, 메인 스레드 보장
         let newTimer = Timer(timeInterval: interval, repeats: false) { [weak self] _ in
-            Task { @MainActor [weak self] in
+            Task { @MainActor in
                 self?.updateAndReschedule()
             }
         }
