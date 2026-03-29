@@ -12,9 +12,18 @@ final class SettingsViewModel: ObservableObject {
     @Published var showDeleteAlert: Bool = false
 
     private let repository: SettingsRepository
+    private let authUseCase: AuthUseCaseProtocol
+    private let userUseCase: UserUseCaseProtocol
+    var onLogout: (() -> Void)?
 
-    init(repository: SettingsRepository = SettingsRepositoryImpl()) {
+    init(
+        repository: SettingsRepository = SettingsRepositoryImpl(),
+        authUseCase: AuthUseCaseProtocol = AuthUseCase(),
+        userUseCase: UserUseCaseProtocol = UserUseCase()
+    ) {
         self.repository = repository
+        self.authUseCase = authUseCase
+        self.userUseCase = userUseCase
     }
 
     // MARK: - Helpers
@@ -128,11 +137,26 @@ final class SettingsViewModel: ObservableObject {
 
     func logout() {
         showLogoutAlert = false
-        // TODO: TokenManager.shared.clear() + deactivateDevice 호출
+        Task {
+            do {
+                try await authUseCase.logout()
+            } catch {
+                // 서버 로그아웃 실패해도 로컬 토큰은 이미 삭제됨 — 로그인 화면으로 전환
+                print("[Settings] logout error: \(error.localizedDescription)")
+            }
+            onLogout?()
+        }
     }
 
     func deleteAccount() {
         showDeleteAlert = false
-        // TODO: 회원 탈퇴 API 호출
+        Task {
+            do {
+                try await userUseCase.deleteAccount()
+                onLogout?()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
 
     @StateObject private var viewModel = SettingsViewModel()
+    @EnvironmentObject private var router: RootRouter
 
     var body: some View {
         List {
@@ -59,6 +60,9 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("설정")
+        .onAppear {
+            viewModel.onLogout = { router.navigateToLogin() }
+        }
         .task {
             await viewModel.loadData()
         }

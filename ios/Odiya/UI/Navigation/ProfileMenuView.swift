@@ -7,9 +7,17 @@ struct ProfileMenuView: View {
     @State private var user: User = User(id: 0, nickname: "", profileImageUrl: nil)
 
     private let userRepository: UserRepository
+    private let authUseCase: AuthUseCaseProtocol
+    var onLogout: (() -> Void)?
 
-    init(userRepository: UserRepository = UserRepositoryImpl()) {
+    init(
+        userRepository: UserRepository = UserRepositoryImpl(),
+        authUseCase: AuthUseCaseProtocol = AuthUseCase(),
+        onLogout: (() -> Void)? = nil
+    ) {
         self.userRepository = userRepository
+        self.authUseCase = authUseCase
+        self.onLogout = onLogout
     }
 
     var body: some View {
@@ -50,8 +58,15 @@ struct ProfileMenuView: View {
             .alert("로그아웃", isPresented: $showLogoutAlert) {
                 Button("취소", role: .cancel) {}
                 Button("로그아웃", role: .destructive) {
-                    // TODO: 로그아웃 처리
-                    dismiss()
+                    Task {
+                        do {
+                            try await authUseCase.logout()
+                        } catch {
+                            print("[ProfileMenu] logout error: \(error.localizedDescription)")
+                        }
+                        onLogout?()
+                        dismiss()
+                    }
                 }
             } message: {
                 Text("정말 로그아웃하시겠어요?")

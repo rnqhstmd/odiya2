@@ -57,3 +57,4 @@ ios/.swiftpm/xcode/xcuserdata/**
 ios/Odiya.xcodeproj/xcuserdata/**
 .DS_Store
 .claude/
+context/odiya/development-journey.md

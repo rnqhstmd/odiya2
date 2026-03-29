@@ -23,8 +23,10 @@ extension EnvironmentValues {
 
 struct MainTabView: View {
 
+    @EnvironmentObject private var router: RootRouter
     @State private var showNotifications = false
     @State private var showProfile = false
+    @State private var pendingLogout = false
 
     var body: some View {
         TabView {
@@ -49,8 +51,13 @@ struct MainTabView: View {
         .sheet(isPresented: $showNotifications) {
             NotificationListView()
         }
-        .sheet(isPresented: $showProfile) {
-            ProfileMenuView()
+        .sheet(isPresented: $showProfile, onDismiss: {
+            if pendingLogout {
+                pendingLogout = false
+                router.navigateToLogin()
+            }
+        }) {
+            ProfileMenuView(onLogout: { pendingLogout = true })
         }
     }
 }

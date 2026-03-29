@@ -155,7 +155,7 @@ struct NotificationListView: View {
     private func friendRequestButtons(_ notification: AppNotification) -> some View {
         HStack(spacing: 8) {
             Button {
-                viewModel.acceptFriendRequest(id: notification.id)
+                viewModel.acceptFriendRequest(notification: notification)
             } label: {
                 Text("수락")
                     .font(.caption)
@@ -168,7 +168,7 @@ struct NotificationListView: View {
             }
 
             Button {
-                viewModel.declineFriendRequest(id: notification.id)
+                viewModel.declineFriendRequest(notification: notification)
             } label: {
                 Text("거절")
                     .font(.caption)
