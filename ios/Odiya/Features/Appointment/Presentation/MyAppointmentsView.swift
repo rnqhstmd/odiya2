@@ -40,11 +40,16 @@ struct MyAppointmentsView: View {
                     .tint(OdiyaColors.primary)
                 }
             }
-            .sheet(isPresented: $showCreateAppointment) {
+            .sheet(isPresented: $showCreateAppointment, onDismiss: {
+                Task { await viewModel.loadAppointments() }
+            }) {
                 CreateAppointmentView()
             }
             .onAppear {
                 Task { await viewModel.loadAppointments() }
+            }
+            .refreshable {
+                await viewModel.loadAppointments()
             }
             .overlay {
                 if viewModel.isLoading && viewModel.upcomingAppointments.isEmpty && viewModel.pastAppointments.isEmpty {

@@ -193,48 +193,70 @@ struct AppointmentCardView: View {
 private struct CountdownView: View {
 
     let targetDate: Date
-    @State private var minutesRemaining: Int = 0
-    @State private var timer: Timer? = nil
+    @State private var secondsRemaining: Int = 0
+    @State private var timer: Timer?
 
     var body: some View {
         Text(countdownText)
             .font(.caption)
             .fontWeight(.semibold)
-            .foregroundStyle(minutesRemaining <= 30 ? OdiyaColors.nudge : OdiyaColors.primary)
+            .foregroundStyle(secondsRemaining <= 1800 ? OdiyaColors.nudge : OdiyaColors.primary)
             .monospacedDigit()
             .onAppear { startTimer() }
             .onDisappear { timer?.invalidate() }
     }
 
     private var countdownText: String {
-        if minutesRemaining <= 0 { return "지금!" }
-        if minutesRemaining < 60 { return "\(minutesRemaining)분 후" }
-        let h = minutesRemaining / 60
-        let m = minutesRemaining % 60
+        if secondsRemaining <= 0 { return "지금!" }
+        if secondsRemaining <= 1800 {
+            let mins = secondsRemaining / 60
+            let secs = secondsRemaining % 60
+            return mins > 0 ? "\(mins)분 \(secs)초 후" : "\(secs)초 후"
+        }
+        if secondsRemaining < 3600 { return "\(secondsRemaining / 60)분 후" }
+        let h = secondsRemaining / 3600
+        let m = (secondsRemaining % 3600) / 60
         return m == 0 ? "\(h)시간 후" : "\(h)시간 \(m)분 후"
     }
 
     private func startTimer() {
         updateRemaining()
-        timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+        let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
             updateRemaining()
         }
     }
 
     private func updateRemaining() {
-        let minutes = Calendar.current.dateComponents([.minute], from: Date(), to: targetDate).minute ?? 0
-        minutesRemaining = max(0, minutes)
+        let seconds = Int(targetDate.timeIntervalSince(Date()))
+        secondsRemaining = max(0, seconds)
+        if secondsRemaining <= 0 {
+            timer?.invalidate()
+            return
+        }
+        if secondsRemaining <= 1800, let t = timer, t.timeInterval > 1 {
+            t.invalidate()
+            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+                let s = Int(targetDate.timeIntervalSince(Date()))
+                secondsRemaining = max(0, s)
+                if s <= 0 { timer?.invalidate() }
+            }
+        }
     }
 }
 
 // MARK: - Date Extension
 
 private extension Date {
-    var koreanFormatted: String {
+    private static let koreanFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateFormat = "M월 d일 (E) a h:mm"
-        return formatter.string(from: self)
+        return formatter
+    }()
+
+    var koreanFormatted: String {
+        Self.koreanFormatter.string(from: self)
     }
 }
 

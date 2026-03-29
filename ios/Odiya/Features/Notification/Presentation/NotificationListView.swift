@@ -49,6 +49,9 @@ struct NotificationListView: View {
                         }
                     }
                     .listStyle(.plain)
+                    .refreshable {
+                        await viewModel.loadNotifications()
+                    }
                 }
             }
             .navigationTitle("알림")

@@ -215,4 +215,11 @@ final class CalendarViewModel: ObservableObject {
     }
 
     var korCalendar: Calendar { koreanCalendar }
+
+    func reloadCurrentMonth() async {
+        let components = koreanCalendar.dateComponents([.year, .month], from: currentMonth)
+        if let year = components.year, let month = components.month {
+            await loadMonth(year: year, month: month)
+        }
+    }
 }

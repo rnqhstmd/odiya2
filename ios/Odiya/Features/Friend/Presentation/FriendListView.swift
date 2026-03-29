@@ -51,6 +51,9 @@ struct FriendListView: View {
                         }
                     }
                     .listStyle(.plain)
+                    .refreshable {
+                        await viewModel.loadFriends()
+                    }
                 }
             }
             .navigationTitle("친구")

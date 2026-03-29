@@ -35,6 +35,9 @@ struct AppointmentDetailView: View {
                     .background(Color.black.opacity(0.1))
             }
         }
+        .sheet(isPresented: $viewModel.showEditSheet) {
+            editSheet
+        }
         .alert("약속 취소", isPresented: $viewModel.showCancelConfirm) {
             Button("취소하기", role: .destructive) {
                 Task { await viewModel.cancelAppointment() }
@@ -301,7 +304,7 @@ struct AppointmentDetailView: View {
         ToolbarItem(placement: .navigationBarTrailing) {
             Menu {
                 Button {
-                    // TODO: 수정 화면 연결
+                    viewModel.prepareEdit()
                 } label: {
                     Label("약속 수정", systemImage: "pencil")
                 }
@@ -317,10 +320,48 @@ struct AppointmentDetailView: View {
         }
     }
 
+    // MARK: - Edit Sheet
+
+    private var editSheet: some View {
+        NavigationStack {
+            Form {
+                Section("약속 이름") {
+                    TextField("약속 이름", text: $viewModel.editName)
+                }
+                Section("약속 시간") {
+                    DatePicker(
+                        "날짜 및 시간",
+                        selection: $viewModel.editDateTime,
+                        in: Date()...,
+                        displayedComponents: [.date, .hourAndMinute]
+                    )
+                    .datePickerStyle(.graphical)
+                    .environment(\.locale, Locale(identifier: "ko_KR"))
+                }
+            }
+            .navigationTitle("약속 수정")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("취소") {
+                        viewModel.showEditSheet = false
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("저장") {
+                        Task { await viewModel.updateAppointment() }
+                    }
+                    .fontWeight(.semibold)
+                    .disabled(viewModel.editName.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+        }
+    }
+
     // MARK: - Helpers
 
     private var isHost: Bool {
-        viewModel.appointment.participants.first(where: { $0.isHost })?.id == 0
+        viewModel.appointment.currentUserIsHost
     }
 
     private func infoRow(icon: String, iconColor: Color, title: String, subtitle: String) -> some View {
@@ -345,37 +386,57 @@ struct AppointmentDetailView: View {
 private struct DepartureCountdownBannerText: View {
 
     let targetDate: Date
-    @State private var minutesRemaining: Int = 0
-    private let timer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+    @State private var secondsRemaining: Int = 0
+    @State private var timer: Timer?
 
     var body: some View {
         Text(countdownLabel)
             .font(.caption)
             .foregroundStyle(.white.opacity(0.85))
             .monospacedDigit()
-            .onReceive(timer) { _ in
-                updateRemaining()
-            }
-            .onAppear {
-                updateRemaining()
-            }
+            .onAppear { startTimer() }
+            .onDisappear { timer?.invalidate() }
     }
 
     private var countdownLabel: String {
-        if minutesRemaining <= 0 {
+        if secondsRemaining <= 0 {
             return "지금 출발하세요!"
-        } else if minutesRemaining < 60 {
-            return "\(minutesRemaining)분 남음"
+        } else if secondsRemaining < 60 {
+            return "\(secondsRemaining)초 남음"
+        } else if secondsRemaining < 3600 {
+            let mins = secondsRemaining / 60
+            let secs = secondsRemaining % 60
+            return secondsRemaining <= 1800 ? "\(mins)분 \(secs)초 남음" : "\(mins)분 남음"
         } else {
-            let hours = minutesRemaining / 60
-            let mins = minutesRemaining % 60
+            let hours = secondsRemaining / 3600
+            let mins = (secondsRemaining % 3600) / 60
             return "\(hours)시간 \(mins)분 남음"
         }
     }
 
+    private func startTimer() {
+        updateRemaining()
+        let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+            updateRemaining()
+        }
+    }
+
     private func updateRemaining() {
-        let minutes = Calendar.current.dateComponents([.minute], from: Date(), to: targetDate).minute ?? 0
-        minutesRemaining = max(0, minutes)
+        let seconds = Int(targetDate.timeIntervalSince(Date()))
+        secondsRemaining = max(0, seconds)
+        if secondsRemaining <= 0 {
+            timer?.invalidate()
+            return
+        }
+        if secondsRemaining <= 1800, let t = timer, t.timeInterval > 1 {
+            t.invalidate()
+            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+                let s = Int(targetDate.timeIntervalSince(Date()))
+                secondsRemaining = max(0, s)
+                if s <= 0 { timer?.invalidate() }
+            }
+        }
     }
 }
 
@@ -384,15 +445,15 @@ private struct DepartureCountdownBannerText: View {
 private struct DepartureCountdownDetailView: View {
 
     let alertAt: Date
-    @State private var minutesRemaining: Int = 0
-    @State private var timer: Timer? = nil
+    @State private var secondsRemaining: Int = 0
+    @State private var timer: Timer?
 
     var body: some View {
         VStack(spacing: 4) {
-            Text(minutesRemaining <= 0 ? "지금 출발!" : "\(minutesRemaining)분")
+            Text(countdownText)
                 .font(.title3)
                 .fontWeight(.bold)
-                .foregroundStyle(minutesRemaining <= 10 ? OdiyaColors.nudge : OdiyaColors.primary)
+                .foregroundStyle(secondsRemaining <= 600 ? OdiyaColors.nudge : OdiyaColors.primary)
                 .monospacedDigit()
             Text("출발까지")
                 .font(.caption)
@@ -402,34 +463,65 @@ private struct DepartureCountdownDetailView: View {
         .onDisappear { timer?.invalidate() }
     }
 
+    private var countdownText: String {
+        if secondsRemaining <= 0 { return "지금 출발!" }
+        if secondsRemaining <= 1800 {
+            let mins = secondsRemaining / 60
+            let secs = secondsRemaining % 60
+            return mins > 0 ? "\(mins)분 \(secs)초" : "\(secs)초"
+        }
+        return "\(secondsRemaining / 60)분"
+    }
+
     private func startTimer() {
         updateRemaining()
-        timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+        let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
             updateRemaining()
         }
     }
 
     private func updateRemaining() {
-        let minutes = Calendar.current.dateComponents([.minute], from: Date(), to: alertAt).minute ?? 0
-        minutesRemaining = max(0, minutes)
+        let seconds = Int(alertAt.timeIntervalSince(Date()))
+        secondsRemaining = max(0, seconds)
+        if secondsRemaining <= 0 {
+            timer?.invalidate()
+            return
+        }
+        if secondsRemaining <= 1800, let t = timer, t.timeInterval > 1 {
+            t.invalidate()
+            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+                let s = Int(alertAt.timeIntervalSince(Date()))
+                secondsRemaining = max(0, s)
+                if s <= 0 { timer?.invalidate() }
+            }
+        }
     }
 }
 
 // MARK: - Date Extension
 
 private extension Date {
-    var koreanDateFormatted: String {
+    private static let koreanDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateFormat = "yyyy년 M월 d일 (E)"
-        return formatter.string(from: self)
-    }
+        return formatter
+    }()
 
-    var koreanTimeFormatted: String {
+    private static let koreanTimeFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateFormat = "a h:mm"
-        return formatter.string(from: self)
+        return formatter
+    }()
+
+    var koreanDateFormatted: String {
+        Self.koreanDateFormatter.string(from: self)
+    }
+
+    var koreanTimeFormatted: String {
+        Self.koreanTimeFormatter.string(from: self)
     }
 }
 

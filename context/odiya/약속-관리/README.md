@@ -1,7 +1,7 @@
 # 약속 관리
 
 - 작성일: 2026-03-03
-- 수정일: 2026-03-04 (출발지 나중에 지정, 참여자 카카오톡 스타일 UX, Step4 출발지 카드)
+- 수정일: 2026-03-29 (카카오톡 공유·외부 앱 길안내·약속 상세 iOS 구현 완료 반영)
 - 관련 레포: odiya-ios, odiya-api
 
 ---
@@ -327,7 +327,7 @@ AppointmentResponse 필드 전체 + 추가 필드:
 
 ---
 
-### 약속 상세 화면 (AppointmentDetailView) — iOS 미구현
+### 약속 상세 화면 (AppointmentDetailView) — ✅ iOS 구현 완료
 
 약속 상세 화면에서 사용하는 API 매핑:
 

@@ -48,6 +48,9 @@ struct CalendarView: View {
                 DayAppointmentListView(viewModel: viewModel)
                     .frame(maxHeight: .infinity)
             }
+            .refreshable {
+                await viewModel.reloadCurrentMonth()
+            }
         }
     }
 

@@ -13,6 +13,9 @@ final class AppointmentDetailViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
     @Published var showCancelConfirm: Bool = false
+    @Published var showEditSheet: Bool = false
+    @Published var editName: String = ""
+    @Published var editDateTime: Date = Date()
 
     // MARK: - Dependencies
 
@@ -83,6 +86,37 @@ final class AppointmentDetailViewModel: ObservableObject {
         do {
             try await repository.cancelAppointment(id: appointment.id)
             appointment.status = .cancelled
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func prepareEdit() {
+        editName = appointment.name
+        editDateTime = appointment.dateTime
+        showEditSheet = true
+    }
+
+    func updateAppointment() async {
+        guard editName != appointment.name || editDateTime != appointment.dateTime else {
+            showEditSheet = false
+            return
+        }
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+        do {
+            let request = UpdateAppointmentRequest(
+                name: editName != appointment.name ? editName : nil,
+                placeName: nil,
+                placeAddress: nil,
+                latitude: nil,
+                longitude: nil,
+                dateTime: editDateTime != appointment.dateTime ? editDateTime : nil
+            )
+            _ = try await repository.updateAppointment(id: appointment.id, request: request)
+            await loadDetail()
+            showEditSheet = false
         } catch {
             errorMessage = error.localizedDescription
         }

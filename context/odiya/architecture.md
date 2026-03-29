@@ -71,9 +71,10 @@ Infrastructure (JPA, Redis, 외부 API)
 | Appointment | AppointmentV1Controller | AppointmentFacade | AppointmentService | Appointment, AppointmentParticipant | ✅ 완료 |
 | DeparturePlace | DeparturePlaceV1Controller | DeparturePlaceFacade | DeparturePlaceService | DeparturePlace | ✅ 완료 |
 | UserSettings | UserSettingsV1Controller | UserSettingsFacade | UserSettingsService | UserSettings | ✅ 완료 |
-| Notification | - | - | - | - | ⬜ 미구현 |
-| Place (검색) | - | - | - | - | ⬜ 미구현 |
-| TravelTime | - | - | - | - | ⬜ 미구현 |
+| Notification | NotificationV1Controller | NotificationFacade | NotificationService | Notification | ✅ 완료 |
+| Device | DeviceV1Controller | - | DeviceTokenService | DeviceToken | ✅ 완료 |
+| Place (검색) | PlaceV1Controller | - | PlaceService | - | ✅ 완료 |
+| TravelTime | - (내부 서비스) | - | TravelTimeService | TravelTime | ✅ 완료 |
 
 ## 외부 API 연동
 
