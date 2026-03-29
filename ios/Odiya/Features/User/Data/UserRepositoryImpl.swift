@@ -36,4 +36,13 @@ final class UserRepositoryImpl: UserRepository {
     func deleteAccount() async throws {
         try await apiClient.requestVoid(endpoint: .deleteAccount)
     }
+
+    func getPresignedURL(fileName: String, contentType: String) async throws -> PresignedURLResponse {
+        let body = PresignedURLRequest(fileName: fileName, contentType: contentType)
+        return try await apiClient.request(
+            endpoint: .getPresignedURL,
+            body: body,
+            responseType: PresignedURLResponse.self
+        )
+    }
 }

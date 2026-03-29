@@ -4,6 +4,8 @@ struct AddFriendView: View {
 
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = AddFriendViewModel()
+    @State private var showQRScanner = false
+    @State private var showMyQR = false
 
     var body: some View {
         NavigationStack {
@@ -144,7 +146,7 @@ struct AddFriendView: View {
                         // 버튼 2개
                         HStack(spacing: 12) {
                             Button {
-                                // TODO: QR 스캔 화면 이동
+                                showQRScanner = true
                             } label: {
                                 Text("스캔하기")
                                     .font(.subheadline)
@@ -158,7 +160,7 @@ struct AddFriendView: View {
                             .buttonStyle(.plain)
 
                             Button {
-                                // TODO: 내 QR 코드 표시 화면 이동
+                                showMyQR = true
                             } label: {
                                 Text("내 QR")
                                     .font(.subheadline)
@@ -184,7 +186,10 @@ struct AddFriendView: View {
                 prompt: "닉네임으로 검색"
             )
             .onAppear {
-                Task { await viewModel.loadPendingRequests() }
+                Task {
+                    await viewModel.loadPendingRequests()
+                    await viewModel.loadMyUserId()
+                }
             }
             .onChange(of: viewModel.searchText) { _, newValue in
                 Task { await viewModel.searchUsers() }
@@ -198,6 +203,14 @@ struct AddFriendView: View {
                 Button("확인", role: .cancel) {}
             } message: {
                 Text(viewModel.alertMessage)
+            }
+            .sheet(isPresented: $showMyQR) {
+                if let myUserId = viewModel.myUserId {
+                    QRCodeView(userId: myUserId)
+                }
+            }
+            .fullScreenCover(isPresented: $showQRScanner) {
+                QRScannerView(myUserId: viewModel.myUserId)
             }
         }
     }

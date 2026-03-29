@@ -1,10 +1,13 @@
 import SwiftUI
+import PhotosUI
 
 struct ProfileView: View {
 
     @StateObject private var viewModel = ProfileViewModel()
+    @EnvironmentObject private var router: RootRouter
     @State private var editingNickname = ""
     @State private var isEditingNickname = false
+    @State private var selectedPhotoItem: PhotosPickerItem?
 
     var body: some View {
         NavigationStack {
@@ -13,17 +16,28 @@ struct ProfileView: View {
                     // 프로필 섹션
                     Section {
                         HStack(spacing: 16) {
-                            AsyncImage(url: URL(string: user.profileImageUrl ?? "")) { image in
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                            } placeholder: {
-                                Image(systemName: "person.circle.fill")
-                                    .resizable()
-                                    .foregroundStyle(.gray)
+                            PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                                AsyncImage(url: URL(string: user.profileImageUrl ?? "")) { image in
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                } placeholder: {
+                                    Image(systemName: "person.circle.fill")
+                                        .resizable()
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(width: 64, height: 64)
+                                .clipShape(Circle())
+                                .overlay(alignment: .bottomTrailing) {
+                                    Image(systemName: "camera.fill")
+                                        .font(.system(size: 12))
+                                        .foregroundStyle(.white)
+                                        .padding(4)
+                                        .background(Color.accentColor)
+                                        .clipShape(Circle())
+                                }
                             }
-                            .frame(width: 64, height: 64)
-                            .clipShape(Circle())
+                            .buttonStyle(.plain)
 
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(user.nickname)
@@ -81,6 +95,9 @@ struct ProfileView: View {
             } message: {
                 Text("정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.")
             }
+            .onAppear {
+                viewModel.onLogout = { router.navigateToLogin() }
+            }
             .task {
                 viewModel.loadProfile()
                 if let user = viewModel.user {
@@ -92,10 +109,25 @@ struct ProfileView: View {
                     editingNickname = user.nickname
                 }
             }
+            .onChange(of: selectedPhotoItem) { newItem in
+                guard let newItem else { return }
+                Task {
+                    guard let data = try? await newItem.loadTransferable(type: Data.self),
+                          let uiImage = UIImage(data: data) else { return }
+
+                    let resized = uiImage.resizedToFill(size: CGSize(width: 1024, height: 1024))
+                    guard let jpegData = resized.jpegData(compressionQuality: 0.8) else { return }
+
+                    viewModel.uploadProfileImage(jpegData)
+                }
+            }
         }
     }
 }
 
 #Preview {
-    ProfileView()
+    NavigationStack {
+        ProfileView()
+    }
+    .environmentObject(RootRouter())
 }
