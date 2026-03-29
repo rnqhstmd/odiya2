@@ -31,6 +31,7 @@ struct AppNotification: Identifiable {
     let type: NotificationType
     let title: String
     let body: String
+    let referenceId: Int64?
     let createdAt: Date
     var isRead: Bool
 
@@ -45,11 +46,12 @@ struct AppNotification: Identifiable {
         return "\(days)일 전"
     }
 
-    init(id: String, type: NotificationType, title: String, body: String, createdAt: Date, isRead: Bool) {
+    init(id: String, type: NotificationType, title: String, body: String, referenceId: Int64? = nil, createdAt: Date, isRead: Bool) {
         self.id = id
         self.type = type
         self.title = title
         self.body = body
+        self.referenceId = referenceId
         self.createdAt = createdAt
         self.isRead = isRead
     }
@@ -59,6 +61,7 @@ struct AppNotification: Identifiable {
         self.type = NotificationType(rawValue: dto.type) ?? .unknown
         self.title = dto.title
         self.body = dto.body
+        self.referenceId = dto.referenceId
         self.isRead = dto.isRead
 
         let formatter = ISO8601DateFormatter()

@@ -129,24 +129,24 @@ final class NotificationListViewModel: ObservableObject {
             }
     }
 
-    func acceptFriendRequest(id: String) {
-        guard let requestId = Int64(id) else { return }
+    func acceptFriendRequest(notification: AppNotification) {
+        guard let requestId = notification.referenceId else { return }
         Task {
             do {
                 try await friendRepository.acceptFriendRequest(requestId: requestId)
-                await markAsRead(id: id)
+                await markAsRead(id: notification.id)
             } catch {
                 errorMessage = error.localizedDescription
             }
         }
     }
 
-    func declineFriendRequest(id: String) {
-        guard let requestId = Int64(id) else { return }
+    func declineFriendRequest(notification: AppNotification) {
+        guard let requestId = notification.referenceId else { return }
         Task {
             do {
                 try await friendRepository.rejectFriendRequest(requestId: requestId)
-                await markAsRead(id: id)
+                await markAsRead(id: notification.id)
             } catch {
                 errorMessage = error.localizedDescription
             }

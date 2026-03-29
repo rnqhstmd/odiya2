@@ -41,6 +41,7 @@ struct NudgeButton: View {
         .disabled(isCooldown)
         .scaleEffect(isPressed ? 0.85 : 1.0)
         .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isPressed)
+        .onDisappear { cooldownTimer?.invalidate(); cooldownTimer = nil }
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in isPressed = true }

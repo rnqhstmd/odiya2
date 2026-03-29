@@ -59,7 +59,9 @@ struct ProfileMenuView: View {
                     Task {
                         try? await authUseCase.logout()
                         dismiss()
-                        router.navigateToLogin()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            router.navigateToLogin()
+                        }
                     }
                 }
             } message: {
