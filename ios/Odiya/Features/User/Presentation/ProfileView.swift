@@ -104,19 +104,25 @@ struct ProfileView: View {
                     editingNickname = user.nickname
                 }
             }
-            .onChange(of: viewModel.user) { newUser in
+            .onChange(of: viewModel.user) { _, newUser in
                 if let user = newUser {
                     editingNickname = user.nickname
                 }
             }
-            .onChange(of: selectedPhotoItem) { newItem in
+            .onChange(of: selectedPhotoItem) { _, newItem in
                 guard let newItem else { return }
                 Task {
                     guard let data = try? await newItem.loadTransferable(type: Data.self),
-                          let uiImage = UIImage(data: data) else { return }
+                          let uiImage = UIImage(data: data) else {
+                        viewModel.errorMessage = "이미지를 불러올 수 없습니다."
+                        return
+                    }
 
                     let resized = uiImage.resizedToFill(size: CGSize(width: 1024, height: 1024))
-                    guard let jpegData = resized.jpegData(compressionQuality: 0.8) else { return }
+                    guard let jpegData = resized.jpegData(compressionQuality: 0.8) else {
+                        viewModel.errorMessage = "이미지 변환에 실패했습니다."
+                        return
+                    }
 
                     viewModel.uploadProfileImage(jpegData)
                 }
