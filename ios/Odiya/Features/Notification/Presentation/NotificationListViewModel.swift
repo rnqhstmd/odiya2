@@ -11,11 +11,16 @@ final class NotificationListViewModel: ObservableObject {
     private static let pageSize = 20
 
     private let repository: NotificationRepository
+    private let friendRepository: FriendRepository
     private var cursor: Int64?
     private(set) var hasNext = false
 
-    init(repository: NotificationRepository = NotificationRepositoryImpl()) {
+    init(
+        repository: NotificationRepository = NotificationRepositoryImpl(),
+        friendRepository: FriendRepository = FriendRepositoryImpl()
+    ) {
         self.repository = repository
+        self.friendRepository = friendRepository
     }
 
     // MARK: - Load
@@ -125,12 +130,26 @@ final class NotificationListViewModel: ObservableObject {
     }
 
     func acceptFriendRequest(id: String) {
-        Task { await markAsRead(id: id) }
-        // TODO: 친구 요청 수락 API 연동
+        guard let requestId = Int64(id) else { return }
+        Task {
+            do {
+                try await friendRepository.acceptFriendRequest(requestId: requestId)
+                await markAsRead(id: id)
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
     }
 
     func declineFriendRequest(id: String) {
-        Task { await markAsRead(id: id) }
-        // TODO: 친구 요청 거절 API 연동
+        guard let requestId = Int64(id) else { return }
+        Task {
+            do {
+                try await friendRepository.rejectFriendRequest(requestId: requestId)
+                await markAsRead(id: id)
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
     }
 }

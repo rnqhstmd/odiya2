@@ -122,18 +122,25 @@ struct NudgeButton: View {
     private func startCooldown() {
         isCooldown = true
         cooldownRemaining = cooldownDuration
+        scheduleCooldownTick()
+    }
 
+    private func scheduleCooldownTick() {
         cooldownTimer?.invalidate()
-        cooldownTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+        guard cooldownRemaining > 0 else {
+            cooldownTimer = nil
+            isCooldown = false
+            return
+        }
+        // RunLoop.main(.common) — 스크롤 중에도 갱신, 메인 스레드 보장
+        let newTimer = Timer(timeInterval: 1, repeats: false) { _ in
             Task { @MainActor in
                 cooldownRemaining -= 1
-                if cooldownRemaining <= 0 {
-                    cooldownTimer?.invalidate()
-                    cooldownTimer = nil
-                    isCooldown = false
-                }
+                scheduleCooldownTick()
             }
         }
+        cooldownTimer = newTimer
+        RunLoop.main.add(newTimer, forMode: .common)
     }
 }
 

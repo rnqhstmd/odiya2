@@ -393,51 +393,31 @@ struct AppointmentDetailView: View {
 
 private struct DepartureCountdownBannerText: View {
 
-    let targetDate: Date
-    @State private var secondsRemaining: Int = 0
-    @State private var timer: Timer?
+    @StateObject private var countdown: CountdownTimer
+
+    init(targetDate: Date) {
+        _countdown = StateObject(wrappedValue: CountdownTimer(targetDate: targetDate))
+    }
 
     var body: some View {
         Text(countdownLabel)
             .font(.caption)
             .foregroundStyle(.white.opacity(0.85))
             .monospacedDigit()
-            .onAppear { startTimer() }
-            .onDisappear { timer?.invalidate() }
+            .onAppear { countdown.start() }
+            .onDisappear { countdown.stop() }
     }
 
     private var countdownLabel: String {
-        if secondsRemaining <= 0 {
-            return "지금 출발하세요!"
-        } else if secondsRemaining < 60 {
-            return "\(secondsRemaining)초 남음"
-        } else if secondsRemaining < 3600 {
-            let mins = secondsRemaining / 60
-            let secs = secondsRemaining % 60
-            return secondsRemaining <= 1800 ? "\(mins)분 \(secs)초 남음" : "\(mins)분 남음"
-        } else {
-            let hours = secondsRemaining / 3600
-            let mins = (secondsRemaining % 3600) / 60
-            return "\(hours)시간 \(mins)분 남음"
+        let s = countdown.secondsRemaining
+        if s <= 0 { return "지금 출발하세요!" }
+        if s < 60 { return "\(s)초 남음" }
+        if s < 3600 {
+            let mins = s / 60, secs = s % 60
+            return s <= 1800 ? "\(mins)분 \(secs)초 남음" : "\(mins)분 남음"
         }
-    }
-
-    private func startTimer() {
-        updateAndReschedule()
-    }
-
-    private func updateAndReschedule() {
-        timer?.invalidate()
-        let seconds = Int(targetDate.timeIntervalSince(Date()))
-        secondsRemaining = max(0, seconds)
-        guard secondsRemaining > 0 else { return }
-        let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
-        // RunLoop.main(.common) — 스크롤 중에도 갱신, 메인 스레드 보장
-        let newTimer = Timer(timeInterval: interval, repeats: false) { _ in
-            updateAndReschedule()
-        }
-        timer = newTimer
-        RunLoop.main.add(newTimer, forMode: .common)
+        let hours = s / 3600, mins = (s % 3600) / 60
+        return "\(hours)시간 \(mins)분 남음"
     }
 }
 
@@ -445,51 +425,35 @@ private struct DepartureCountdownBannerText: View {
 
 private struct DepartureCountdownDetailView: View {
 
-    let alertAt: Date
-    @State private var secondsRemaining: Int = 0
-    @State private var timer: Timer?
+    @StateObject private var countdown: CountdownTimer
+
+    init(alertAt: Date) {
+        _countdown = StateObject(wrappedValue: CountdownTimer(targetDate: alertAt))
+    }
 
     var body: some View {
         VStack(spacing: 4) {
             Text(countdownText)
                 .font(.title3)
                 .fontWeight(.bold)
-                .foregroundStyle(secondsRemaining <= 600 ? OdiyaColors.nudge : OdiyaColors.primary)
+                .foregroundStyle(countdown.secondsRemaining <= 600 ? OdiyaColors.nudge : OdiyaColors.primary)
                 .monospacedDigit()
             Text("출발까지")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
-        .onAppear { startTimer() }
-        .onDisappear { timer?.invalidate() }
+        .onAppear { countdown.start() }
+        .onDisappear { countdown.stop() }
     }
 
     private var countdownText: String {
-        if secondsRemaining <= 0 { return "지금 출발!" }
-        if secondsRemaining <= 1800 {
-            let mins = secondsRemaining / 60
-            let secs = secondsRemaining % 60
+        let s = countdown.secondsRemaining
+        if s <= 0 { return "지금 출발!" }
+        if s <= 1800 {
+            let mins = s / 60, secs = s % 60
             return mins > 0 ? "\(mins)분 \(secs)초" : "\(secs)초"
         }
-        return "\(secondsRemaining / 60)분"
-    }
-
-    private func startTimer() {
-        updateAndReschedule()
-    }
-
-    private func updateAndReschedule() {
-        timer?.invalidate()
-        let seconds = Int(alertAt.timeIntervalSince(Date()))
-        secondsRemaining = max(0, seconds)
-        guard secondsRemaining > 0 else { return }
-        let interval: TimeInterval = secondsRemaining <= 1800 ? 1 : 60
-        // RunLoop.main(.common) — 스크롤 중에도 갱신, 메인 스레드 보장
-        let newTimer = Timer(timeInterval: interval, repeats: false) { _ in
-            updateAndReschedule()
-        }
-        timer = newTimer
-        RunLoop.main.add(newTimer, forMode: .common)
+        return "\(s / 60)분"
     }
 }
 

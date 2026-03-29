@@ -3,13 +3,19 @@ import SwiftUI
 struct ProfileMenuView: View {
 
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var router: RootRouter
     @State private var showLogoutAlert = false
     @State private var user: User = User(id: 0, nickname: "", profileImageUrl: nil)
 
     private let userRepository: UserRepository
+    private let authUseCase: AuthUseCaseProtocol
 
-    init(userRepository: UserRepository = UserRepositoryImpl()) {
+    init(
+        userRepository: UserRepository = UserRepositoryImpl(),
+        authUseCase: AuthUseCaseProtocol = AuthUseCase()
+    ) {
         self.userRepository = userRepository
+        self.authUseCase = authUseCase
     }
 
     var body: some View {
@@ -50,8 +56,11 @@ struct ProfileMenuView: View {
             .alert("로그아웃", isPresented: $showLogoutAlert) {
                 Button("취소", role: .cancel) {}
                 Button("로그아웃", role: .destructive) {
-                    // TODO: 로그아웃 처리
-                    dismiss()
+                    Task {
+                        try? await authUseCase.logout()
+                        dismiss()
+                        router.navigateToLogin()
+                    }
                 }
             } message: {
                 Text("정말 로그아웃하시겠어요?")

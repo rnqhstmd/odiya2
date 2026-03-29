@@ -207,11 +207,15 @@ final class CalendarViewModel: ObservableObject {
 
     // MARK: - Display Helpers
 
+    private static let monthTitleFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "ko_KR")
+        f.dateFormat = "yyyy년 M월"
+        return f
+    }()
+
     func monthTitle(for date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy년 M월"
-        return formatter.string(from: date)
+        Self.monthTitleFormatter.string(from: date)
     }
 
     var korCalendar: Calendar { koreanCalendar }
