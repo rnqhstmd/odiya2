@@ -40,11 +40,16 @@ struct MyAppointmentsView: View {
                     .tint(OdiyaColors.primary)
                 }
             }
-            .sheet(isPresented: $showCreateAppointment) {
+            .sheet(isPresented: $showCreateAppointment, onDismiss: {
+                Task { await viewModel.loadAppointments() }
+            }) {
                 CreateAppointmentView()
             }
             .onAppear {
                 Task { await viewModel.loadAppointments() }
+            }
+            .refreshable {
+                await viewModel.loadAppointments()
             }
             .overlay {
                 if viewModel.isLoading && viewModel.upcomingAppointments.isEmpty && viewModel.pastAppointments.isEmpty {
@@ -134,31 +139,35 @@ struct MyAppointmentsView: View {
     // MARK: - Empty States
 
     private var emptyUpcoming: some View {
-        Spacer()
-            .frame(maxHeight: .infinity)
-            .overlay(
-                EmptyStateView(
-                    iconName: "calendar.badge.plus",
-                    title: "다가오는 약속이 없어요",
-                    description: "새로운 약속을 만들어보세요",
-                    actionTitle: "약속 만들기",
-                    action: {
-                        showCreateAppointment = true
-                    }
-                )
+        ScrollView {
+            EmptyStateView(
+                iconName: "calendar.badge.plus",
+                title: "다가오는 약속이 없어요",
+                description: "새로운 약속을 만들어보세요",
+                actionTitle: "약속 만들기",
+                action: {
+                    showCreateAppointment = true
+                }
             )
+            .frame(maxWidth: .infinity, minHeight: 300)
+        }
+        .refreshable {
+            await viewModel.loadAppointments()
+        }
     }
 
     private var emptyPast: some View {
-        Spacer()
-            .frame(maxHeight: .infinity)
-            .overlay(
-                EmptyStateView(
-                    iconName: "clock.arrow.circlepath",
-                    title: "지난 약속이 없어요",
-                    description: "약속을 잡고 추억을 만들어보세요"
-                )
+        ScrollView {
+            EmptyStateView(
+                iconName: "clock.arrow.circlepath",
+                title: "지난 약속이 없어요",
+                description: "약속을 잡고 추억을 만들어보세요"
             )
+            .frame(maxWidth: .infinity, minHeight: 300)
+        }
+        .refreshable {
+            await viewModel.loadAppointments()
+        }
     }
 }
 

@@ -45,8 +45,13 @@ struct CalendarView: View {
                 Divider()
 
                 // 선택된 날짜 약속 목록
-                DayAppointmentListView(viewModel: viewModel)
-                    .frame(maxHeight: .infinity)
+                ScrollView {
+                    DayAppointmentListView(viewModel: viewModel)
+                }
+                .frame(maxHeight: .infinity)
+                .refreshable {
+                    await viewModel.reloadCurrentMonth()
+                }
             }
         }
     }

@@ -22,7 +22,9 @@ final class AppointmentRepositoryImpl: AppointmentRepository {
             endpoint: .getAppointment(id: id),
             responseType: AppointmentDetailResponseDTO.self
         )
-        return dto.toDomain()
+        var appointment = dto.toDomain()
+        appointment.currentUserIsHost = dto.isHost
+        return appointment
     }
 
     func getMyAppointments(status: String, cursor: Int64?, size: Int) async throws -> (appointments: [Appointment], hasNext: Bool) {

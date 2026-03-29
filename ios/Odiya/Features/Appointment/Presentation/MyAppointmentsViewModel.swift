@@ -32,6 +32,7 @@ final class MyAppointmentsViewModel: ObservableObject {
     // MARK: - Methods
 
     func loadAppointments() async {
+        guard !isLoading else { return }
         isLoading = true
         errorMessage = nil
         defer { isLoading = false }

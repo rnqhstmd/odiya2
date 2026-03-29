@@ -9,11 +9,13 @@ enum NotificationType: String, CaseIterable {
     case nudge              = "NUDGE"
     case appointmentConfirmed = "APPOINTMENT_CONFIRMED"
     case appointmentCancelled = "APPOINTMENT_CANCELLED"
+    case friendAccepted     = "FRIEND_ACCEPTED"
     case unknown            = "UNKNOWN"
 
     var iconName: String {
         switch self {
         case .friendRequest:        return "person.badge.plus"
+        case .friendAccepted:       return "person.badge.checkmark"
         case .appointmentInvite:    return "calendar.badge.plus"
         case .departureAlert:       return "bell.badge.fill"
         case .nudge:                return "megaphone.fill"
@@ -118,6 +120,7 @@ struct Appointment: Identifiable, Equatable {
     var durationMinutes: Int?
     var departurePlaceLabel: String?
     var departureAlertAt: Date?
+    var currentUserIsHost: Bool = false
 
     var isUpcoming: Bool {
         status == .confirmed && dateTime > Date()

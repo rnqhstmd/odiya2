@@ -12,11 +12,17 @@ struct NotificationListView: View {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if viewModel.notifications.isEmpty {
-                    EmptyStateView(
-                        iconName: "bell.slash",
-                        title: "알림이 없어요",
-                        description: "새로운 알림이 오면 여기에 표시돼요"
-                    )
+                    ScrollView {
+                        EmptyStateView(
+                            iconName: "bell.slash",
+                            title: "알림이 없어요",
+                            description: "새로운 알림이 오면 여기에 표시돼요"
+                        )
+                        .frame(maxWidth: .infinity, minHeight: 300)
+                    }
+                    .refreshable {
+                        await viewModel.loadNotifications()
+                    }
                 } else {
                     List {
                         ForEach(viewModel.groupedNotifications, id: \.key) { group in
@@ -49,6 +55,9 @@ struct NotificationListView: View {
                         }
                     }
                     .listStyle(.plain)
+                    .refreshable {
+                        await viewModel.loadNotifications()
+                    }
                 }
             }
             .navigationTitle("알림")
