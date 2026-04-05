@@ -11,16 +11,31 @@ final class AddFriendViewModel: ObservableObject {
     @Published var alertMessage: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
+    @Published var myUserId: Int64?
 
     // MARK: - Dependencies
 
     private let repository: FriendRepository
+    private let userRepository: UserRepository
 
-    init(repository: FriendRepository = FriendRepositoryImpl()) {
+    init(
+        repository: FriendRepository = FriendRepositoryImpl(),
+        userRepository: UserRepository = UserRepositoryImpl()
+    ) {
         self.repository = repository
+        self.userRepository = userRepository
     }
 
     // MARK: - Load
+
+    func loadMyUserId() async {
+        do {
+            let profile = try await userRepository.getMyProfile()
+            myUserId = profile.id
+        } catch {
+            // QR 기능에 필수적이지 않으므로 무시
+        }
+    }
 
     func loadPendingRequests() async {
         isLoading = true

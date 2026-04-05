@@ -52,6 +52,21 @@ final class ProfileViewModel: ObservableObject {
         }
     }
 
+    func uploadProfileImage(_ imageData: Data) {
+        isLoading = true
+
+        Task {
+            do {
+                user = try await userUseCase.uploadAndUpdateProfileImage(imageData)
+            } catch let error as APIError {
+                errorMessage = error.userMessage
+            } catch {
+                errorMessage = "프로필 이미지 변경에 실패했습니다."
+            }
+            isLoading = false
+        }
+    }
+
     func logout() {
         Task {
             try? await authUseCase.logout()

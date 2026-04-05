@@ -1,0 +1,30 @@
+cloud:
+  aws:
+    s3:
+      bucket: ${S3_BUCKET_NAME:}
+      region: ${AWS_REGION:ap-northeast-2}
+      # access-key/secret-key를 비우면 DefaultCredentialsProvider(환경변수/IAM Role 체인)로 fallback.
+      access-key: ${AWS_ACCESS_KEY:}
+      secret-key: ${AWS_SECRET_KEY:}
+      presigned-url-expiration: 600
+
+---
+spring.config.activate.on-profile: local, test
+
+cloud:
+  aws:
+    s3:
+      bucket: odiya-local-bucket
+      region: ap-northeast-2
+      access-key: local-access-key
+      secret-key: local-secret-key
+      presigned-url-expiration: 600
+
+---
+spring.config.activate.on-profile: dev
+
+---
+spring.config.activate.on-profile: qa
+
+---
+spring.config.activate.on-profile: prd

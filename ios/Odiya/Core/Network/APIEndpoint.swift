@@ -20,6 +20,9 @@ enum APIEndpoint {
     case deleteAccount
     case searchUsers(nickname: String)
 
+    // Storage
+    case getPresignedURL
+
     // Friend
     case getFriends(tagId: Int64?)
     case sendFriendRequest
@@ -83,6 +86,7 @@ enum APIEndpoint {
         case .updateProfileImage: return "/api/v1/users/me/profile-image"
         case .deleteAccount:    return "/api/v1/users/me"
         case .searchUsers:      return "/api/v1/users/search"
+        case .getPresignedURL:  return "/api/v1/storage/presigned-url"
         case .getFriends:       return "/api/v1/friends"
         case .sendFriendRequest:            return "/api/v1/friends/request"
         case .getReceivedRequests:          return "/api/v1/friends/requests/received"
@@ -167,7 +171,8 @@ enum APIEndpoint {
         switch self {
         case .kakaoLogin, .refreshToken, .logout,
              .sendFriendRequest, .acceptFriendRequest, .rejectFriendRequest,
-             .createTag, .createDeparturePlace:
+             .createTag, .createDeparturePlace,
+             .getPresignedURL:
             return .post
         case .getMyProfile, .getFriends, .getReceivedRequests, .getTags, .searchUsers,
              .getDeparturePlaces, .getUserSettings, .getCalendarData:

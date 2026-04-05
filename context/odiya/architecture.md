@@ -20,6 +20,7 @@
 | 푸시 | FCM (Firebase Cloud Messaging) | APNs 경유 |
 | 모니터링 | Prometheus + Grafana | Micrometer 기반 |
 | 스케줄러 | Spring Batch | 이동시간 재계산, 출발 알림 |
+| 이미지 스토리지 | AWS S3 (Presigned URL) | iOS 앱이 백엔드 경유 없이 직접 PUT 업로드 |
 | 배포 (서버) | AWS EC2 | |
 | 배포 (앱) | TestFlight | |
 
@@ -39,7 +40,8 @@ odiya2/backend/
 ├── modules/
 │   ├── jpa                   ← MySQL + Hibernate + QueryDSL + BaseEntity
 │   ├── redis                 ← Master/Replica Redis + Lettuce
-│   └── kafka                 ← 프로듀서/컨슈머 설정
+│   ├── kafka                 ← 프로듀서/컨슈머 설정
+│   └── storage               ← AWS S3 Presigned URL 발급 (S3Presigner)
 └── supports/
     ├── jackson               ← JSON 직렬화
     ├── logging               ← Logback + Slack 알림
@@ -75,6 +77,7 @@ Infrastructure (JPA, Redis, 외부 API)
 | Device | DeviceV1Controller | - | DeviceTokenService | DeviceToken | ✅ 완료 |
 | Place (검색) | PlaceV1Controller | - | PlaceService | - | ✅ 완료 |
 | TravelTime | - (내부 서비스) | - | TravelTimeService | TravelTime | ✅ 완료 |
+| Storage | StorageV1Controller | - | StorageService | - (모듈 분리) | ✅ 완료 — Presigned URL 발급 |
 
 ## 외부 API 연동
 
@@ -85,6 +88,7 @@ Infrastructure (JPA, Redis, 외부 API)
 | 카카오모빌리티 API | 백엔드 | `Authorization: KakaoAK {REST_API_KEY}` | 자동차 이동시간 |
 | ODsay API | 백엔드 | Query param `apiKey` | 대중교통 이동시간 |
 | FCM (Firebase) | 백엔드 | 서비스 계정 JSON | 푸시 알림 전송 |
+| AWS S3 | 백엔드(Presign) + iOS(PUT) | `DefaultCredentialsProvider` 체인 또는 정적 키 | 프로필 이미지 스토리지 |
 | 카카오맵 SDK | iOS | 네이티브 앱 키 (SDK init) | 지도 렌더링 |
 | 카카오 로그인 SDK | iOS | 네이티브 앱 키 (SDK init) | 소셜 로그인 |
 | 카카오 ShareApi | iOS | 네이티브 앱 키 (SDK init) | 약속 초대 공유 |
