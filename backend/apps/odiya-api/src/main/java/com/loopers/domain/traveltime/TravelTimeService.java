@@ -13,6 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
+/**
+ * 이동시간 계산 도메인 서비스.
+ *
+ * <p><b>NOTE (tech-debt #M2):</b> 본 클래스는 여전히 {@link Service @Service}와
+ * {@link Transactional @Transactional} Spring 어노테이션에 의존하고 있다. 이는
+ * "도메인 계층에서 Spring 의존 제거(M2)" 범위로, 이번 PR의 M3(외부 인프라 의존성 포트 추상화)
+ * 작업과는 별개 이슈다. 해당 어노테이션 제거는 Application 레이어에 별도 bean 등록 설정을 두는
+ * 후속 PR에서 일괄 처리한다.
+ */
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -26,7 +35,7 @@ public class TravelTimeService {
 
     /**
      * Calculate and save travel time for a participant.
-     * Flow: null check -> near-range check (withinDistanceMeters) -> cache -> API -> fallback -> DB save
+     * Flow: null check -> zero-travel-range check -> cache -> API -> fallback -> DB save
      */
     @Transactional
     public TravelTime calculateAndSave(AppointmentParticipant participant) {
@@ -67,8 +76,8 @@ public class TravelTimeService {
     private DurationResult calculateDuration(double originLat, double originLng,
                                              double destLat, double destLng,
                                              TransportType transportType) {
-        // E-2: near-range check — 출발지/목적지가 설정된 임계 거리(기본 50m) 이내면 0분으로 처리
-        if (isWithinDirectRange(originLat, originLng, destLat, destLng)) {
+        // E-2: 출발지/목적지가 설정된 임계 거리(service.travel-time.within-distance-meters) 이내면 0분으로 처리
+        if (isWithinZeroTravelRange(originLat, originLng, destLat, destLng)) {
             return new DurationResult(0, false, false);
         }
 
@@ -104,10 +113,11 @@ public class TravelTimeService {
     }
 
     /**
-     * 출발지와 목적지가 설정된 직접 이동 임계 거리({@code properties.withinDistanceMeters()}) 이내인지 여부.
-     * 이내라면 외부 API 호출 없이 0분으로 간주한다.
+     * 출발지와 목적지가 "이동시간 0분"으로 간주되는 임계 거리 이내인지 여부.
+     * 임계값은 {@code properties.withinDistanceMeters()} ({@code service.travel-time.within-distance-meters})로
+     * 설정 가능하며, 이 거리 이내면 외부 API 호출 없이 즉시 0분을 반환한다.
      */
-    private boolean isWithinDirectRange(double lat1, double lng1, double lat2, double lng2) {
+    private boolean isWithinZeroTravelRange(double lat1, double lng1, double lat2, double lng2) {
         return haversineDistance(lat1, lng1, lat2, lng2) <= properties.withinDistanceMeters();
     }
 

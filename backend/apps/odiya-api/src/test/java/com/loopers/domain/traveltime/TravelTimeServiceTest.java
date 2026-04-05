@@ -55,7 +55,7 @@ class TravelTimeServiceTest {
             travelTimeCacheRepository,
             userSettingsRepository,
             externalTravelTimeProvider,
-            TravelTimeProperties.defaults()
+            new TravelTimeProperties(80.0, 6_371_000.0, 50.0, 1.4, 40.0, 1.5, 30.0)
         );
         lenient().when(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
             .thenReturn(Optional.empty());

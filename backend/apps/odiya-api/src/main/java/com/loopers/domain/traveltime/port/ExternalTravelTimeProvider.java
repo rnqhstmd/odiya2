@@ -25,7 +25,11 @@ public interface ExternalTravelTimeProvider {
      * @param destLat 목적지 위도
      * @param destLng 목적지 경도
      * @return 소요 분
-     * @throws RuntimeException 외부 API 호출 실패 시 (호출자가 fallback 처리)
+     * @throws com.loopers.support.error.CoreException 외부 API 호출 실패 시
+     *         (인프라 어댑터가 던지는 {@code CoreException} 또는 그 서브타입).
+     *         호출자({@code TravelTimeService})가 catch하여 Haversine 기반 fallback으로 전환한다.
+     * @throws IllegalArgumentException {@link TransportType#WALKING}이 전달된 경우.
+     *         WALKING은 도메인 서비스 내부에서 직접 처리해야 하며 이 포트를 통하지 않는다.
      */
     int calculateDuration(TransportType transportType,
                           double originLat, double originLng,

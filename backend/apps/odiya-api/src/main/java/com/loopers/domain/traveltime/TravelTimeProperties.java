@@ -20,17 +20,4 @@ public record TravelTimeProperties(
     @DefaultValue("1.5")      double transitDetourFactor,
     @DefaultValue("30.0")     double transitSpeedKmh
 ) {
-
-    /** 테스트용 기본값 팩토리 — 단위 테스트에서 수동 주입할 때 사용한다. */
-    public static TravelTimeProperties defaults() {
-        return new TravelTimeProperties(
-            80.0,
-            6_371_000.0,
-            50.0,
-            1.4,
-            40.0,
-            1.5,
-            30.0
-        );
-    }
 }

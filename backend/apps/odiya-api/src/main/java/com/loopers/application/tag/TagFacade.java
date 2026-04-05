@@ -6,8 +6,6 @@ import com.loopers.domain.tag.Tag;
 import com.loopers.domain.tag.TagService;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserService;
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +41,7 @@ public class TagFacade {
         // 1. 소유권 검증 먼저
         Tag tag = tagService.getTag(tagId);
         if (!tag.getOwner().getId().equals(userId)) {
-            throw new CoreException(ErrorType.NOT_FOUND, ErrorMessages.TAG_NOT_FOUND);
+            throw ErrorMessages.TAG_NOT_FOUND.asException();
         }
         tag.guardDeletable();
 

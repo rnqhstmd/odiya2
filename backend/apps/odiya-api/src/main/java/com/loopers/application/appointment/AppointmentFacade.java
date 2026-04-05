@@ -61,9 +61,9 @@ public class AppointmentFacade {
         DeparturePlace departurePlace = null;
         if (departurePlaceId != null) {
             departurePlace = departurePlaceRepository.findActiveById(departurePlaceId)
-                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, ErrorMessages.DEPARTURE_PLACE_NOT_FOUND));
+                .orElseThrow(ErrorMessages.DEPARTURE_PLACE_NOT_FOUND::asException);
             if (!departurePlace.isOwnedBy(hostUserId)) {
-                throw new CoreException(ErrorType.NOT_FOUND, ErrorMessages.DEPARTURE_PLACE_NOT_FOUND);
+                throw ErrorMessages.DEPARTURE_PLACE_NOT_FOUND.asException();
             }
         }
 
@@ -77,7 +77,7 @@ public class AppointmentFacade {
                 continue;
             }
             if (!friendService.isAcceptedFriend(hostUserId, participantId)) {
-                throw new CoreException(ErrorType.BAD_REQUEST, ErrorMessages.INVITE_REQUIRES_FRIENDSHIP);
+                throw ErrorMessages.INVITE_REQUIRES_FRIENDSHIP.asException();
             }
             User participant = userService.getUser(participantId);
             appointmentService.addParticipant(appointment, participant, TransportType.TRANSIT);
@@ -338,10 +338,10 @@ public class AppointmentFacade {
         List<Long> uniqueUserIds = userIds.stream().distinct().toList();
         for (Long userId : uniqueUserIds) {
             if (existingParticipantIds.contains(userId)) {
-                throw new CoreException(ErrorType.CONFLICT, ErrorMessages.PARTICIPANT_ALREADY_INVITED);
+                throw ErrorMessages.PARTICIPANT_ALREADY_INVITED.asException();
             }
             if (!friendService.isAcceptedFriend(hostUserId, userId)) {
-                throw new CoreException(ErrorType.BAD_REQUEST, ErrorMessages.INVITE_REQUIRES_FRIENDSHIP);
+                throw ErrorMessages.INVITE_REQUIRES_FRIENDSHIP.asException();
             }
             User user = userService.getUser(userId);
             appointmentService.addParticipant(appointment, user, TransportType.TRANSIT);
@@ -358,9 +358,9 @@ public class AppointmentFacade {
         DeparturePlace departurePlace = null;
         if (departurePlaceId != null) {
             departurePlace = departurePlaceRepository.findActiveById(departurePlaceId)
-                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, ErrorMessages.DEPARTURE_PLACE_NOT_FOUND));
+                .orElseThrow(ErrorMessages.DEPARTURE_PLACE_NOT_FOUND::asException);
             if (!departurePlace.isOwnedBy(userId)) {
-                throw new CoreException(ErrorType.NOT_FOUND, ErrorMessages.DEPARTURE_PLACE_NOT_FOUND);
+                throw ErrorMessages.DEPARTURE_PLACE_NOT_FOUND.asException();
             }
         }
 
@@ -429,7 +429,7 @@ public class AppointmentFacade {
         boolean isParticipant = appointment.getParticipants().stream()
             .anyMatch(p -> p.getUser().getId().equals(userId));
         if (!isParticipant) {
-            throw new CoreException(ErrorType.NOT_FOUND, ErrorMessages.APPOINTMENT_PARTICIPANT_NOT_FOUND);
+            throw ErrorMessages.APPOINTMENT_PARTICIPANT_NOT_FOUND.asException();
         }
     }
 }

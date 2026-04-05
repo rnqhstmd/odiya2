@@ -9,8 +9,6 @@ import com.loopers.domain.tag.Tag;
 import com.loopers.domain.tag.TagService;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserService;
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -33,7 +31,7 @@ public class FriendFacade {
         if (tagId != null) {
             Tag tag = tagService.getTag(tagId);
             if (!tag.getOwner().getId().equals(userId)) {
-                throw new CoreException(ErrorType.NOT_FOUND, ErrorMessages.TAG_NOT_FOUND);
+                throw ErrorMessages.TAG_NOT_FOUND.asException();
             }
         }
         List<Friendship> friendships = friendService.getAcceptedFriends(userId, tagId);
@@ -104,7 +102,7 @@ public class FriendFacade {
     public void changeFriendTag(Long userId, Long friendUserId, Long tagId) {
         Tag tag = tagService.getTag(tagId);
         if (!tag.getOwner().getId().equals(userId)) {
-            throw new CoreException(ErrorType.NOT_FOUND, ErrorMessages.TAG_NOT_FOUND);
+            throw ErrorMessages.TAG_NOT_FOUND.asException();
         }
         friendService.changeFriendTag(userId, friendUserId, tag);
     }

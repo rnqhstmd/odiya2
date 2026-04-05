@@ -46,6 +46,13 @@ extension Date {
         return formatter
     }()
 
+    private static let monthTitleFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "yyyy년 M월"
+        return formatter
+    }()
+
     // MARK: - Formatted Strings
 
     /// "M월 d일 (E) a h:mm" — 약속 카드 등 한 줄 표시용
@@ -76,5 +83,10 @@ extension Date {
     /// "E" — 요일 짧은 표시 (월, 화, 수...)
     var weekdayShortFormatted: String {
         Self.weekdayShortFormatter.string(from: self)
+    }
+
+    /// "yyyy년 M월" — 캘린더 월 헤더 표시용
+    var monthTitleFormatted: String {
+        Self.monthTitleFormatter.string(from: self)
     }
 }
