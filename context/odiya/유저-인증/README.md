@@ -1,7 +1,7 @@
 # 유저 인증
 
 - 작성일: 2026-03-03
-- 수정일: 2026-03-04 (백엔드 API 명세 추가 — 구현 완료 기준)
+- 수정일: 2026-04-05 (프로필 이미지 변경 S3 Presigned URL 흐름, Storage API 명세 추가 — PR #32)
 - 관련 레포: odiya-ios, odiya-api
 
 ---
@@ -41,6 +41,22 @@ KakaoTalk OAuth를 유일한 로그인 수단으로 사용한다.
 |------|------|-----------|
 | 닉네임 | 카카오 닉네임 (초기값) | 앱 내 변경 가능 |
 | 프로필 이미지 | 카카오 프로필 이미지 (초기값) | 앱 내 변경 가능 |
+
+### 프로필 이미지 변경 흐름 (S3 Presigned URL)
+
+```
+1. ProfileView → PhotosPicker로 이미지 선택
+2. Task.detached: 1024×1024 리사이즈 + JPEG 0.8 압축 (UI 스레드 블로킹 방지)
+3. POST /api/v1/storage/presigned-url → { presignedUrl, imageUrl } 수령
+4. iOS ImageUploadService: presignedUrl로 S3에 직접 PUT (Content-Type 포함)
+5. PATCH /api/v1/users/me/profile-image { profileImageUrl: imageUrl }
+6. 서버가 User.profileImageUrl 갱신 → 응답으로 갱신된 UserResponse 반환
+```
+
+**보안 정책:**
+- Presigned URL은 인증된 사용자 본인 스코프로만 발급 (`profile-images/{userId}/{uuid}/{filename}`)
+- 파일명은 DTO 정규식(`^[\w\-.]+\.(jpg|jpeg|png|webp|heic)$`) + 서비스 단 `new File().getName()` 이중 방어
+- URL 만료: 기본 10분 (`presigned-url-expiration: 600`)
 
 ---
 
@@ -186,3 +202,37 @@ KakaoTalk OAuth를 유일한 로그인 수단으로 사용한다.
 **Response:** 데이터 없음
 
 **동작:** soft-delete (deletedAt 설정) → 관련 데이터 정리
+
+---
+
+### 스토리지 API — StorageV1Controller (✅ 구현 완료)
+
+> 프로필 이미지 같은 사용자 파일을 S3에 업로드하기 위한 Presigned URL을 발급한다.
+
+#### 8. Presigned URL 발급
+
+| 항목 | 값 |
+|------|-----|
+| Method | `POST` |
+| URL | `/api/v1/storage/presigned-url` |
+| iOS 화면 | ProfileView (프로필 이미지 변경) |
+
+**Request Body:**
+
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| fileName | String | O | 파일명 (정규식 `^[\w\-.]+\.(jpg\|jpeg\|png\|webp\|heic)$`, 최대 255자) |
+| contentType | String | O | MIME (`image/jpeg`, `image/png`, `image/webp`, `image/heic`) |
+
+**Response Body (`PresignedUrlResponse`):**
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| presignedUrl | String | iOS가 PUT 업로드할 시간 제한 URL (기본 만료 10분) |
+| imageUrl | String | 업로드 완료 후 프로필 이미지 URL로 저장할 public URL |
+
+**동작:**
+1. 인증된 사용자 ID로 objectKey 생성: `profile-images/{userId}/{uuid}/{sanitizedFileName}`
+2. `S3Presigner.presignPutObject()`로 presigned URL 발급
+3. Path Traversal 방지: `new File(fileName).getName()`으로 basename만 추출 (DTO 정규식과 이중 방어)
+4. 인증 체계: AWS 자격증명은 `accessKey`/`secretKey` 설정 시 `StaticCredentialsProvider`, 비어 있으면 `DefaultCredentialsProvider` (IAM Role/환경변수 체인)로 fallback

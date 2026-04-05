@@ -1,7 +1,7 @@
 # 친구 관리
 
 - 작성일: 2026-03-03
-- 수정일: 2026-03-04 (요청/수락 플로우, 차단=끊기 통합, FriendshipStatus, AddFriendView 재작성)
+- 수정일: 2026-04-05 (QR 코드 친구 추가 섹션 추가 — PR #32)
 - 관련 레포: odiya-ios, odiya-api
 
 ---
@@ -23,6 +23,40 @@
 4. 상대방이 수락 → 양방향 친구 관계 확정
 5. 수락 완료된 친구만 약속에 초대 가능
 ```
+
+### QR 코드 친구 추가
+
+내 QR 코드를 보여주거나 상대의 QR을 스캔하여 친구 요청을 보낸다. **백엔드 추가 구현 없이 기존 친구 요청 API를 재사용**한다.
+
+#### 플로우
+
+```
+[내 QR 생성]
+1. AddFriendView → "내 QR" 버튼
+2. myUserId가 로드된 경우에만 활성화
+3. QRCodeView: CIQRCodeGenerator로 `odiya://friend?userId={myUserId}` 인코딩하여 표시
+
+[QR 스캔]
+1. AddFriendView → "스캔하기" 버튼 → QRScannerView (fullScreenCover)
+2. AVCaptureSession + AVCaptureMetadataOutput(.qr)로 인식
+3. QR 값 파싱 → `odiya://friend?userId={id}` 검증
+4. 자기 자신 스캔 방지 (myUserId와 동일하면 차단)
+5. 유효한 userId면 기존 POST /api/v1/friends/request 호출
+6. 성공 시 Alert → dismiss / 실패/자기QR/유효하지 않은 QR 시 Alert → 재스캔
+```
+
+#### 딥링크 스킴
+
+| 스킴 | 설명 |
+|------|------|
+| `odiya://friend?userId={id}` | QR 코드에 인코딩되는 친구 요청 링크 |
+
+#### 안정성 가드
+
+- **중복 스캔 방지**: `isProcessing` 플래그 + `stopScanning()` 즉시 호출로 delegate 재진입 차단
+- **세션 레이스 방지**: serial `sessionQueue`로 `beginConfiguration/startRunning/stopRunning` 순차 실행
+- **재구성 가드**: `isConfigured` 플래그로 `addInput`/`addOutput` 중복 누적 방지
+- **복구 가능 알림**: 자기 QR / 유효하지 않은 QR / 친구 요청 실패 시 `resumeScanning()` 으로 세션 재시작
 
 ---
 
