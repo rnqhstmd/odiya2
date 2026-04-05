@@ -289,7 +289,7 @@ struct AppointmentDetailView: View {
                     Label("카톡 공유", systemImage: "message.fill")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(Color(hex: 0x3A1D1D))
+                        .foregroundStyle(OdiyaColors.kakaoText)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
                         .background(OdiyaColors.kakaoYellow)

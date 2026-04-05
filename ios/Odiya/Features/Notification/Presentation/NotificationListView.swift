@@ -144,7 +144,7 @@ struct NotificationListView: View {
         case .appointmentCancelled:
             return LinearGradient(colors: [OdiyaColors.danger, OdiyaColors.danger.opacity(0.7)], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .friendRequest, .friendAccepted:
-            return LinearGradient(colors: [Color(hex: 0x5AC8FA), Color(hex: 0x007AFF)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            return LinearGradient(colors: [OdiyaColors.tagFriend, OdiyaColors.friendAccentBlue], startPoint: .topLeading, endPoint: .bottomTrailing)
         default:
             return OdiyaColors.primaryGradient
         }

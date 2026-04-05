@@ -1,5 +1,6 @@
 package com.loopers.application.appointment;
 
+import com.loopers.application.common.ErrorMessages;
 import com.loopers.application.notification.NotificationFacade;
 import com.loopers.domain.appointment.Appointment;
 import com.loopers.domain.appointment.AppointmentParticipant;
@@ -60,9 +61,9 @@ public class AppointmentFacade {
         DeparturePlace departurePlace = null;
         if (departurePlaceId != null) {
             departurePlace = departurePlaceRepository.findActiveById(departurePlaceId)
-                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 출발지입니다."));
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, ErrorMessages.DEPARTURE_PLACE_NOT_FOUND));
             if (!departurePlace.isOwnedBy(hostUserId)) {
-                throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 출발지입니다.");
+                throw new CoreException(ErrorType.NOT_FOUND, ErrorMessages.DEPARTURE_PLACE_NOT_FOUND);
             }
         }
 
@@ -76,7 +77,7 @@ public class AppointmentFacade {
                 continue;
             }
             if (!friendService.isAcceptedFriend(hostUserId, participantId)) {
-                throw new CoreException(ErrorType.BAD_REQUEST, "친구 관계인 사용자만 초대할 수 있습니다.");
+                throw new CoreException(ErrorType.BAD_REQUEST, ErrorMessages.INVITE_REQUIRES_FRIENDSHIP);
             }
             User participant = userService.getUser(participantId);
             appointmentService.addParticipant(appointment, participant, TransportType.TRANSIT);
@@ -340,7 +341,7 @@ public class AppointmentFacade {
                 throw new CoreException(ErrorType.CONFLICT, "이미 초대된 참여자입니다.");
             }
             if (!friendService.isAcceptedFriend(hostUserId, userId)) {
-                throw new CoreException(ErrorType.BAD_REQUEST, "친구 관계인 사용자만 초대할 수 있습니다.");
+                throw new CoreException(ErrorType.BAD_REQUEST, ErrorMessages.INVITE_REQUIRES_FRIENDSHIP);
             }
             User user = userService.getUser(userId);
             appointmentService.addParticipant(appointment, user, TransportType.TRANSIT);
@@ -357,9 +358,9 @@ public class AppointmentFacade {
         DeparturePlace departurePlace = null;
         if (departurePlaceId != null) {
             departurePlace = departurePlaceRepository.findActiveById(departurePlaceId)
-                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 출발지입니다."));
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, ErrorMessages.DEPARTURE_PLACE_NOT_FOUND));
             if (!departurePlace.isOwnedBy(userId)) {
-                throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 출발지입니다.");
+                throw new CoreException(ErrorType.NOT_FOUND, ErrorMessages.DEPARTURE_PLACE_NOT_FOUND);
             }
         }
 
@@ -428,7 +429,7 @@ public class AppointmentFacade {
         boolean isParticipant = appointment.getParticipants().stream()
             .anyMatch(p -> p.getUser().getId().equals(userId));
         if (!isParticipant) {
-            throw new CoreException(ErrorType.NOT_FOUND, "해당 약속의 참여자가 아닙니다.");
+            throw new CoreException(ErrorType.NOT_FOUND, ErrorMessages.APPOINTMENT_PARTICIPANT_NOT_FOUND);
         }
     }
 }

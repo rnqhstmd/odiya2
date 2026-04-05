@@ -1,5 +1,6 @@
 package com.loopers.application.friend;
 
+import com.loopers.application.common.ErrorMessages;
 import com.loopers.application.notification.NotificationFacade;
 import com.loopers.domain.friend.FriendService;
 import com.loopers.domain.friend.Friendship;
@@ -32,7 +33,7 @@ public class FriendFacade {
         if (tagId != null) {
             Tag tag = tagService.getTag(tagId);
             if (!tag.getOwner().getId().equals(userId)) {
-                throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 태그입니다.");
+                throw new CoreException(ErrorType.NOT_FOUND, ErrorMessages.TAG_NOT_FOUND);
             }
         }
         List<Friendship> friendships = friendService.getAcceptedFriends(userId, tagId);
@@ -103,7 +104,7 @@ public class FriendFacade {
     public void changeFriendTag(Long userId, Long friendUserId, Long tagId) {
         Tag tag = tagService.getTag(tagId);
         if (!tag.getOwner().getId().equals(userId)) {
-            throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 태그입니다.");
+            throw new CoreException(ErrorType.NOT_FOUND, ErrorMessages.TAG_NOT_FOUND);
         }
         friendService.changeFriendTag(userId, friendUserId, tag);
     }

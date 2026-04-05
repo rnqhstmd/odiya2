@@ -59,6 +59,14 @@ odsay:
 
 service:
   default-profile-image-url: ${DEFAULT_PROFILE_IMAGE_URL}
+  travel-time:
+    walking-speed-meters-per-minute: 80.0
+    earth-radius-meters: 6371000.0
+    within-distance-meters: 50.0
+    car-detour-factor: 1.4
+    car-speed-kmh: 40.0
+    transit-detour-factor: 1.5
+    transit-speed-kmh: 30.0
 
 ---
 spring:

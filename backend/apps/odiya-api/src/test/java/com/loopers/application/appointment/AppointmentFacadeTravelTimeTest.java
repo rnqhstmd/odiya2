@@ -7,8 +7,7 @@ import com.loopers.domain.usersettings.TransportType;
 import com.loopers.infrastructure.appointment.AppointmentJpaRepository;
 import com.loopers.infrastructure.appointment.AppointmentParticipantJpaRepository;
 import com.loopers.infrastructure.departureplace.DeparturePlaceJpaRepository;
-import com.loopers.infrastructure.kakao.KakaoMobilityApiClient;
-import com.loopers.infrastructure.odsay.OdsayApiClient;
+import com.loopers.domain.traveltime.port.ExternalTravelTimeProvider;
 import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.AfterEach;
@@ -25,6 +24,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -51,10 +51,7 @@ class AppointmentFacadeTravelTimeTest {
     private DatabaseCleanUp databaseCleanUp;
 
     @MockitoBean
-    private KakaoMobilityApiClient kakaoMobilityApiClient;
-
-    @MockitoBean
-    private OdsayApiClient odsayApiClient;
+    private ExternalTravelTimeProvider externalTravelTimeProvider;
 
     private User host;
     private DeparturePlace departurePlace;
@@ -80,7 +77,7 @@ class AppointmentFacadeTravelTimeTest {
         @Test
         void returnsTravelTime_whenDeparturePlaceIsSet() {
             // arrange
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(30);
 
             // act
@@ -112,7 +109,7 @@ class AppointmentFacadeTravelTimeTest {
         @Test
         void returnsFallbackTravelTime_whenApiThrowsException() {
             // arrange
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willThrow(new RuntimeException("ODsay API 장애"));
 
             // act & assert - 예외가 전파되지 않고, fallback 값이 반환되어야 함
@@ -135,7 +132,7 @@ class AppointmentFacadeTravelTimeTest {
         @Test
         void recalculatesTravelTime_whenCoordinatesChange() {
             // arrange
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(20);
             appointmentFacade.create(
                 host.getId(), "모임", "강남역", "서울 강남구 강남대로 396",
@@ -144,7 +141,7 @@ class AppointmentFacadeTravelTimeTest {
 
             Long appointmentId = appointmentJpaRepository.findAll().get(0).getId();
 
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(45);
 
             // act
@@ -160,7 +157,7 @@ class AppointmentFacadeTravelTimeTest {
         @Test
         void doesNotRecalculate_whenOnlyNameChanges() {
             // arrange
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(20);
             appointmentFacade.create(
                 host.getId(), "모임", "강남역", "서울 강남구 강남대로 396",
@@ -175,15 +172,15 @@ class AppointmentFacadeTravelTimeTest {
                 null, null, null);
 
             // assert: create 시 1번, update 시에는 호출 없음 → 총 1번
-            verify(odsayApiClient, org.mockito.Mockito.times(1))
-                .calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+            verify(externalTravelTimeProvider, org.mockito.Mockito.times(1))
+                .calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble());
         }
 
         @DisplayName("약속 수정 중 이동시간 계산 API 장애 시, Haversine fallback으로 완료된다.")
         @Test
         void completesWithFallback_whenApiThrowsDuringUpdate() {
             // arrange
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(20);
             appointmentFacade.create(
                 host.getId(), "모임", "강남역", "서울 강남구 강남대로 396",
@@ -192,7 +189,7 @@ class AppointmentFacadeTravelTimeTest {
 
             Long appointmentId = appointmentJpaRepository.findAll().get(0).getId();
 
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willThrow(new RuntimeException("API 장애"));
 
             // act & assert - 예외가 전파되지 않고, fallback으로 이동시간이 계산되어야 함
@@ -212,7 +209,7 @@ class AppointmentFacadeTravelTimeTest {
         @Test
         void completesWithFallback_whenApiThrowsDuringDepartureUpdate() {
             // arrange
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(20);
             appointmentFacade.create(
                 host.getId(), "모임", "강남역", "서울 강남구 강남대로 396",
@@ -221,7 +218,7 @@ class AppointmentFacadeTravelTimeTest {
 
             Long appointmentId = appointmentJpaRepository.findAll().get(0).getId();
 
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willThrow(new RuntimeException("API 장애"));
 
             // act & assert - 예외가 전파되지 않고, fallback 값이 반환되어야 함

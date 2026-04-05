@@ -9,10 +9,7 @@ struct DayAppointmentListView: View {
     }
 
     private var dateHeaderText: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "M월 d일 (E)"
-        return formatter.string(from: viewModel.selectedDate)
+        viewModel.selectedDate.shortKoreanDateFormatted
     }
 
     var body: some View {
@@ -82,10 +79,7 @@ private struct AppointmentRow: View {
     let appointment: Appointment
 
     private var timeText: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "HH:mm"
-        return formatter.string(from: appointment.dateTime)
+        appointment.dateTime.hourMinuteFormatted
     }
 
     private var tagColor: Color {

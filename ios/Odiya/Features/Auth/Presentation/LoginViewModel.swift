@@ -31,17 +31,6 @@ final class LoginViewModel: ObservableObject {
         }
     }
 
-    // TODO: Apple 로그인 구현
-    func loginWithApple() {
-        isLoading = true
-        errorMessage = nil
-
-        Task {
-            // TODO: Apple Sign In 연동 구현
-            isLoading = false
-        }
-    }
-
     private func getKakaoToken() async throws -> OAuthToken {
         return try await withCheckedThrowingContinuation { continuation in
             if UserApi.isKakaoTalkLoginAvailable() {

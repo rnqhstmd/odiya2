@@ -1,11 +1,10 @@
 package com.loopers.domain.traveltime;
 
 import com.loopers.domain.appointment.AppointmentParticipant;
+import com.loopers.domain.traveltime.port.ExternalTravelTimeProvider;
 import com.loopers.domain.usersettings.TransportType;
 import com.loopers.domain.usersettings.UserSettings;
 import com.loopers.domain.usersettings.UserSettingsRepository;
-import com.loopers.infrastructure.kakao.KakaoMobilityApiClient;
-import com.loopers.infrastructure.odsay.OdsayApiClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,19 +18,11 @@ import java.util.Optional;
 @Service
 public class TravelTimeService {
 
-    private static final double WALKING_SPEED_METERS_PER_MINUTE = 80.0;
-    private static final double EARTH_RADIUS_METERS = 6_371_000.0;
-    private static final double WITHIN_DISTANCE_METERS = 50.0;
-    private static final double CAR_DETOUR_FACTOR = 1.4;
-    private static final double CAR_SPEED_KMH = 40.0;
-    private static final double TRANSIT_DETOUR_FACTOR = 1.5;
-    private static final double TRANSIT_SPEED_KMH = 30.0;
-
     private final TravelTimeRepository travelTimeRepository;
     private final TravelTimeCacheRepository travelTimeCacheRepository;
     private final UserSettingsRepository userSettingsRepository;
-    private final KakaoMobilityApiClient kakaoMobilityApiClient;
-    private final OdsayApiClient odsayApiClient;
+    private final ExternalTravelTimeProvider externalTravelTimeProvider;
+    private final TravelTimeProperties properties;
 
     /**
      * Calculate and save travel time for a participant.
@@ -104,18 +95,15 @@ public class TravelTimeService {
 
     private int calculateDurationFromApi(TransportType transportType, double originLng, double originLat,
                                          double destLng, double destLat) {
-        return switch (transportType) {
-            case CAR_PARKING, CAR_PICKUP ->
-                kakaoMobilityApiClient.calculateDuration(originLng, originLat, destLng, destLat);
-            case TRANSIT ->
-                odsayApiClient.calculateDuration(originLng, originLat, destLng, destLat);
-            case WALKING ->
-                calculateWalkingDuration(originLat, originLng, destLat, destLng);
-        };
+        if (transportType == TransportType.WALKING) {
+            return calculateWalkingDuration(originLat, originLng, destLat, destLng);
+        }
+        return externalTravelTimeProvider.calculateDuration(
+            transportType, originLng, originLat, destLng, destLat);
     }
 
     private boolean isWithin50Meters(double lat1, double lng1, double lat2, double lng2) {
-        return haversineDistance(lat1, lng1, lat2, lng2) <= WITHIN_DISTANCE_METERS;
+        return haversineDistance(lat1, lng1, lat2, lng2) <= properties.withinDistanceMeters();
     }
 
     double haversineDistance(double lat1, double lng1, double lat2, double lng2) {
@@ -125,12 +113,12 @@ public class TravelTimeService {
                  + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
                  * Math.sin(dLng / 2) * Math.sin(dLng / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return EARTH_RADIUS_METERS * c;
+        return properties.earthRadiusMeters() * c;
     }
 
     private int calculateWalkingDuration(double lat1, double lng1, double lat2, double lng2) {
         double distanceMeters = haversineDistance(lat1, lng1, lat2, lng2);
-        return (int) Math.ceil(distanceMeters / WALKING_SPEED_METERS_PER_MINUTE);
+        return (int) Math.ceil(distanceMeters / properties.walkingSpeedMetersPerMinute());
     }
 
     private int calculateHaversineFallback(double lat1, double lng1, double lat2, double lng2,
@@ -139,15 +127,15 @@ public class TravelTimeService {
         return switch (transportType) {
             case CAR_PARKING, CAR_PICKUP -> {
                 double distanceKm = distanceMeters / 1000.0;
-                double hours = (distanceKm * CAR_DETOUR_FACTOR) / CAR_SPEED_KMH;
+                double hours = (distanceKm * properties.carDetourFactor()) / properties.carSpeedKmh();
                 yield (int) Math.ceil(hours * 60);
             }
             case TRANSIT -> {
                 double distanceKm = distanceMeters / 1000.0;
-                double hours = (distanceKm * TRANSIT_DETOUR_FACTOR) / TRANSIT_SPEED_KMH;
+                double hours = (distanceKm * properties.transitDetourFactor()) / properties.transitSpeedKmh();
                 yield (int) Math.ceil(hours * 60);
             }
-            case WALKING -> (int) Math.ceil(distanceMeters / WALKING_SPEED_METERS_PER_MINUTE);
+            case WALKING -> (int) Math.ceil(distanceMeters / properties.walkingSpeedMetersPerMinute());
         };
     }
 

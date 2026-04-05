@@ -235,9 +235,7 @@ private struct MiniAppointmentLabel: View {
     }
 
     private var timeText: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        return formatter.string(from: appointment.dateTime)
+        appointment.dateTime.hourMinuteFormatted
     }
 
     var body: some View {

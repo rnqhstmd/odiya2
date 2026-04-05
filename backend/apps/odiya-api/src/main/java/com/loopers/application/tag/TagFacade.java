@@ -1,5 +1,6 @@
 package com.loopers.application.tag;
 
+import com.loopers.application.common.ErrorMessages;
 import com.loopers.domain.friend.FriendService;
 import com.loopers.domain.tag.Tag;
 import com.loopers.domain.tag.TagService;
@@ -42,7 +43,7 @@ public class TagFacade {
         // 1. 소유권 검증 먼저
         Tag tag = tagService.getTag(tagId);
         if (!tag.getOwner().getId().equals(userId)) {
-            throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 태그입니다.");
+            throw new CoreException(ErrorType.NOT_FOUND, ErrorMessages.TAG_NOT_FOUND);
         }
         tag.guardDeletable();
 

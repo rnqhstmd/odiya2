@@ -31,7 +31,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     // MARK: - APNs Token
 
     /// APNs 토큰을 받으면 백엔드에 디바이스 등록
-    /// TODO: Firebase Messaging 연동 시 이 메서드 대신 MessagingDelegate.messaging(_:didReceiveRegistrationToken:) 사용
     func application(
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
