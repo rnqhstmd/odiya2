@@ -5,6 +5,7 @@ import com.loopers.domain.traveltime.port.ExternalTravelTimeProvider;
 import com.loopers.domain.usersettings.TransportType;
 import com.loopers.domain.usersettings.UserSettings;
 import com.loopers.domain.usersettings.UserSettingsRepository;
+import com.loopers.support.error.CoreException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -88,12 +89,15 @@ public class TravelTimeService {
         }
 
         // External API call
+        // 외부 API 클라이언트(KakaoMobilityApiClient/OdsayApiClient)는 모든 실패(4xx/5xx/타임아웃/
+        // 빈 응답)를 CoreException으로 래핑한다. CoreException만 catch하여 Haversine fallback으로
+        // 전환하고, 그 외 RuntimeException(NPE 등 프로그래밍 오류)은 그대로 전파한다.
         try {
             int duration = calculateDurationFromApi(transportType, originLat, originLng, destLat, destLng);
             // Save to cache (non-fallback only, D1)
             travelTimeCacheRepository.save(originLat, originLng, destLat, destLng, transportType, duration);
             return new DurationResult(duration, false, false);
-        } catch (Exception e) {
+        } catch (CoreException e) {
             log.warn("외부 API 이동시간 계산 실패, fallback 사용: transportType={}, error={}", transportType, e.getMessage(), e);
         }
 

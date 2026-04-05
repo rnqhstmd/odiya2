@@ -90,4 +90,33 @@ class TravelTimePropertiesBindingTest {
                 });
         }
     }
+
+    @DisplayName("application.yml에 잘못된 값이 제공될 때,")
+    @Nested
+    class WhenInvalidPropertiesProvided {
+
+        @DisplayName("속도 필드가 0으로 설정되면, @Positive 제약 위반으로 컨텍스트 로딩에 실패한다.")
+        @Test
+        void failsFast_whenSpeedIsZero() {
+            contextRunner
+                .withPropertyValues("service.travel-time.car-speed-kmh=0.0")
+                .run(context -> assertThat(context).hasFailed());
+        }
+
+        @DisplayName("속도 필드가 음수로 설정되면, @Positive 제약 위반으로 컨텍스트 로딩에 실패한다.")
+        @Test
+        void failsFast_whenSpeedIsNegative() {
+            contextRunner
+                .withPropertyValues("service.travel-time.walking-speed-meters-per-minute=-10.0")
+                .run(context -> assertThat(context).hasFailed());
+        }
+
+        @DisplayName("거리 임계값이 음수로 설정되면, @Positive 제약 위반으로 컨텍스트 로딩에 실패한다.")
+        @Test
+        void failsFast_whenDistanceIsNegative() {
+            contextRunner
+                .withPropertyValues("service.travel-time.within-distance-meters=-1.0")
+                .run(context -> assertThat(context).hasFailed());
+        }
+    }
 }

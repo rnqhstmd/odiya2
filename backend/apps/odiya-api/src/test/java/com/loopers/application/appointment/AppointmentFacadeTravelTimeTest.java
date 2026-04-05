@@ -9,6 +9,8 @@ import com.loopers.infrastructure.appointment.AppointmentParticipantJpaRepositor
 import com.loopers.infrastructure.departureplace.DeparturePlaceJpaRepository;
 import com.loopers.domain.traveltime.port.ExternalTravelTimeProvider;
 import com.loopers.infrastructure.user.UserJpaRepository;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,7 +112,7 @@ class AppointmentFacadeTravelTimeTest {
         void returnsFallbackTravelTime_whenApiThrowsException() {
             // arrange
             given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
-                .willThrow(new RuntimeException("ODsay API 장애"));
+                .willThrow(new CoreException(ErrorType.SERVICE_UNAVAILABLE, "ODsay API 장애"));
 
             // act & assert - 예외가 전파되지 않고, fallback 값이 반환되어야 함
             AppointmentInfo result = appointmentFacade.create(
@@ -190,7 +192,7 @@ class AppointmentFacadeTravelTimeTest {
             Long appointmentId = appointmentJpaRepository.findAll().get(0).getId();
 
             given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
-                .willThrow(new RuntimeException("API 장애"));
+                .willThrow(new CoreException(ErrorType.SERVICE_UNAVAILABLE, "API 장애"));
 
             // act & assert - 예외가 전파되지 않고, fallback으로 이동시간이 계산되어야 함
             AppointmentInfo result = appointmentFacade.updateAppointment(
@@ -219,7 +221,7 @@ class AppointmentFacadeTravelTimeTest {
             Long appointmentId = appointmentJpaRepository.findAll().get(0).getId();
 
             given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
-                .willThrow(new RuntimeException("API 장애"));
+                .willThrow(new CoreException(ErrorType.SERVICE_UNAVAILABLE, "API 장애"));
 
             // act & assert - 예외가 전파되지 않고, fallback 값이 반환되어야 함
             DepartureUpdateInfo result = appointmentFacade.updateDeparture(

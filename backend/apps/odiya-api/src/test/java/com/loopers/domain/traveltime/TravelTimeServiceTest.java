@@ -9,6 +9,8 @@ import com.loopers.domain.usersettings.TransportType;
 import com.loopers.domain.usersettings.UserSettings;
 import com.loopers.domain.usersettings.UserSettingsRepository;
 import com.loopers.domain.traveltime.port.ExternalTravelTimeProvider;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -361,7 +363,7 @@ class TravelTimeServiceTest {
             given(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
                 .willReturn(Optional.empty());
             given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
-                .willThrow(new RuntimeException("API 장애"));
+                .willThrow(new CoreException(ErrorType.SERVICE_UNAVAILABLE, "API 장애"));
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.save(any())).willAnswer(inv -> inv.getArgument(0));
@@ -385,7 +387,7 @@ class TravelTimeServiceTest {
             given(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
                 .willReturn(Optional.empty());
             given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
-                .willThrow(new RuntimeException("API 장애"));
+                .willThrow(new CoreException(ErrorType.SERVICE_UNAVAILABLE, "API 장애"));
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.save(any())).willAnswer(inv -> inv.getArgument(0));
@@ -407,7 +409,7 @@ class TravelTimeServiceTest {
             given(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
                 .willReturn(Optional.empty());
             given(externalTravelTimeProvider.calculateDuration(eq(TransportType.CAR_PARKING), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
-                .willThrow(new RuntimeException("API 장애"));
+                .willThrow(new CoreException(ErrorType.SERVICE_UNAVAILABLE, "API 장애"));
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.save(any())).willAnswer(inv -> inv.getArgument(0));
