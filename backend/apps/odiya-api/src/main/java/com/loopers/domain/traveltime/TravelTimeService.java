@@ -26,7 +26,7 @@ public class TravelTimeService {
 
     /**
      * Calculate and save travel time for a participant.
-     * Flow: null check -> 50m check -> cache -> API -> fallback -> DB save
+     * Flow: null check -> near-range check (withinDistanceMeters) -> cache -> API -> fallback -> DB save
      */
     @Transactional
     public TravelTime calculateAndSave(AppointmentParticipant participant) {
@@ -67,8 +67,8 @@ public class TravelTimeService {
     private DurationResult calculateDuration(double originLat, double originLng,
                                              double destLat, double destLng,
                                              TransportType transportType) {
-        // E-2: within 50m -> 0 minutes
-        if (isWithin50Meters(originLat, originLng, destLat, destLng)) {
+        // E-2: near-range check — 출발지/목적지가 설정된 임계 거리(기본 50m) 이내면 0분으로 처리
+        if (isWithinDirectRange(originLat, originLng, destLat, destLng)) {
             return new DurationResult(0, false, false);
         }
 
@@ -80,7 +80,7 @@ public class TravelTimeService {
 
         // External API call
         try {
-            int duration = calculateDurationFromApi(transportType, originLng, originLat, destLng, destLat);
+            int duration = calculateDurationFromApi(transportType, originLat, originLng, destLat, destLng);
             // Save to cache (non-fallback only, D1)
             travelTimeCacheRepository.save(originLat, originLng, destLat, destLng, transportType, duration);
             return new DurationResult(duration, false, false);
@@ -93,16 +93,21 @@ public class TravelTimeService {
         return new DurationResult(fallbackDuration, true, false);
     }
 
-    private int calculateDurationFromApi(TransportType transportType, double originLng, double originLat,
-                                         double destLng, double destLat) {
+    private int calculateDurationFromApi(TransportType transportType,
+                                         double originLat, double originLng,
+                                         double destLat, double destLng) {
         if (transportType == TransportType.WALKING) {
             return calculateWalkingDuration(originLat, originLng, destLat, destLng);
         }
         return externalTravelTimeProvider.calculateDuration(
-            transportType, originLng, originLat, destLng, destLat);
+            transportType, originLat, originLng, destLat, destLng);
     }
 
-    private boolean isWithin50Meters(double lat1, double lng1, double lat2, double lng2) {
+    /**
+     * 출발지와 목적지가 설정된 직접 이동 임계 거리({@code properties.withinDistanceMeters()}) 이내인지 여부.
+     * 이내라면 외부 API 호출 없이 0분으로 간주한다.
+     */
+    private boolean isWithinDirectRange(double lat1, double lng1, double lat2, double lng2) {
         return haversineDistance(lat1, lng1, lat2, lng2) <= properties.withinDistanceMeters();
     }
 

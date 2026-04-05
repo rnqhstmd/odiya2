@@ -1,4 +1,3 @@
-import Foundation
 import CoreGraphics
 
 /// 디자인 시스템 스페이싱 토큰.
@@ -7,7 +6,7 @@ import CoreGraphics
 /// 신규 View 작성 시 이 토큰을 우선 사용하고, 값이 맞지 않으면 디자인 스펙 확인 후
 /// 필요한 경우 아래 enum에 추가한다. 매직 숫자 직접 기입은 지양한다.
 enum OdiyaSpacing {
-    /// 4pt — 아이콘-텍스트 최소 간격
+    /// 2pt — 아이콘-텍스트 최소 간격 (hairline)
     static let xxs: CGFloat = 2
     /// 4pt — tight (칩 내부, 아이콘 주변)
     static let xs: CGFloat = 4

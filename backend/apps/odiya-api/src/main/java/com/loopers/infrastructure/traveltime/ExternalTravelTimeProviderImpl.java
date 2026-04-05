@@ -12,6 +12,10 @@ import org.springframework.stereotype.Component;
  *
  * <p>이동수단에 따라 카카오모빌리티(자동차) 또는 ODsay(대중교통) API로 디스패치한다.
  * WALKING은 호출자(도메인 서비스)가 직접 처리하므로 이 구현체는 그 분기를 받지 않는다.
+ *
+ * <p>포트 시그니처는 도메인 규약대로 {@code (Lat, Lng)} 순서로 받지만, 외부 API 클라이언트는
+ * 카카오/ODsay 모두 {@code (Lng, Lat)} 순서를 요구하므로 이 어댑터가 호출 시점에 순서를 뒤집어
+ * 전달한다. 도메인 내부에 {@code (Lng, Lat)} 순서가 새어들지 않도록 변환 경계를 이곳으로 집약한다.
  */
 @Component
 @RequiredArgsConstructor
@@ -22,8 +26,8 @@ public class ExternalTravelTimeProviderImpl implements ExternalTravelTimeProvide
 
     @Override
     public int calculateDuration(TransportType transportType,
-                                 double originLng, double originLat,
-                                 double destLng, double destLat) {
+                                 double originLat, double originLng,
+                                 double destLat, double destLng) {
         return switch (transportType) {
             case CAR_PARKING, CAR_PICKUP ->
                 kakaoMobilityApiClient.calculateDuration(originLng, originLat, destLng, destLat);
