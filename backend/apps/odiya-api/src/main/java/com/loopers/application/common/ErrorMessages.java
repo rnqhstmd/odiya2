@@ -16,4 +16,7 @@ public final class ErrorMessages {
 
     // BAD_REQUEST
     public static final String INVITE_REQUIRES_FRIENDSHIP = "친구 관계인 사용자만 초대할 수 있습니다.";
+
+    // CONFLICT
+    public static final String PARTICIPANT_ALREADY_INVITED = "이미 초대된 참여자입니다.";
 }

@@ -338,7 +338,7 @@ public class AppointmentFacade {
         List<Long> uniqueUserIds = userIds.stream().distinct().toList();
         for (Long userId : uniqueUserIds) {
             if (existingParticipantIds.contains(userId)) {
-                throw new CoreException(ErrorType.CONFLICT, "이미 초대된 참여자입니다.");
+                throw new CoreException(ErrorType.CONFLICT, ErrorMessages.PARTICIPANT_ALREADY_INVITED);
             }
             if (!friendService.isAcceptedFriend(hostUserId, userId)) {
                 throw new CoreException(ErrorType.BAD_REQUEST, ErrorMessages.INVITE_REQUIRES_FRIENDSHIP);

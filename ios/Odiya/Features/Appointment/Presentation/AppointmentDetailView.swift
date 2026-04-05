@@ -75,7 +75,7 @@ struct AppointmentDetailView: View {
             Divider()
             actionButtons
         }
-        .padding(20)
+        .padding(OdiyaSpacing.xl)
     }
 
     // MARK: - Countdown Banner
@@ -98,9 +98,9 @@ struct AppointmentDetailView: View {
 
             Spacer()
         }
-        .padding(16)
+        .padding(OdiyaSpacing.lg)
         .background(OdiyaColors.nudgeGradient)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: OdiyaRadius.lg))
     }
 
     // MARK: - Basic Info
