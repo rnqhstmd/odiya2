@@ -172,6 +172,8 @@ struct AddFriendView: View {
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             .buttonStyle(.plain)
+                            .disabled(viewModel.myUserId == nil)
+                            .opacity(viewModel.myUserId == nil ? 0.5 : 1.0)
                         }
                         .padding(.top, 12)
                         .padding(.bottom, 4)

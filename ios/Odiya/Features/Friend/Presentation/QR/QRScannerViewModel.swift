@@ -16,6 +16,9 @@ final class QRScannerViewModel: NSObject, ObservableObject {
 
     private let repository: FriendRepository
     private var myUserId: Int64?
+    private var isConfigured = false
+    // 캡처 세션 관련 호출(configure/startRunning/stopRunning)을 순차 실행하여 race 방지.
+    private let sessionQueue = DispatchQueue(label: "com.odiya.qrscanner.session")
 
     init(repository: FriendRepository = FriendRepositoryImpl()) {
         self.repository = repository
@@ -28,14 +31,13 @@ final class QRScannerViewModel: NSObject, ObservableObject {
     // MARK: - Scanning
 
     func startScanning() async {
-        // Check camera permission
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
-            setupCaptureSession()
+            configureAndStart()
         case .notDetermined:
             let granted = await AVCaptureDevice.requestAccess(for: .video)
             if granted {
-                setupCaptureSession()
+                configureAndStart()
             } else {
                 showPermissionAlert = true
             }
@@ -47,42 +49,66 @@ final class QRScannerViewModel: NSObject, ObservableObject {
     }
 
     func stopScanning() {
-        guard captureSession.isRunning else { return }
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            self?.captureSession.stopRunning()
+        sessionQueue.async { [weak self] in
+            guard let self, self.captureSession.isRunning else { return }
+            self.captureSession.stopRunning()
+        }
+    }
+
+    /// 복구 가능한 알림(자기 QR, 유효하지 않은 QR, 친구 요청 실패)을 닫은 뒤 다시 스캔을 재개한다.
+    func resumeScanning() {
+        isProcessing = false
+        sessionQueue.async { [weak self] in
+            guard let self, !self.captureSession.isRunning else { return }
+            self.captureSession.startRunning()
         }
     }
 
     // MARK: - Private
 
-    private func setupCaptureSession() {
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self,
-                  let device = AVCaptureDevice.default(for: .video),
-                  let input = try? AVCaptureDeviceInput(device: device) else {
-                Task { @MainActor [weak self] in
-                    self?.alertMessage = "카메라를 사용할 수 없습니다."
-                    self?.showAlert = true
+    /// MainActor에서 호출. 최초 1회만 session 구성하고, 이후에는 startRunning만 호출.
+    private func configureAndStart() {
+        let needsConfiguration = !isConfigured
+        if needsConfiguration {
+            // 구성 시작 전에 플래그를 선점하여 중복 구성 방지 (실패 시 rollback).
+            isConfigured = true
+        }
+
+        sessionQueue.async { [weak self] in
+            guard let self else { return }
+
+            if needsConfiguration {
+                guard let device = AVCaptureDevice.default(for: .video),
+                      let input = try? AVCaptureDeviceInput(device: device) else {
+                    Task { @MainActor [weak self] in
+                        self?.isConfigured = false
+                        self?.alertMessage = "카메라를 사용할 수 없습니다."
+                        self?.shouldDismissOnAlert = true
+                        self?.showAlert = true
+                    }
+                    return
                 }
-                return
+
+                let metadataOutput = AVCaptureMetadataOutput()
+
+                self.captureSession.beginConfiguration()
+
+                if self.captureSession.canAddInput(input) {
+                    self.captureSession.addInput(input)
+                }
+
+                if self.captureSession.canAddOutput(metadataOutput) {
+                    self.captureSession.addOutput(metadataOutput)
+                    metadataOutput.setMetadataObjectsDelegate(self, queue: .main)
+                    metadataOutput.metadataObjectTypes = [.qr]
+                }
+
+                self.captureSession.commitConfiguration()
             }
 
-            let metadataOutput = AVCaptureMetadataOutput()
-
-            self.captureSession.beginConfiguration()
-
-            if self.captureSession.canAddInput(input) {
-                self.captureSession.addInput(input)
+            if !self.captureSession.isRunning {
+                self.captureSession.startRunning()
             }
-
-            if self.captureSession.canAddOutput(metadataOutput) {
-                self.captureSession.addOutput(metadataOutput)
-                metadataOutput.setMetadataObjectsDelegate(self, queue: .main)
-                metadataOutput.metadataObjectTypes = [.qr]
-            }
-
-            self.captureSession.commitConfiguration()
-            self.captureSession.startRunning()
         }
     }
 
@@ -103,7 +129,6 @@ final class QRScannerViewModel: NSObject, ObservableObject {
             alertMessage = "자기 자신에게는 친구 요청을 보낼 수 없습니다."
             shouldDismissOnAlert = false
             showAlert = true
-            isProcessing = false
             return
         }
 
@@ -122,7 +147,6 @@ final class QRScannerViewModel: NSObject, ObservableObject {
                 shouldDismissOnAlert = false
                 showAlert = true
             }
-            isProcessing = false
         }
     }
 
@@ -146,16 +170,16 @@ extension QRScannerViewModel: AVCaptureMetadataOutputObjectsDelegate {
         Task { @MainActor [weak self] in
             guard let self, !self.isProcessing else { return }
             self.isProcessing = true
+            // 알림/처리 도중 동일 QR의 delegate 재진입을 막기 위해 즉시 세션 정지.
+            self.stopScanning()
 
             guard let scannedUserId = self.parseQRCode(stringValue) else {
                 self.alertMessage = "유효하지 않은 QR 코드입니다."
                 self.shouldDismissOnAlert = false
                 self.showAlert = true
-                self.isProcessing = false
                 return
             }
 
-            self.stopScanning()
             self.handleScannedUserId(scannedUserId)
         }
     }

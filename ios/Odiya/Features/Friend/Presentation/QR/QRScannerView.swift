@@ -44,6 +44,8 @@ struct QRScannerView: View {
                 Button("확인", role: .cancel) {
                     if viewModel.shouldDismissOnAlert {
                         dismiss()
+                    } else {
+                        viewModel.resumeScanning()
                     }
                 }
             } message: {

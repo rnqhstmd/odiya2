@@ -1,6 +1,11 @@
 import SwiftUI
 import PhotosUI
 
+private enum ProfileImageConstants {
+    static let targetSize = CGSize(width: 1024, height: 1024)
+    static let compressionQuality: CGFloat = 0.8
+}
+
 struct ProfileView: View {
 
     @StateObject private var viewModel = ProfileViewModel()
@@ -111,20 +116,29 @@ struct ProfileView: View {
             }
             .onChange(of: selectedPhotoItem) { _, newItem in
                 guard let newItem else { return }
-                Task {
+                // 리사이즈/JPEG 인코딩은 UI 스레드를 막지 않도록 detached 태스크에서 수행.
+                Task.detached(priority: .userInitiated) {
                     guard let data = try? await newItem.loadTransferable(type: Data.self),
                           let uiImage = UIImage(data: data) else {
-                        viewModel.errorMessage = "이미지를 불러올 수 없습니다."
+                        await MainActor.run {
+                            viewModel.errorMessage = "이미지를 불러올 수 없습니다."
+                        }
                         return
                     }
 
-                    let resized = uiImage.resizedToFill(size: CGSize(width: 1024, height: 1024))
-                    guard let jpegData = resized.jpegData(compressionQuality: 0.8) else {
-                        viewModel.errorMessage = "이미지 변환에 실패했습니다."
+                    let resized = uiImage.resizedToFill(size: ProfileImageConstants.targetSize)
+                    guard let jpegData = resized.jpegData(
+                        compressionQuality: ProfileImageConstants.compressionQuality
+                    ) else {
+                        await MainActor.run {
+                            viewModel.errorMessage = "이미지 변환에 실패했습니다."
+                        }
                         return
                     }
 
-                    viewModel.uploadProfileImage(jpegData)
+                    await MainActor.run {
+                        viewModel.uploadProfileImage(jpegData)
+                    }
                 }
             }
         }

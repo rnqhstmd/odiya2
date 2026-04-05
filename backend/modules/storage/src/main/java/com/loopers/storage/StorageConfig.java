@@ -14,13 +14,22 @@ public class StorageConfig {
 
     @Bean
     public S3Presigner s3Presigner(StorageProperties props) {
-        return S3Presigner.builder()
-            .region(Region.of(props.region()))
-            .credentialsProvider(
+        S3Presigner.Builder builder = S3Presigner.builder()
+            .region(Region.of(props.region()));
+
+        // accessKey/secretKey가 명시된 경우에만 StaticCredentialsProvider 사용.
+        // 비어 있으면 DefaultCredentialsProvider(환경변수, 프로필, IAM Role 체인)로 fallback.
+        String accessKey = props.accessKey();
+        String secretKey = props.secretKey();
+        if (accessKey != null && !accessKey.isBlank()
+            && secretKey != null && !secretKey.isBlank()) {
+            builder.credentialsProvider(
                 StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create(props.accessKey(), props.secretKey())
+                    AwsBasicCredentials.create(accessKey, secretKey)
                 )
-            )
-            .build();
+            );
+        }
+
+        return builder.build();
     }
 }

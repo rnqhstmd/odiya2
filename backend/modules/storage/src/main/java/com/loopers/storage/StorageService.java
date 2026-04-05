@@ -7,6 +7,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+import java.io.File;
 import java.time.Duration;
 import java.util.UUID;
 
@@ -14,14 +15,16 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class StorageService {
 
+    private static final String DEFAULT_FILE_NAME = "profile.jpg";
+
     private final S3Presigner s3Presigner;
     private final StorageProperties properties;
 
     public PresignedUrlResult generatePresignedUrl(Long userId, String fileName, String contentType) {
-        // Path Traversal 방지: basename만 추출
-        String sanitized = java.nio.file.Paths.get(fileName).getFileName().toString();
+        // Path Traversal 방지: basename만 추출 (DTO 단계 정규식 검증과 이중 방어)
+        String sanitized = new File(fileName).getName();
         if (sanitized.isBlank()) {
-            sanitized = "profile.jpg";
+            sanitized = DEFAULT_FILE_NAME;
         }
         String objectKey = "profile-images/" + userId + "/" + UUID.randomUUID() + "/" + sanitized;
 
