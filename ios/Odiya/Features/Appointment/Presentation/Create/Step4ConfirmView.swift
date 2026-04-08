@@ -4,20 +4,6 @@ struct Step4ConfirmView: View {
 
     @ObservedObject var viewModel: CreateAppointmentViewModel
 
-    private var dateFormatter: DateFormatter {
-        let f = DateFormatter()
-        f.locale = Locale(identifier: "ko_KR")
-        f.dateFormat = "yyyy년 M월 d일 (E)"
-        return f
-    }
-
-    private var timeFormatter: DateFormatter {
-        let f = DateFormatter()
-        f.locale = Locale(identifier: "ko_KR")
-        f.dateFormat = "a h:mm"
-        return f
-    }
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -28,9 +14,9 @@ struct Step4ConfirmView: View {
                     Divider().padding(.leading, 44)
                     SummaryRow(icon: "mappin.circle.fill", label: "장소", value: viewModel.selectedPlace?.name ?? "-")
                     Divider().padding(.leading, 44)
-                    SummaryRow(icon: "calendar", label: "날짜", value: dateFormatter.string(from: viewModel.date))
+                    SummaryRow(icon: "calendar", label: "날짜", value: viewModel.date.koreanDateFormatted)
                     Divider().padding(.leading, 44)
-                    SummaryRow(icon: "clock.fill", label: "시간", value: timeFormatter.string(from: viewModel.time))
+                    SummaryRow(icon: "clock.fill", label: "시간", value: viewModel.time.koreanTimeFormatted)
                     Divider().padding(.leading, 44)
                     SummaryRow(
                         icon: "person.2.fill",

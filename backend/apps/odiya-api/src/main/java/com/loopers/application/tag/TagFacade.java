@@ -1,12 +1,11 @@
 package com.loopers.application.tag;
 
+import com.loopers.application.common.ErrorMessages;
 import com.loopers.domain.friend.FriendService;
 import com.loopers.domain.tag.Tag;
 import com.loopers.domain.tag.TagService;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserService;
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +41,7 @@ public class TagFacade {
         // 1. 소유권 검증 먼저
         Tag tag = tagService.getTag(tagId);
         if (!tag.getOwner().getId().equals(userId)) {
-            throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 태그입니다.");
+            throw ErrorMessages.TAG_NOT_FOUND.asException();
         }
         tag.guardDeletable();
 

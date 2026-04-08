@@ -85,7 +85,7 @@ struct AppointmentCardView: View {
                 NudgeButton()
             }
         }
-        .padding(16)
+        .padding(OdiyaSpacing.lg)
         .background(OdiyaColors.odiya100)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
@@ -131,9 +131,9 @@ struct AppointmentCardView: View {
                 transportInfo
             }
         }
-        .padding(16)
+        .padding(OdiyaSpacing.lg)
         .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: OdiyaRadius.lg))
         .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 2)
     }
 

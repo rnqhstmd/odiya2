@@ -75,7 +75,7 @@ struct AppointmentDetailView: View {
             Divider()
             actionButtons
         }
-        .padding(20)
+        .padding(OdiyaSpacing.xl)
     }
 
     // MARK: - Countdown Banner
@@ -98,9 +98,9 @@ struct AppointmentDetailView: View {
 
             Spacer()
         }
-        .padding(16)
+        .padding(OdiyaSpacing.lg)
         .background(OdiyaColors.nudgeGradient)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: OdiyaRadius.lg))
     }
 
     // MARK: - Basic Info
@@ -289,7 +289,7 @@ struct AppointmentDetailView: View {
                     Label("카톡 공유", systemImage: "message.fill")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(Color(hex: 0x3A1D1D))
+                        .foregroundStyle(OdiyaColors.kakaoText)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
                         .background(OdiyaColors.kakaoYellow)

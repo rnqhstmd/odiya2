@@ -14,6 +14,8 @@ enum OdiyaColors {
     static let secondary = odiya500
     static let nudge = Color(hex: 0xD94F8A)
     static let kakaoYellow = Color(hex: 0xFEE500)
+    static let kakaoText = Color(hex: 0x3A1D1D)  // 카카오 로그인/공유 버튼 위 텍스트 (KakaoTalk Brand Guide)
+    static let friendAccentBlue = Color(hex: 0x007AFF)  // 친구 요청 알림 그라데이션 포인트
 
     // MARK: - iOS 시맨틱
     static let danger = Color(hex: 0xFF3B30)

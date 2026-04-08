@@ -111,10 +111,7 @@ struct WeeklyCalendarView: View {
     // MARK: - Helpers
 
     private func weekdayLabel(for date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "E"
-        return formatter.string(from: date)
+        date.weekdayShortFormatted
     }
 }
 

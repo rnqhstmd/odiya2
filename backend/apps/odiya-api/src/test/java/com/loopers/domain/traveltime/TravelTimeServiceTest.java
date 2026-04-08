@@ -8,16 +8,16 @@ import com.loopers.domain.user.User;
 import com.loopers.domain.usersettings.TransportType;
 import com.loopers.domain.usersettings.UserSettings;
 import com.loopers.domain.usersettings.UserSettingsRepository;
-import com.loopers.infrastructure.kakao.KakaoMobilityApiClient;
-import com.loopers.infrastructure.odsay.OdsayApiClient;
+import com.loopers.domain.traveltime.port.ExternalTravelTimeProvider;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
-import org.mockito.InjectMocks;
+import static org.mockito.Mockito.verifyNoInteractions;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -46,16 +46,19 @@ class TravelTimeServiceTest {
     private UserSettingsRepository userSettingsRepository;
 
     @Mock
-    private KakaoMobilityApiClient kakaoMobilityApiClient;
+    private ExternalTravelTimeProvider externalTravelTimeProvider;
 
-    @Mock
-    private OdsayApiClient odsayApiClient;
-
-    @InjectMocks
     private TravelTimeService travelTimeService;
 
     @BeforeEach
     void setUp() {
+        travelTimeService = new TravelTimeService(
+            travelTimeRepository,
+            travelTimeCacheRepository,
+            userSettingsRepository,
+            externalTravelTimeProvider,
+            new TravelTimeProperties(80.0, 6_371_000.0, 50.0, 1.4, 40.0, 1.5, 30.0)
+        );
         lenient().when(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
             .thenReturn(Optional.empty());
     }
@@ -91,7 +94,7 @@ class TravelTimeServiceTest {
 
             // assert
             assertThat(result).isNull();
-            verify(kakaoMobilityApiClient, never()).calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+            verifyNoInteractions(externalTravelTimeProvider);
         }
 
         @DisplayName("출발지와 목적지 좌표가 동일하면, 외부 API 미호출 후 0분을 저장한다.")
@@ -111,8 +114,7 @@ class TravelTimeServiceTest {
             // assert
             assertThat(result).isNotNull();
             assertThat(result.getDurationMinutes()).isEqualTo(0);
-            verify(kakaoMobilityApiClient, never()).calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
-            verify(odsayApiClient, never()).calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+            verifyNoInteractions(externalTravelTimeProvider);
         }
 
         @DisplayName("CAR_PARKING 이동수단이면, KakaoMobilityApiClient를 호출한다.")
@@ -122,7 +124,7 @@ class TravelTimeServiceTest {
             AppointmentParticipant participant = makeParticipant(
                 TransportType.CAR_PARKING, 37.4979, 127.0276, 37.5665, 126.9780);
 
-            given(kakaoMobilityApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.CAR_PARKING), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(30);
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
@@ -134,7 +136,7 @@ class TravelTimeServiceTest {
             // assert
             assertThat(result).isNotNull();
             assertThat(result.getDurationMinutes()).isEqualTo(30);
-            verify(kakaoMobilityApiClient).calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+            verify(externalTravelTimeProvider).calculateDuration(eq(TransportType.CAR_PARKING), anyDouble(), anyDouble(), anyDouble(), anyDouble());
         }
 
         @DisplayName("TRANSIT 이동수단이면, OdsayApiClient를 호출한다.")
@@ -144,7 +146,7 @@ class TravelTimeServiceTest {
             AppointmentParticipant participant = makeParticipant(
                 TransportType.TRANSIT, 37.4979, 127.0276, 37.5665, 126.9780);
 
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(45);
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
@@ -156,7 +158,7 @@ class TravelTimeServiceTest {
             // assert
             assertThat(result).isNotNull();
             assertThat(result.getDurationMinutes()).isEqualTo(45);
-            verify(odsayApiClient).calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+            verify(externalTravelTimeProvider).calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble());
         }
 
         @DisplayName("WALKING 이동수단이면, 외부 API 미호출 후 Haversine 공식으로 계산한다.")
@@ -176,8 +178,7 @@ class TravelTimeServiceTest {
             // assert
             assertThat(result).isNotNull();
             assertThat(result.getDurationMinutes()).isGreaterThan(0);
-            verify(kakaoMobilityApiClient, never()).calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
-            verify(odsayApiClient, never()).calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+            verifyNoInteractions(externalTravelTimeProvider);
         }
 
         @DisplayName("기존 TravelTime이 있으면, update 후 저장한다.")
@@ -192,7 +193,7 @@ class TravelTimeServiceTest {
             TravelTime existing = TravelTime.create(participant, 20, TransportType.TRANSIT,
                 appointment.getDateTime().minusMinutes(25));
 
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(35);
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.of(existing));
@@ -216,7 +217,7 @@ class TravelTimeServiceTest {
             // createDefault: parkingBuffer=10, extraMinutes=5; but TRANSIT → parkingBuffer=0, extra=5
             UserSettings settings = UserSettings.createDefault(participant.getUser());
 
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(30);
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.of(settings));
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
@@ -238,7 +239,7 @@ class TravelTimeServiceTest {
             AppointmentParticipant participant = makeParticipant(
                 TransportType.TRANSIT, 37.4979, 127.0276, 37.5665, 126.9780);
 
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(20);
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
@@ -264,7 +265,7 @@ class TravelTimeServiceTest {
             UserSettings settings = UserSettings.createDefault(participant.getUser());
 
             // 카카오모빌리티 API는 분(minutes) 단위로 반환 (duration=1800초 시나리오 → 30분)
-            given(kakaoMobilityApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.CAR_PARKING), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(30);
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.of(settings));
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
@@ -290,7 +291,7 @@ class TravelTimeServiceTest {
             UserSettings settings = UserSettings.createDefault(participant.getUser());
 
             // 카카오모빌리티 API는 분(minutes) 단위로 반환 (duration=1800초 시나리오 → 30분)
-            given(kakaoMobilityApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.CAR_PICKUP), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(30);
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.of(settings));
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
@@ -324,8 +325,7 @@ class TravelTimeServiceTest {
             // assert
             assertThat(result).isNotNull();
             assertThat(result.getDurationMinutes()).isEqualTo(25);
-            verify(kakaoMobilityApiClient, never()).calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
-            verify(odsayApiClient, never()).calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+            verifyNoInteractions(externalTravelTimeProvider);
         }
 
         @DisplayName("캐시미스시 외부API를 호출하고 캐시에 저장한다.")
@@ -337,7 +337,7 @@ class TravelTimeServiceTest {
 
             given(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
                 .willReturn(Optional.empty());
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
                 .willReturn(40);
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
@@ -349,7 +349,7 @@ class TravelTimeServiceTest {
             // assert
             assertThat(result).isNotNull();
             assertThat(result.getDurationMinutes()).isEqualTo(40);
-            verify(odsayApiClient).calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+            verify(externalTravelTimeProvider).calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble());
             verify(travelTimeCacheRepository).save(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any(), eq(40));
         }
 
@@ -362,8 +362,8 @@ class TravelTimeServiceTest {
 
             given(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
                 .willReturn(Optional.empty());
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
-                .willThrow(new RuntimeException("API 장애"));
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+                .willThrow(new CoreException(ErrorType.SERVICE_UNAVAILABLE, "API 장애"));
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.save(any())).willAnswer(inv -> inv.getArgument(0));
@@ -386,8 +386,8 @@ class TravelTimeServiceTest {
 
             given(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
                 .willReturn(Optional.empty());
-            given(odsayApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
-                .willThrow(new RuntimeException("API 장애"));
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.TRANSIT), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+                .willThrow(new CoreException(ErrorType.SERVICE_UNAVAILABLE, "API 장애"));
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.save(any())).willAnswer(inv -> inv.getArgument(0));
@@ -408,8 +408,8 @@ class TravelTimeServiceTest {
 
             given(travelTimeCacheRepository.find(anyDouble(), anyDouble(), anyDouble(), anyDouble(), any()))
                 .willReturn(Optional.empty());
-            given(kakaoMobilityApiClient.calculateDuration(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
-                .willThrow(new RuntimeException("API 장애"));
+            given(externalTravelTimeProvider.calculateDuration(eq(TransportType.CAR_PARKING), anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+                .willThrow(new CoreException(ErrorType.SERVICE_UNAVAILABLE, "API 장애"));
             given(userSettingsRepository.findActiveByUserId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.findByParticipantId(any())).willReturn(Optional.empty());
             given(travelTimeRepository.save(any())).willAnswer(inv -> inv.getArgument(0));
