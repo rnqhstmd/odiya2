@@ -33,3 +33,9 @@
 | 주간 뷰 | 캘린더 주간 보기. 타임라인 형태로 약속 블록 표시 |
 | S3 Presigned URL | AWS S3가 발급하는 시간 제한 업로드 URL. iOS 앱이 백엔드 경유 없이 직접 S3에 PUT 업로드. 만료 10분 |
 | QR 친구 추가 딥링크 | `odiya://friend?userId={id}` 형식. 내 QR 생성 → 상대가 스캔 → 기존 친구 요청 API 재사용 |
+| 디자인 v2 | 2026-04-22 전면 리뉴얼된 iOS 디자인. 토스+Linear 감성 · 깊은 보라 11단 + 모던 그레이 + 산호 액센트 · Pretendard+SF Pro · 전체 다크모드. 상세: [`디자인-UX/v2-design-renewal.md`](디자인-UX/v2-design-renewal.md) |
+| 산호 액센트 | v2 재촉/긴급 전용 컬러 `#FF5E7A`. v1 의 Nudge `#D94F8A` 를 대체 |
+| 태그 개인화 | 친구에게 부여된 태그 색이 해당 친구·약속의 카드/캘린더 도트/아바타/상세 화면 액센트로 **일관되게 전파**되는 v2 패턴 |
+| tabular-nums | 숫자 너비를 고정하여 카운트다운·시간·거리 정렬을 맞추는 폰트 feature. SwiftUI `.monospacedDigit()` |
+| 글래스 카드 | 약속 상세 v2 (Variant B) 에서 지도 위에 띄우는 반투명 카드. SwiftUI `.ultraThinMaterial` |
+| Claude Design | `claude.ai/design` 의 디자인 아티팩트 도구. 프로토타입 HTML/CSS/JS 번들을 내보내 코딩 에이전트가 구현하도록 전달 |

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00AD453F5BCC205F9DBBB9CC /* MyAppointmentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3E6D95565E2CAC9568FC3F /* MyAppointmentsView.swift */; };
+		033E16F04CDF629FBF841A8F /* QRScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217375ED137BF5EF60095D7F /* QRScannerViewModel.swift */; };
 		042EF4751251936320A12AA2 /* DeparturePlaceSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0B43A46010D6705AAAD965 /* DeparturePlaceSearchView.swift */; };
 		06E35B576EE70684D46DD73A /* OdiyaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AE570952773ABAAB8AF624 /* OdiyaApp.swift */; };
 		0AB4600E03BD558BFC53B3FE /* FriendListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D58779FADFE4108F45E0125 /* FriendListView.swift */; };
@@ -31,23 +32,30 @@
 		369CB18D754A3EBEB031B2C4 /* AuthInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DA34C6A3BD2ED9A3FD92D01 /* AuthInterceptor.swift */; };
 		370BC1714B360612B7017E0A /* NudgeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2F3B221EED8F52137D506E /* NudgeButton.swift */; };
 		3B6F7F6058CAC1882C7FDF74 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54639829304D89A41F18DC33 /* APIClient.swift */; };
+		3C8D8E0650AED119A622910B /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFD73BAB01D5DE13D5C766D /* QRScannerView.swift */; };
 		423884CE035AF26C96A4AA49 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B961FA6FE13FC0A09CD0B6 /* LoadingView.swift */; };
+		424D77824D5A92DA0EE4A9F9 /* NudgeCooldownTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C60CE70EFAB0B437E5DC71F /* NudgeCooldownTimer.swift */; };
 		451B0D921887067C0E07D149 /* Step1NameDateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E892FEACAF92081803277 /* Step1NameDateView.swift */; };
 		472D67FF47910919CA1B9AFF /* TagEditSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54AAB0D4E192D8DB030352BD /* TagEditSheet.swift */; };
+		489500C6C63ADF61CFE2CA1C /* Date+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B3688D6995D313D3A79C07 /* Date+Formatting.swift */; };
 		4940F5E46082DC2E46AE6760 /* AppointmentCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C0B37CC87AB53EE490A4BE /* AppointmentCardView.swift */; };
 		4A7E4D87857B9F49AF415460 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48AC75D60AC5E34070A3733B /* SettingsViewModel.swift */; };
 		4C23340365563A04CD9F3BA2 /* AddFriendViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B677EE2A0FBA1ACB0F6CDF81 /* AddFriendViewModel.swift */; };
 		5376F653B12F9B223BD2DDAA /* AppointmentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6985EDC740321AB3DA5FC257 /* AppointmentDetailView.swift */; };
 		53CB058C45FFCDE5E17512C6 /* MyAppointmentsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A220843AEA39B6424A48CBD /* MyAppointmentsViewModel.swift */; };
 		547F6632B3A509FCFD1DAEC8 /* Step4ConfirmView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6871B281DC27FDB727834CE /* Step4ConfirmView.swift */; };
+		548A60A325BC4305E12F1283 /* OdiyaSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5DA772B83CF222DD56D24E /* OdiyaSpacing.swift */; };
 		55FCBDD1A2A45DAABF21CD35 /* CalendarDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55710F56D77D0F379E67629F /* CalendarDTO.swift */; };
 		5B19FD7D519951D4398EBF99 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 679DB2FC4B35E523B1C61630 /* CalendarView.swift */; };
+		5D8130F9F3C5D82E8E9F702E /* OdiyaShadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD827F53D87073AD40DD88E4 /* OdiyaShadows.swift */; };
 		6342119F13B130DECDF5EBBB /* NotificationDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = A212B808D3338FD82EA4C61B /* NotificationDTO.swift */; };
 		64091AD23567B7ED16D0344A /* AppointmentRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E3D7BFA98A980B64B12919 /* AppointmentRepositoryImpl.swift */; };
 		6493024F1B9D2B51258CEED6 /* AppointmentRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60568195E80829B69B783CEB /* AppointmentRepository.swift */; };
+		64E34C5C1478469104FF23C9 /* KakaoMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC61EB481F804C0AAA0EF427 /* KakaoMapView.swift */; };
 		656D52AC50318E829BD20376 /* AuthUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B93F5E92059E4CB0383533 /* AuthUseCase.swift */; };
 		674194FD1FD8B7D855429CAC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C5E22F4E796264212FAD89 /* SettingsView.swift */; };
 		67E918FEAF5EE31CBF969528 /* Step2PlaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A59D6D5965C043000E91C9 /* Step2PlaceView.swift */; };
+		6914AAFAA2451ADBF23210B7 /* OdiyaTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CD5A90837D02649348486A /* OdiyaTypography.swift */; };
 		6B6F66B05A58509897A4D691 /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693FF42F6D0B9B011D7DEBEC /* MockURLProtocol.swift */; };
 		7094255D3269F848EB875422 /* CalendarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BE3050B23D0EA44CEB5DAA /* CalendarViewModel.swift */; };
 		791CEB57B7C57441D8FDB004 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 394CA926A5320CC5127D47AF /* Data+Extensions.swift */; };
@@ -86,8 +94,11 @@
 		C6C5511A953D61297602186D /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92705453CDDC81BC983E86E9 /* Environment.swift */; };
 		C99B4DEFDD4A9B5DF5D2EF9A /* NotificationRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484832E2B4CCFF766B0EA45E /* NotificationRepositoryImpl.swift */; };
 		CA7505CEC0E88DE661091A0B /* DeparturePlaceEditSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC1084F2DD08036ED630B88 /* DeparturePlaceEditSheet.swift */; };
+		CF89713EC520F2D40D193073 /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E50C9C82DB89B024F45F20 /* QRCodeView.swift */; };
 		D7BFFD2FCCC631B1D959F3D3 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B681B4E8DEC48C081DBEC9 /* LoginView.swift */; };
 		D9420AD1BA0B65CE0180FD83 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C36CB7A1B590EB37F2D4B9 /* ProfileViewModel.swift */; };
+		D9779D1DB59646501FBF1DA0 /* MapFallbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF52106C773AD307146A24AD /* MapFallbackView.swift */; };
+		DCFDD7891A718C8522F4DFF3 /* CountdownTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 381D64FA053268EC3E5E7E4D /* CountdownTimer.swift */; };
 		DD9314DB3B399C66A77E127E /* TagDotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C14621A44090432EF229AB /* TagDotView.swift */; };
 		DEEE9FD78B7452DC4CCA2045 /* AuthDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5FC9E41ABE73BE706615321 /* AuthDTO.swift */; };
 		DFC56C78E52F9973C19E9480 /* NotificationRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C1EDDF05FD01701B918B0D4 /* NotificationRepository.swift */; };
@@ -95,10 +106,12 @@
 		E8528A8DDD172AF305757C76 /* UserDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ADB8C70ED7536C73280D48F /* UserDTO.swift */; };
 		EE30C0063F0FB2B62D27EEAF /* CalendarRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3A7CB282FB0707C92655D7 /* CalendarRepositoryImpl.swift */; };
 		F370B19C48BD4C8F13D0C0A5 /* CreateAppointmentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFADA24BC3474EF6E91D1D3 /* CreateAppointmentViewModel.swift */; };
+		F625FBFD88DE4898ED1B80F6 /* UIImage+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D9C478E012EB76711D8F6B /* UIImage+Resize.swift */; };
 		F6AF865B4978D34035887B64 /* WeeklyCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3E12A4E0CE34A1A27933B1 /* WeeklyCalendarView.swift */; };
 		F8F3013A44CCFF0AF1A5E94F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 530E8AC1610B24779591D361 /* GoogleService-Info.plist */; };
 		F9DFE92A4F14931CCAE67A51 /* TagFilterChipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A18046B6DB4183BC701774 /* TagFilterChipsView.swift */; };
 		FB3D6F5B4A8B38DE3F0695D6 /* AppointmentDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B897D124864FEFA0DF7842B /* AppointmentDetailViewModel.swift */; };
+		FBFA3BA7AAFC10F29DDF1F37 /* ImageUploadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605515229685B61F4A74762A /* ImageUploadService.swift */; };
 		FDC2DCF0499D30BC10E6033B /* RootRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7D4E06D152F64E3AE48ED6 /* RootRouter.swift */; };
 /* End PBXBuildFile section */
 
@@ -114,11 +127,15 @@
 
 /* Begin PBXFileReference section */
 		01A59D6D5965C043000E91C9 /* Step2PlaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Step2PlaceView.swift; sourceTree = "<group>"; };
+		05CD5A90837D02649348486A /* OdiyaTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdiyaTypography.swift; sourceTree = "<group>"; };
 		07D405F2EAA1A074967E60AD /* Step3ParticipantsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Step3ParticipantsView.swift; sourceTree = "<group>"; };
+		0C60CE70EFAB0B437E5DC71F /* NudgeCooldownTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NudgeCooldownTimer.swift; sourceTree = "<group>"; };
 		199CEA2BB63D923FF08714C7 /* TokenManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenManager.swift; sourceTree = "<group>"; };
 		1AFC9AA96945E7151078D23D /* CreateAppointmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAppointmentView.swift; sourceTree = "<group>"; };
 		1B897D124864FEFA0DF7842B /* AppointmentDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppointmentDetailViewModel.swift; sourceTree = "<group>"; };
 		1C50EFB87F4E9A573536755A /* SettingsRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRepositoryImpl.swift; sourceTree = "<group>"; };
+		1CFD73BAB01D5DE13D5C766D /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
+		217375ED137BF5EF60095D7F /* QRScannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerViewModel.swift; sourceTree = "<group>"; };
 		21BE3050B23D0EA44CEB5DAA /* CalendarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewModel.swift; sourceTree = "<group>"; };
 		257F8A6AE3E597F37E7513F8 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		29FD5A2CE75A49CB65690D9A /* OdiyaColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdiyaColors.swift; sourceTree = "<group>"; };
@@ -132,11 +149,14 @@
 		35913B1725C880D84B8BD690 /* CalendarRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarRepository.swift; sourceTree = "<group>"; };
 		37CBF9420ED733F1724E3781 /* DeparturePlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeparturePlace.swift; sourceTree = "<group>"; };
 		37F2E04530B49F3599C29529 /* AuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRepository.swift; sourceTree = "<group>"; };
+		381D64FA053268EC3E5E7E4D /* CountdownTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownTimer.swift; sourceTree = "<group>"; };
 		38800BBF1FC62A8F7A91318B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		389839A76595DD35A396C472 /* AppointmentDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppointmentDTO.swift; sourceTree = "<group>"; };
 		394CA926A5320CC5127D47AF /* Data+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extensions.swift"; sourceTree = "<group>"; };
 		3C7D48EC64091AA9C9ACE48A /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		3D42E91F10EA0FD811CF0318 /* FriendDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendDTO.swift; sourceTree = "<group>"; };
+		3E5DA772B83CF222DD56D24E /* OdiyaSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdiyaSpacing.swift; sourceTree = "<group>"; };
+		41B3688D6995D313D3A79C07 /* Date+Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Formatting.swift"; sourceTree = "<group>"; };
 		446F3F46EFD74808B86B860D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		453E7CB234BC7BE852245451 /* APIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIResponse.swift; sourceTree = "<group>"; };
 		484832E2B4CCFF766B0EA45E /* NotificationRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRepositoryImpl.swift; sourceTree = "<group>"; };
@@ -149,7 +169,9 @@
 		54639829304D89A41F18DC33 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		54AAB0D4E192D8DB030352BD /* TagEditSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagEditSheet.swift; sourceTree = "<group>"; };
 		55710F56D77D0F379E67629F /* CalendarDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDTO.swift; sourceTree = "<group>"; };
+		605515229685B61F4A74762A /* ImageUploadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUploadService.swift; sourceTree = "<group>"; };
 		60568195E80829B69B783CEB /* AppointmentRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppointmentRepository.swift; sourceTree = "<group>"; };
+		63D9C478E012EB76711D8F6B /* UIImage+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Resize.swift"; sourceTree = "<group>"; };
 		679DB2FC4B35E523B1C61630 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		686D4BD055FD8D88ADA8E07D /* TransportType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportType.swift; sourceTree = "<group>"; };
 		693FF42F6D0B9B011D7DEBEC /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
@@ -164,6 +186,7 @@
 		7C1EDDF05FD01701B918B0D4 /* NotificationRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRepository.swift; sourceTree = "<group>"; };
 		7D58779FADFE4108F45E0125 /* FriendListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendListView.swift; sourceTree = "<group>"; };
 		82A18046B6DB4183BC701774 /* TagFilterChipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagFilterChipsView.swift; sourceTree = "<group>"; };
+		82E50C9C82DB89B024F45F20 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		85B961FA6FE13FC0A09CD0B6 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		8C3A7CB282FB0707C92655D7 /* CalendarRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarRepositoryImpl.swift; sourceTree = "<group>"; };
 		8C4B3FE07134C29BCC207AAA /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
@@ -187,6 +210,7 @@
 		B847CAE27E24AFD32C629918 /* FriendRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRepository.swift; sourceTree = "<group>"; };
 		BA7D4E06D152F64E3AE48ED6 /* RootRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootRouter.swift; sourceTree = "<group>"; };
 		BB2F3B221EED8F52137D506E /* NudgeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NudgeButton.swift; sourceTree = "<group>"; };
+		BD827F53D87073AD40DD88E4 /* OdiyaShadows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdiyaShadows.swift; sourceTree = "<group>"; };
 		BEC3F728EFA2FC5B4D07BC37 /* UserRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRepository.swift; sourceTree = "<group>"; };
 		BF986D7BBFDE8FB4006BFE73 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		C2C36CB7A1B590EB37F2D4B9 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
@@ -208,6 +232,8 @@
 		F62672CFEE63A83BA95DA8DE /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		F6764AB71E5765A64125B52B /* DeparturePlaceManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeparturePlaceManagementView.swift; sourceTree = "<group>"; };
 		FA3E12A4E0CE34A1A27933B1 /* WeeklyCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyCalendarView.swift; sourceTree = "<group>"; };
+		FC61EB481F804C0AAA0EF427 /* KakaoMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoMapView.swift; sourceTree = "<group>"; };
+		FF52106C773AD307146A24AD /* MapFallbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapFallbackView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -326,6 +352,7 @@
 				8FEA5A2FBB0160AB75FF89F6 /* FriendListViewModel.swift */,
 				3284BD6D79ECE47F5C393AB4 /* FriendRowView.swift */,
 				82A18046B6DB4183BC701774 /* TagFilterChipsView.swift */,
+				65468A1C2F6B88A71D44EF88 /* QR */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -400,6 +427,16 @@
 			path = Create;
 			sourceTree = "<group>";
 		};
+		65468A1C2F6B88A71D44EF88 /* QR */ = {
+			isa = PBXGroup;
+			children = (
+				82E50C9C82DB89B024F45F20 /* QRCodeView.swift */,
+				1CFD73BAB01D5DE13D5C766D /* QRScannerView.swift */,
+				217375ED137BF5EF60095D7F /* QRScannerViewModel.swift */,
+			);
+			path = QR;
+			sourceTree = "<group>";
+		};
 		6A10AF84B3CBB920E3E955D7 /* Network */ = {
 			isa = PBXGroup;
 			children = (
@@ -426,6 +463,7 @@
 			children = (
 				9A6D54D1D5188CC5535825FF /* Auth */,
 				8463D15CC1AC2BFB11E39F4C /* Extensions */,
+				B617BCA131575BBDBDCE659B /* Map */,
 				56FD24D35FBB45D589E2EBC0 /* Models */,
 				FFF9EE02EE5D35714AEE653C /* Network */,
 			);
@@ -492,6 +530,8 @@
 			isa = PBXGroup;
 			children = (
 				394CA926A5320CC5127D47AF /* Data+Extensions.swift */,
+				41B3688D6995D313D3A79C07 /* Date+Formatting.swift */,
+				63D9C478E012EB76711D8F6B /* UIImage+Resize.swift */,
 				350A91483932AD8512DBB07F /* URLRequest+Extensions.swift */,
 			);
 			path = Extensions;
@@ -551,6 +591,7 @@
 				7B3E6D95565E2CAC9568FC3F /* MyAppointmentsView.swift */,
 				2A220843AEA39B6424A48CBD /* MyAppointmentsViewModel.swift */,
 				BB2F3B221EED8F52137D506E /* NudgeButton.swift */,
+				0C60CE70EFAB0B437E5DC71F /* NudgeCooldownTimer.swift */,
 				5F4F7BFB006901AF87900AAC /* Create */,
 			);
 			path = Presentation;
@@ -592,6 +633,15 @@
 				BA7D4E06D152F64E3AE48ED6 /* RootRouter.swift */,
 			);
 			path = Navigation;
+			sourceTree = "<group>";
+		};
+		B617BCA131575BBDBDCE659B /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				FC61EB481F804C0AAA0EF427 /* KakaoMapView.swift */,
+				FF52106C773AD307146A24AD /* MapFallbackView.swift */,
+			);
+			path = Map;
 			sourceTree = "<group>";
 		};
 		D0A837D4D6840027F9EBA98D /* OdiyaTests */ = {
@@ -659,6 +709,7 @@
 		F7EF2751DC38E03CAA6920B2 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				381D64FA053268EC3E5E7E4D /* CountdownTimer.swift */,
 				8C4B3FE07134C29BCC207AAA /* EmptyStateView.swift */,
 				85B961FA6FE13FC0A09CD0B6 /* LoadingView.swift */,
 				4F785F1A7272DEBED9FDEBF5 /* OdiyaAlertModifier.swift */,
@@ -673,6 +724,9 @@
 			isa = PBXGroup;
 			children = (
 				29FD5A2CE75A49CB65690D9A /* OdiyaColors.swift */,
+				BD827F53D87073AD40DD88E4 /* OdiyaShadows.swift */,
+				3E5DA772B83CF222DD56D24E /* OdiyaSpacing.swift */,
+				05CD5A90837D02649348486A /* OdiyaTypography.swift */,
 			);
 			path = Theme;
 			sourceTree = "<group>";
@@ -695,6 +749,7 @@
 				C852A7CB2A283B27B0A07CA7 /* APIError.swift */,
 				453E7CB234BC7BE852245451 /* APIResponse.swift */,
 				4DA34C6A3BD2ED9A3FD92D01 /* AuthInterceptor.swift */,
+				605515229685B61F4A74762A /* ImageUploadService.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -748,6 +803,8 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = E549C57AF5CE23792CE8EF78 /* Build configuration list for PBXProject "Odiya" */;
 			developmentRegion = en;
@@ -760,7 +817,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				71294B4B7557F360F04CF9F4 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
-				E6F020702F6FA3B6008B71A3 /* XCRemoteSwiftPackageReference "KakaoMapsSDK-SPM" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 75BE77E42548A853AA9BC31E /* Products */;
@@ -814,9 +870,11 @@
 				EE30C0063F0FB2B62D27EEAF /* CalendarRepositoryImpl.swift in Sources */,
 				5B19FD7D519951D4398EBF99 /* CalendarView.swift in Sources */,
 				7094255D3269F848EB875422 /* CalendarViewModel.swift in Sources */,
+				DCFDD7891A718C8522F4DFF3 /* CountdownTimer.swift in Sources */,
 				BC48FF73B862E55E1532D374 /* CreateAppointmentView.swift in Sources */,
 				F370B19C48BD4C8F13D0C0A5 /* CreateAppointmentViewModel.swift in Sources */,
 				791CEB57B7C57441D8FDB004 /* Data+Extensions.swift in Sources */,
+				489500C6C63ADF61CFE2CA1C /* Date+Formatting.swift in Sources */,
 				17ADE436B62B8ED3BDCB6DB3 /* DayAppointmentListView.swift in Sources */,
 				8F14CF4BD8739FE20D5A55EF /* DeparturePlace.swift in Sources */,
 				CA7505CEC0E88DE661091A0B /* DeparturePlaceEditSheet.swift in Sources */,
@@ -831,11 +889,14 @@
 				AA65F9500D26E9855DE0B354 /* FriendRepository.swift in Sources */,
 				972BC0AF04CF192A4A44FB08 /* FriendRepositoryImpl.swift in Sources */,
 				0C99858D47C833FDD4E95426 /* FriendRowView.swift in Sources */,
+				FBFA3BA7AAFC10F29DDF1F37 /* ImageUploadService.swift in Sources */,
+				64E34C5C1478469104FF23C9 /* KakaoMapView.swift in Sources */,
 				B1885D6432FA2FAEDA225B8B /* KeychainHelper.swift in Sources */,
 				423884CE035AF26C96A4AA49 /* LoadingView.swift in Sources */,
 				D7BFFD2FCCC631B1D959F3D3 /* LoginView.swift in Sources */,
 				87192C46C703BBAF81156808 /* LoginViewModel.swift in Sources */,
 				2127DB20FE0FD0B6187997AD /* MainTabView.swift in Sources */,
+				D9779D1DB59646501FBF1DA0 /* MapFallbackView.swift in Sources */,
 				1CD64244995FE4A0AEE2E728 /* MockData.swift in Sources */,
 				C4431C34364400A19B388E56 /* MonthlyCalendarView.swift in Sources */,
 				00AD453F5BCC205F9DBBB9CC /* MyAppointmentsView.swift in Sources */,
@@ -846,13 +907,20 @@
 				DFC56C78E52F9973C19E9480 /* NotificationRepository.swift in Sources */,
 				C99B4DEFDD4A9B5DF5D2EF9A /* NotificationRepositoryImpl.swift in Sources */,
 				370BC1714B360612B7017E0A /* NudgeButton.swift in Sources */,
+				424D77824D5A92DA0EE4A9F9 /* NudgeCooldownTimer.swift in Sources */,
 				2A923018A19D160797A56771 /* OdiyaAlertModifier.swift in Sources */,
 				06E35B576EE70684D46DD73A /* OdiyaApp.swift in Sources */,
 				237CFCFC7FCF897069AC3F8C /* OdiyaColors.swift in Sources */,
+				5D8130F9F3C5D82E8E9F702E /* OdiyaShadows.swift in Sources */,
+				548A60A325BC4305E12F1283 /* OdiyaSpacing.swift in Sources */,
+				6914AAFAA2451ADBF23210B7 /* OdiyaTypography.swift in Sources */,
 				8497A8DB2813C389982E02AF /* ProfileImageView.swift in Sources */,
 				1E2430565F9F692F5A859832 /* ProfileMenuView.swift in Sources */,
 				9CDE3221EEB3B5457897DADD /* ProfileView.swift in Sources */,
 				D9420AD1BA0B65CE0180FD83 /* ProfileViewModel.swift in Sources */,
+				CF89713EC520F2D40D193073 /* QRCodeView.swift in Sources */,
+				3C8D8E0650AED119A622910B /* QRScannerView.swift in Sources */,
+				033E16F04CDF629FBF841A8F /* QRScannerViewModel.swift in Sources */,
 				FDC2DCF0499D30BC10E6033B /* RootRouter.swift in Sources */,
 				0C49A19DACE0407898508ABC /* SettingsDTO.swift in Sources */,
 				8062308252EF274E6428A9C1 /* SettingsRepository.swift in Sources */,
@@ -871,6 +939,7 @@
 				29CEF490CE92811921B1497A /* ToastView.swift in Sources */,
 				BAA87F9769C76AD59346ECEC /* TokenManager.swift in Sources */,
 				9256405E2F9C417FDBEAE7C7 /* TransportType.swift in Sources */,
+				F625FBFD88DE4898ED1B80F6 /* UIImage+Resize.swift in Sources */,
 				9CF8849EC98D2AE2A4E013A0 /* URLRequest+Extensions.swift in Sources */,
 				172F242EEE6195820D44444D /* User.swift in Sources */,
 				E8528A8DDD172AF305757C76 /* UserDTO.swift in Sources */,
@@ -1131,14 +1200,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.22.0;
-			};
-		};
-		E6F020702F6FA3B6008B71A3 /* XCRemoteSwiftPackageReference "KakaoMapsSDK-SPM" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/kakao-mapsSDK/KakaoMapsSDK-SPM.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.12.10;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

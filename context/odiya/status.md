@@ -122,10 +122,12 @@
 
 ## 디자인 & UX
 
+### v1 / v1.5 (기반 — 완료)
+
 | 항목 | iOS | 상태 |
 |------|:---:|------|
 | 3탭 네비게이션 (캘린더/약속/친구) + 🔔👤 | ✅ | 완료 |
-| 컬러 시스템 (오디 보라 팔레트) | ✅ | 완료 |
+| 컬러 시스템 (오디 보라 팔레트 v1) | ✅ | 완료 — v2 로 대체 예정 |
 | 약속 생성 스텝 위저드 (Step 1~4) | ✅ | 완료 |
 | Step3 카카오톡 스타일 참여자 선택 | ✅ | 완료 |
 | Step4 출발지 카드 + "나중에 지정" | ✅ | 완료 |
@@ -136,6 +138,23 @@
 | 카운트다운 배너 (핑크 그라데이션) | ✅ | 프로토타입 적용 |
 | Apple 로그인 UI | - | 불필요 — 카카오 로그인만 사용 |
 | QR 코드 친구 추가 UI | ✅ | 프로토타입 적용 |
+
+### v2 전면 리뉴얼 (2026-04-22 착수 — 디자인 번들 기반)
+
+토스 + Linear 감성 · 깊은 보라 11단 + 모던 그레이 + 산호 액센트 · Pretendard + SF Pro · 전체 다크모드 지원. 소스: Claude Design 번들 `오디야 디자인 v2.html`. 상세 스펙: [`context/odiya/디자인-UX/v2-design-renewal.md`](디자인-UX/v2-design-renewal.md).
+
+| # | 작업 | iOS | 상태 | 비고 |
+|:-:|------|:---:|:----:|------|
+| 1 | 디자인 토큰 v2 (Colors/Typography/Shadows/Radius + Asset Any/Dark) | ⬜ | 대기 | `OdiyaColors.swift` 재구성 + `OdiyaTypography.swift`/`OdiyaShadows.swift`/`OdiyaRadius.swift` 신규 |
+| 2 | 공통 컴포넌트 v2 (Button/Card/Chip/Avatar/AvatarStack/TabBar `.ultraThinMaterial`) | ⬜ | 대기 | |
+| 3 | 로그인 v2 (Apple 제거, 카카오만) | ⬜ | 대기 | |
+| 4 | 내 약속 + HERO 카운트다운 v2 | ⬜ | 대기 | tabular-nums 필수 |
+| 5 | 약속 상세 v2 (Variant B · 지도 풀블리드 + 글래스 카드) | ⬜ | 대기 | 재촉 CTA accent+glow |
+| 6 | 캘린더 v2 (Variant A · 리치 프리뷰) | ⬜ | 대기 | **월/주 토글 제거** — 월간 단독 |
+| 7 | 약속 만들기 4스텝 v2 | ⬜ | 대기 | |
+| 8 | 친구·설정·태그·프로필 v2 | ⬜ | 대기 | 태그 solid = 개인화 액센트 전파 |
+| 9 | 모달/시트 v2 (알림·재촉 옵션 B·프로필 메뉴) | ⬜ | 대기 | 재촉 시트에서 **메시지 선택 제거** (스펙 충실) |
+| - | 전체 다크모드 지원 | ⬜ | 대기 | 시맨틱 토큰만으로 자동 전환 |
 
 ---
 
