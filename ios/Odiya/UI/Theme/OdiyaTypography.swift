@@ -27,73 +27,79 @@ enum OdiyaTypography {
     }()
 
     /// Pretendard 가 있으면 커스텀 폰트, 없으면 시스템 폰트로 폴백.
-    private static func font(_ face: PretendardFace, size: CGFloat, systemWeight: Font.Weight) -> Font {
+    /// `relativeTo` 를 전달해 Dynamic Type 에 대응한다 (접근성·HIG 준수).
+    private static func font(
+        _ face: PretendardFace,
+        size: CGFloat,
+        systemWeight: Font.Weight,
+        relativeTo textStyle: Font.TextStyle
+    ) -> Font {
         if isPretendardAvailable {
-            return .custom(face.rawValue, size: size)
+            return .custom(face.rawValue, size: size, relativeTo: textStyle)
         }
-        return .system(size: size, weight: systemWeight)
+        return .system(textStyle, design: .default).weight(systemWeight)
     }
 
     // MARK: - Scale (v2)
 
-    /// 28pt / 800 — Nav 대형 타이틀 (홈/약속/친구 상단)
+    /// 28pt / 800 — Nav 대형 타이틀 (홈/약속/친구 상단). Dynamic Type: largeTitle
     static var navLargeTitle: Font {
-        font(.heavy, size: 28, systemWeight: .heavy)
+        font(.heavy, size: 28, systemWeight: .heavy, relativeTo: .largeTitle)
     }
 
-    /// 20pt / 700 — 섹션 헤더
+    /// 20pt / 700 — 섹션 헤더. Dynamic Type: title3
     static var sectionHeader: Font {
-        font(.bold, size: 20, systemWeight: .bold)
+        font(.bold, size: 20, systemWeight: .bold, relativeTo: .title3)
     }
 
-    /// 17pt / 700 — 큰 버튼 (lg)
+    /// 17pt / 700 — 큰 버튼 (lg). Dynamic Type: headline
     static var buttonLg: Font {
-        font(.bold, size: 17, systemWeight: .bold)
+        font(.bold, size: 17, systemWeight: .bold, relativeTo: .headline)
     }
 
-    /// 15pt / 600 — 중간 버튼 (md)
+    /// 15pt / 600 — 중간 버튼 (md). Dynamic Type: subheadline
     static var buttonMd: Font {
-        font(.semibold, size: 15, systemWeight: .semibold)
+        font(.semibold, size: 15, systemWeight: .semibold, relativeTo: .subheadline)
     }
 
-    /// 14pt / 600 — 작은 버튼 (sm)
+    /// 14pt / 600 — 작은 버튼 (sm). Dynamic Type: footnote
     static var buttonSm: Font {
-        font(.semibold, size: 14, systemWeight: .semibold)
+        font(.semibold, size: 14, systemWeight: .semibold, relativeTo: .footnote)
     }
 
-    /// 17pt / 400 — 본문
+    /// 17pt / 400 — 본문. Dynamic Type: body
     static var body: Font {
-        font(.regular, size: 17, systemWeight: .regular)
+        font(.regular, size: 17, systemWeight: .regular, relativeTo: .body)
     }
 
-    /// 15pt / 500 — 본문 보조
+    /// 15pt / 500 — 본문 보조. Dynamic Type: subheadline
     static var bodySm: Font {
-        font(.medium, size: 15, systemWeight: .medium)
+        font(.medium, size: 15, systemWeight: .medium, relativeTo: .subheadline)
     }
 
-    /// 13pt / 600 — 라벨
+    /// 13pt / 600 — 라벨. Dynamic Type: footnote
     static var label: Font {
-        font(.semibold, size: 13, systemWeight: .semibold)
+        font(.semibold, size: 13, systemWeight: .semibold, relativeTo: .footnote)
     }
 
-    /// 12pt / 600 — 캡션·배지
+    /// 12pt / 600 — 캡션·배지. Dynamic Type: caption
     static var caption: Font {
-        font(.semibold, size: 12, systemWeight: .semibold)
+        font(.semibold, size: 12, systemWeight: .semibold, relativeTo: .caption)
     }
 
-    /// HERO 카운트다운 숫자 — `.monospacedDigit()` 적용됨
+    /// HERO 카운트다운 숫자 — `.monospacedDigit()` 적용. Dynamic Type: largeTitle
     static var heroCountdown: Font {
-        font(.heavy, size: 72, systemWeight: .heavy).monospacedDigit()
+        font(.heavy, size: 72, systemWeight: .heavy, relativeTo: .largeTitle).monospacedDigit()
     }
 
-    /// HERO 카운트다운 (컴팩트) — 내 약속 카드용
+    /// HERO 카운트다운 (컴팩트) — 내 약속 카드용. Dynamic Type: title
     static var heroCountdownSm: Font {
-        font(.heavy, size: 48, systemWeight: .heavy).monospacedDigit()
+        font(.heavy, size: 48, systemWeight: .heavy, relativeTo: .title).monospacedDigit()
     }
 
-    /// 시간 / 거리 등 tabular 숫자가 들어가는 본문
+    /// 시간 / 거리 등 tabular 숫자가 들어가는 본문. Dynamic Type: subheadline
     static var tabularBody: Font {
-        font(.semibold, size: 15, systemWeight: .semibold).monospacedDigit()
+        font(.semibold, size: 15, systemWeight: .semibold, relativeTo: .subheadline).monospacedDigit()
     }
 }
 

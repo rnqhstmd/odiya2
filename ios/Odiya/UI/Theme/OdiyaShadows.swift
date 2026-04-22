@@ -43,14 +43,13 @@ private struct OdiyaShadowModifier: ViewModifier {
                 .shadow(color: isDark ? .black.opacity(0.3) : Color(red: 17/255, green: 17/255, blue: 28/255).opacity(0.05), radius: 4, x: 0, y: 2)
                 .shadow(color: isDark ? .black.opacity(0.2) : Color(red: 17/255, green: 17/255, blue: 28/255).opacity(0.08), radius: 32, x: 0, y: 12)
         case .hero:
-            let purple = Color(red: 76/255, green: 42/255, blue: 143/255)
+            let purple = OdiyaColors.p700
             content
                 .shadow(color: purple.opacity(isDark ? 0.25 : 0.12), radius: 10, x: 0, y: 4)
                 .shadow(color: purple.opacity(isDark ? 0.45 : 0.22), radius: 48, x: 0, y: 20)
         case .glow:
-            let accent = Color(red: 255/255, green: 94/255, blue: 122/255)
             content
-                .shadow(color: accent.opacity(isDark ? 0.5 : 0.35), radius: 24, x: 0, y: 8)
+                .shadow(color: OdiyaColors.accent.opacity(isDark ? 0.5 : 0.35), radius: 24, x: 0, y: 8)
         }
     }
 }

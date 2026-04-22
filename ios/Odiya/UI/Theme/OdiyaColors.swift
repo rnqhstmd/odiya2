@@ -227,4 +227,8 @@ extension Color {
         }
         self.init(ui)
     }
+
+    /// `Color.odiya.primary` 같은 네임스페이스 접근을 지원하기 위한 별칭.
+    /// v2-design-renewal.md 의 명명 규약과 호출 감도를 맞춘다.
+    static let odiya = OdiyaColors.self
 }
