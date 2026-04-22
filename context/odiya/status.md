@@ -145,8 +145,8 @@
 
 | # | 작업 | iOS | 상태 | 비고 |
 |:-:|------|:---:|:----:|------|
-| 1 | 디자인 토큰 v2 (Colors/Typography/Shadows/Radius + Asset Any/Dark) | ⬜ | 대기 | `OdiyaColors.swift` 재구성 + `OdiyaTypography.swift`/`OdiyaShadows.swift`/`OdiyaRadius.swift` 신규 |
-| 2 | 공통 컴포넌트 v2 (Button/Card/Chip/Avatar/AvatarStack/TabBar `.ultraThinMaterial`) | ⬜ | 대기 | |
+| 1 | 디자인 토큰 v2 (Colors/Typography/Shadows/Radius + 동적 다크) | ✅ | PR #34 | `OdiyaColors` rewrite (p/g/accent/태그 8종 + 시맨틱 동적) · `OdiyaTypography` 신규 (Pretendard+SF Pro+Dynamic Type) · `OdiyaShadows` 신규 (2-layer + colorScheme) · `OdiyaRadiusV2` 추가. Asset Catalog 대신 `Color(lightHex:darkHex:)` 헬퍼 채택 |
+| 2 | 공통 컴포넌트 v2 (Button/Card/Chip/Avatar/AvatarStack/Segmented) | 🔄 | 진행 중 | `OdiyaButton`/`OdiyaCard`+`OdiyaSectionLabel`/`OdiyaChip`/`OdiyaAvatarV2`+`OdiyaAvatarStackV2`/`OdiyaSegmented` 신규. MainTabView 리스킨은 탭바를 쓰는 화면별 v2 마이그레이션(Stage 4~) 시 `.toolbarBackground(.ultraThinMaterial)` 로 처리 예정 |
 | 3 | 로그인 v2 (Apple 제거, 카카오만) | ⬜ | 대기 | |
 | 4 | 내 약속 + HERO 카운트다운 v2 | ⬜ | 대기 | tabular-nums 필수 |
 | 5 | 약속 상세 v2 (Variant B · 지도 풀블리드 + 글래스 카드) | ⬜ | 대기 | 재촉 CTA accent+glow |

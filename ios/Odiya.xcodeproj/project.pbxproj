@@ -15,6 +15,7 @@
 		0AE2CDD56EAEA9E8EACF4CD2 /* SettingsRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C50EFB87F4E9A573536755A /* SettingsRepositoryImpl.swift */; };
 		0B9C05257077882F836018C1 /* UserUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30002F40028640D1C478E6E6 /* UserUseCase.swift */; };
 		0C49A19DACE0407898508ABC /* SettingsDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF338A5877450C324F1DC61 /* SettingsDTO.swift */; };
+		0C5CE8C2F25C59C929E065D2 /* OdiyaSegmented.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B267E47711EBA56E6BE2954 /* OdiyaSegmented.swift */; };
 		0C99858D47C833FDD4E95426 /* FriendRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3284BD6D79ECE47F5C393AB4 /* FriendRowView.swift */; };
 		172F242EEE6195820D44444D /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7D48EC64091AA9C9ACE48A /* User.swift */; };
 		17ADE436B62B8ED3BDCB6DB3 /* DayAppointmentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3416FCACA66C9F1067CB34F /* DayAppointmentListView.swift */; };
@@ -27,6 +28,8 @@
 		25D108115F97D17A24461308 /* FriendListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FEA5A2FBB0160AB75FF89F6 /* FriendListViewModel.swift */; };
 		29CEF490CE92811921B1497A /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF986D7BBFDE8FB4006BFE73 /* ToastView.swift */; };
 		2A923018A19D160797A56771 /* OdiyaAlertModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F785F1A7272DEBED9FDEBF5 /* OdiyaAlertModifier.swift */; };
+		3257FBC1744759F334289503 /* OdiyaButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591028A932D2CA3840C39031 /* OdiyaButton.swift */; };
+		34842598BB2BB07F780122AE /* OdiyaCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803EA116D7ECC0F3E33069E2 /* OdiyaCard.swift */; };
 		34F7A898746F6450C7791B29 /* Step3ParticipantsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D405F2EAA1A074967E60AD /* Step3ParticipantsView.swift */; };
 		35304A0484EC84E3B0A41F47 /* CalendarRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35913B1725C880D84B8BD690 /* CalendarRepository.swift */; };
 		369CB18D754A3EBEB031B2C4 /* AuthInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DA34C6A3BD2ED9A3FD92D01 /* AuthInterceptor.swift */; };
@@ -83,8 +86,10 @@
 		AA65F9500D26E9855DE0B354 /* FriendRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B847CAE27E24AFD32C629918 /* FriendRepository.swift */; };
 		AD45750F38ABB7B6EBF27211 /* APIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453E7CB234BC7BE852245451 /* APIResponse.swift */; };
 		AFEADA8D6A42D7ABEABB6C36 /* AuthRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E598D02139A24B465E0958 /* AuthRepositoryImpl.swift */; };
+		AFFFFB2CDDC5467389F4D7A9 /* OdiyaChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37B9F2084DB64378EA59037 /* OdiyaChip.swift */; };
 		B1885D6432FA2FAEDA225B8B /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257F8A6AE3E597F37E7513F8 /* KeychainHelper.swift */; };
 		B2492087E13370E65B1DB98B /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = AF79DB876EF0C30147C43B50 /* KakaoSDK */; };
+		B51B3866BBE1C8A1B79F9EE6 /* OdiyaAvatarV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDCBF7FA5B73D9EFCC152057 /* OdiyaAvatarV2.swift */; };
 		B6B343A28C759B043C457C2B /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C852A7CB2A283B27B0A07CA7 /* APIError.swift */; };
 		BAA87F9769C76AD59346ECEC /* TokenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199CEA2BB63D923FF08714C7 /* TokenManager.swift */; };
 		BC48FF73B862E55E1532D374 /* CreateAppointmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AFC9AA96945E7151078D23D /* CreateAppointmentView.swift */; };
@@ -169,6 +174,7 @@
 		54639829304D89A41F18DC33 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		54AAB0D4E192D8DB030352BD /* TagEditSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagEditSheet.swift; sourceTree = "<group>"; };
 		55710F56D77D0F379E67629F /* CalendarDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDTO.swift; sourceTree = "<group>"; };
+		591028A932D2CA3840C39031 /* OdiyaButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdiyaButton.swift; sourceTree = "<group>"; };
 		605515229685B61F4A74762A /* ImageUploadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUploadService.swift; sourceTree = "<group>"; };
 		60568195E80829B69B783CEB /* AppointmentRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppointmentRepository.swift; sourceTree = "<group>"; };
 		63D9C478E012EB76711D8F6B /* UIImage+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Resize.swift"; sourceTree = "<group>"; };
@@ -185,9 +191,11 @@
 		7B3E6D95565E2CAC9568FC3F /* MyAppointmentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAppointmentsView.swift; sourceTree = "<group>"; };
 		7C1EDDF05FD01701B918B0D4 /* NotificationRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRepository.swift; sourceTree = "<group>"; };
 		7D58779FADFE4108F45E0125 /* FriendListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendListView.swift; sourceTree = "<group>"; };
+		803EA116D7ECC0F3E33069E2 /* OdiyaCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdiyaCard.swift; sourceTree = "<group>"; };
 		82A18046B6DB4183BC701774 /* TagFilterChipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagFilterChipsView.swift; sourceTree = "<group>"; };
 		82E50C9C82DB89B024F45F20 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		85B961FA6FE13FC0A09CD0B6 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		8B267E47711EBA56E6BE2954 /* OdiyaSegmented.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdiyaSegmented.swift; sourceTree = "<group>"; };
 		8C3A7CB282FB0707C92655D7 /* CalendarRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarRepositoryImpl.swift; sourceTree = "<group>"; };
 		8C4B3FE07134C29BCC207AAA /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		8FEA5A2FBB0160AB75FF89F6 /* FriendListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendListViewModel.swift; sourceTree = "<group>"; };
@@ -214,6 +222,7 @@
 		BEC3F728EFA2FC5B4D07BC37 /* UserRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRepository.swift; sourceTree = "<group>"; };
 		BF986D7BBFDE8FB4006BFE73 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		C2C36CB7A1B590EB37F2D4B9 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		C37B9F2084DB64378EA59037 /* OdiyaChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdiyaChip.swift; sourceTree = "<group>"; };
 		C6D97A4168459C3BB67AEE59 /* ProfileImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageView.swift; sourceTree = "<group>"; };
 		C849FEF6C673A39E70A52A2F /* APIEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoint.swift; sourceTree = "<group>"; };
 		C852A7CB2A283B27B0A07CA7 /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
@@ -233,6 +242,7 @@
 		F6764AB71E5765A64125B52B /* DeparturePlaceManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeparturePlaceManagementView.swift; sourceTree = "<group>"; };
 		FA3E12A4E0CE34A1A27933B1 /* WeeklyCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyCalendarView.swift; sourceTree = "<group>"; };
 		FC61EB481F804C0AAA0EF427 /* KakaoMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoMapView.swift; sourceTree = "<group>"; };
+		FDCBF7FA5B73D9EFCC152057 /* OdiyaAvatarV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdiyaAvatarV2.swift; sourceTree = "<group>"; };
 		FF52106C773AD307146A24AD /* MapFallbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapFallbackView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -713,6 +723,11 @@
 				8C4B3FE07134C29BCC207AAA /* EmptyStateView.swift */,
 				85B961FA6FE13FC0A09CD0B6 /* LoadingView.swift */,
 				4F785F1A7272DEBED9FDEBF5 /* OdiyaAlertModifier.swift */,
+				FDCBF7FA5B73D9EFCC152057 /* OdiyaAvatarV2.swift */,
+				591028A932D2CA3840C39031 /* OdiyaButton.swift */,
+				803EA116D7ECC0F3E33069E2 /* OdiyaCard.swift */,
+				C37B9F2084DB64378EA59037 /* OdiyaChip.swift */,
+				8B267E47711EBA56E6BE2954 /* OdiyaSegmented.swift */,
 				C6D97A4168459C3BB67AEE59 /* ProfileImageView.swift */,
 				77C14621A44090432EF229AB /* TagDotView.swift */,
 				BF986D7BBFDE8FB4006BFE73 /* ToastView.swift */,
@@ -910,7 +925,12 @@
 				424D77824D5A92DA0EE4A9F9 /* NudgeCooldownTimer.swift in Sources */,
 				2A923018A19D160797A56771 /* OdiyaAlertModifier.swift in Sources */,
 				06E35B576EE70684D46DD73A /* OdiyaApp.swift in Sources */,
+				B51B3866BBE1C8A1B79F9EE6 /* OdiyaAvatarV2.swift in Sources */,
+				3257FBC1744759F334289503 /* OdiyaButton.swift in Sources */,
+				34842598BB2BB07F780122AE /* OdiyaCard.swift in Sources */,
+				AFFFFB2CDDC5467389F4D7A9 /* OdiyaChip.swift in Sources */,
 				237CFCFC7FCF897069AC3F8C /* OdiyaColors.swift in Sources */,
+				0C5CE8C2F25C59C929E065D2 /* OdiyaSegmented.swift in Sources */,
 				5D8130F9F3C5D82E8E9F702E /* OdiyaShadows.swift in Sources */,
 				548A60A325BC4305E12F1283 /* OdiyaSpacing.swift in Sources */,
 				6914AAFAA2451ADBF23210B7 /* OdiyaTypography.swift in Sources */,
