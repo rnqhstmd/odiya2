@@ -63,9 +63,6 @@ struct OdiyaChip: View {
     var icon: String? = nil
     var action: (() -> Void)? = nil
 
-    @Environment(\.colorScheme) private var colorScheme
-    private var isDark: Bool { colorScheme == .dark }
-
     var body: some View {
         let content = HStack(spacing: size.gap) {
             if let tag, !active {

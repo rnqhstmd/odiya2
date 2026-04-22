@@ -12,8 +12,6 @@ struct OdiyaAvatarV2: View {
     var tag: OdiyaColors.TagV2? = nil
     var bordered: Bool = false
 
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
         let baseColor = resolvedColor
         ZStack {

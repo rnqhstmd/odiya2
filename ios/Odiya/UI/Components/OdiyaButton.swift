@@ -84,9 +84,6 @@ struct OdiyaButton: View {
     var isEnabled: Bool = true
     let action: () -> Void
 
-    @Environment(\.colorScheme) private var colorScheme
-    private var isDark: Bool { colorScheme == .dark }
-
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {

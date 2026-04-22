@@ -13,8 +13,6 @@ struct OdiyaCard<CardBody: View>: View {
     var tag: Color? = nil
     @ViewBuilder let content: () -> CardBody
 
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
         let base = content()
             .padding(padding)
@@ -41,11 +39,12 @@ struct OdiyaCard<CardBody: View>: View {
 }
 
 /// 섹션 사이에 두는 작은 헤더 라벨.
-/// `common-v2.jsx` 의 `SectionLabel` 직역.
+/// `common-v2.jsx` 의 `SectionLabel` 직역. 액션 버튼이 필요하면 `trailingAction` 튜플로
+/// `(label, handler)` 를 묶어 전달한다 — 라벨 없이 핸들러만 넘기거나 그 반대가 되는
+/// 실수를 타입 레벨에서 차단한다.
 struct OdiyaSectionLabel: View {
     let title: String
-    var action: (() -> Void)? = nil
-    var actionLabel: String? = nil
+    var trailingAction: (label: String, handler: () -> Void)? = nil
 
     var body: some View {
         HStack {
@@ -54,8 +53,8 @@ struct OdiyaSectionLabel: View {
                 .foregroundStyle(OdiyaColors.textSecondary)
                 .tracking(OdiyaTracking.body)
             Spacer()
-            if let action, let actionLabel {
-                Button(actionLabel, action: action)
+            if let trailingAction {
+                Button(trailingAction.label, action: trailingAction.handler)
                     .font(OdiyaTypography.label)
                     .foregroundStyle(OdiyaColors.interactive)
             }
@@ -99,7 +98,7 @@ struct OdiyaSectionLabel: View {
 #Preview("Dark") {
     ScrollView {
         VStack(spacing: 16) {
-            OdiyaSectionLabel(title: "다가오는 약속", action: {}, actionLabel: "전체")
+            OdiyaSectionLabel(title: "다가오는 약속", trailingAction: (label: "전체", handler: {}))
 
             OdiyaCard(tag: OdiyaColors.tagRose.solid) {
                 VStack(alignment: .leading, spacing: 6) {
