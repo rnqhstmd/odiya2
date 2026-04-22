@@ -1,5 +1,19 @@
 import SwiftUI
 
+/// v2 공용 프레서블 버튼 스타일.
+///
+/// `.plain` 을 쓰면 기본 눌림 피드백이 사라져 UI 가 정적으로 느껴지므로,
+/// subtle scale(0.97) + opacity(0.85) 로 인터랙션을 표현한다. OdiyaButton / OdiyaChip /
+/// OdiyaSegmented 모두 동일 스타일을 공유한다.
+struct OdiyaPressableStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .opacity(configuration.isPressed ? 0.85 : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.75), value: configuration.isPressed)
+    }
+}
+
 /// v2 공용 버튼.
 ///
 /// `tokens-v2.jsx` 의 `Btn` 컴포넌트 직역. variant 4종 × size 3종 조합을 지원하고,
@@ -98,7 +112,7 @@ struct OdiyaButton: View {
             .opacity(isEnabled ? 1.0 : 0.5)
         }
         .disabled(!isEnabled)
-        .buttonStyle(.plain)
+        .buttonStyle(OdiyaPressableStyle())
     }
 
     private var foreground: Color {
@@ -126,11 +140,21 @@ struct OdiyaButton: View {
 
     private struct ShadowModifier: ViewModifier {
         let variant: Variant
+        @Environment(\.colorScheme) private var colorScheme
+
+        private var isDark: Bool { colorScheme == .dark }
 
         func body(content: Content) -> some View {
             switch variant {
             case .primary:
-                content.shadow(color: OdiyaColors.p700.opacity(0.25), radius: 10, x: 0, y: 3)
+                // 다크모드에선 보라 섀도가 대비감을 못 주므로 블랙 톤 + 옅은 보라 글로우로 대체
+                if isDark {
+                    content
+                        .shadow(color: .black.opacity(0.35), radius: 10, x: 0, y: 3)
+                        .shadow(color: OdiyaColors.p500.opacity(0.18), radius: 20, x: 0, y: 6)
+                } else {
+                    content.shadow(color: OdiyaColors.p700.opacity(0.25), radius: 10, x: 0, y: 3)
+                }
             case .accent:
                 content.odiyaShadow(.glow)
             case .secondary, .ghost:

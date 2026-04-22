@@ -89,7 +89,7 @@ struct OdiyaChip: View {
 
         if let action {
             Button(action: action) { content }
-                .buttonStyle(.plain)
+                .buttonStyle(OdiyaPressableStyle())
         } else {
             content
         }
